@@ -1,4 +1,4 @@
-package test;
+
 
 import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;

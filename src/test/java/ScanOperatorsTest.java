@@ -1,4 +1,4 @@
-package test;
+
 
 import operators.ScanOperators;
 import operators.booleanExpressions.AND;

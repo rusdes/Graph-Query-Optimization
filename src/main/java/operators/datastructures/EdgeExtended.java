@@ -1,6 +1,7 @@
 package operators.datastructures;
 
-import org.apache.flink.api.java.tuple.Tuple5;
+// import org.apache.flink.api.java.tuple.Quintet;
+// import org.javatuples.Quintet;
 /**
  * Extended edge for Cypher Implementation
  * @param <E> the key type for the edges
@@ -9,10 +10,14 @@ import org.apache.flink.api.java.tuple.Tuple5;
  * @param <P> the edge properties type
  *  */
 
-public class EdgeExtended<E, K, L, P> extends Tuple5<E, K, K, L, P>{
+public class EdgeExtended<E, K, L, P> {
 	
-	private static final long serialVersionUID = 1L;
-	
+	// private static final long serialVersionUID = 1L;
+	// Long, Long, String, HashMap<String, String>
+	private E f0;
+	private K f1, f2;
+	private L f3;
+	private P f4;
 	public EdgeExtended(){}
 
 	public EdgeExtended(E edgeId, K srcId, K trgId, L label, P props) {

@@ -1,15 +1,19 @@
 package queryplan;
 
 
+import java.util.List;
+
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.operators.Order;
-// import org.apache.flink.api.java.DataSet;
+// import org.apache.flink.api.java.List;
 // import org.apache.flink.api.java.tuple.Pair;
-import org.javatuples.*;
 // import org.apache.flink.api.java.tuple.Triplet;
 // import org.apache.flink.api.java.tuple.Quintet;
-import org.apache.flink.api.java.ExecutionEnvironment;
+
+import org.javatuples.*;
+
+// import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.util.Collector;
 /**
  * Collect statistic information from graph database
@@ -20,38 +24,38 @@ import org.apache.flink.util.Collector;
 public class StatisticsCollector {
 	public static void main(String[] args) throws Exception {
 		
-		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-		env.setParallelism(1);
+		// ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+		// env.setParallelism(1);
 		String srcDir = args[0];
 		String tarDir = args[1];
 		StatisticsCollector k = new StatisticsCollector(env, srcDir, tarDir);
 		k.getEdgesStats();
 		k.getVerticesStats();
 	}	
-	ExecutionEnvironment env;
+	// ExecutionEnvironment env;
 	String srcDir;
 	String tarDir;
 	
-	public StatisticsCollector(ExecutionEnvironment e, String s, String t) {
-		env = e;
+	public StatisticsCollector(String s, String t) {
+		// env = e;
 		srcDir = s;
 		tarDir = t;
 	}
 
 	//This function will write a three-column file to the target directory. The three column consists of the vertex label names, the number of the vertices and the proportion.
-	public Triplet<String, Long, Double>  getVerticesStats () throws Exception {
+	public List<Triplet<String, Long, Double>>  getVerticesStats () throws Exception {
 		
-		Triplet<Long, String, String> verticesFromFile = env.readCsvFile(srcDir + "vertices.csv")
+		List<Triplet<Long, String, String>> verticesFromFile = env.readCsvFile(srcDir + "vertices.csv")
 			.fieldDelimiter("|")
 			.types(Long.class, String.class, String.class);
 		
-		Pair<String, Long> vertexLabels = verticesFromFile.flatMap(new ExtractVertexLabels()).groupBy(0).sum(1); 
+		List<Pair<String, Long>> vertexLabels = verticesFromFile.flatMap(new ExtractVertexLabels()).groupBy(0).sum(1); 
 		
 		long vertexNum = verticesFromFile.count();
 		
-		Pair<String, Long> vertexNumber = env.fromElements("vertices" + " " + String.valueOf(vertexNum)).map(new StringToTuple());
+		List<Pair<String, Long>> vertexNumber = env.fromElements("vertices" + " " + String.valueOf(vertexNum)).map(new StringToTuple());
 		
-		Triplet<String, Long, Double> vertices = vertexLabels.union(vertexNumber)
+		List<Triplet<String, Long, Double>> vertices = vertexLabels.union(vertexNumber)
 				.map(new ProportionComputation(vertexNum))
 				.sortPartition(1, Order.DESCENDING);
 		
@@ -62,19 +66,19 @@ public class StatisticsCollector {
 	}
 
 	//This function will write a three-column file to the target directory. The three column consists of the edge label names, the number of the vertices and the proportion.
-	public Triplet<String, Long, Double> getEdgesStats () throws Exception {
+	public List<Triplet<String, Long, Double>> getEdgesStats () throws Exception {
 		
-		Quintet<Long, Long, Long, String, String> edgesFromFile = env.readCsvFile(srcDir + "edges.csv")
+		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = env.readCsvFile(srcDir + "edges.csv")
 				.fieldDelimiter("|")
 				.types(Long.class, Long.class, Long.class, String.class, String.class);
 		
-		Pair<String, Long> edgeLabels = edgesFromFile.map(new ExtractEdgeLabels()).groupBy(0).sum(1); 
+		List<Pair<String, Long>> edgeLabels = edgesFromFile.map(new ExtractEdgeLabels()).groupBy(0).sum(1); 
 		
 		long edgeNum = edgesFromFile.count();
 		
-		Pair<String, Long> edgeNumber = env.fromElements("edges" + " " + String.valueOf(edgeNum)).map(new StringToTuple());
+		List<Pair<String, Long>> edgeNumber = env.fromElements("edges" + " " + String.valueOf(edgeNum)).map(new StringToTuple());
 		
-		Triplet<String, Long, Double> edges = edgeLabels.union(edgeNumber)
+		List<Triplet<String, Long, Double>> edges = edgeLabels.union(edgeNumber)
 				.map(new ProportionComputation(edgeNum))
 				.sortPartition(1, Order.DESCENDING);
 		

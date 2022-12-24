@@ -1,10 +1,10 @@
 package operators;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.flink.api.common.functions.FlatJoinFunction;
 import org.apache.flink.api.common.functions.JoinFunction;
-import org.apache.flink.api.java.DataSet;
 import org.apache.flink.util.Collector;
 /*
 *
@@ -18,24 +18,24 @@ import org.apache.flink.util.Collector;
 public class BinaryOperators {
 	
 	//Each list contains the vertex IDs and edge IDs of a selected path so far 
-	private DataSet<ArrayList<Long>> pathsLeft;
-	private DataSet<ArrayList<Long>> pathsRight;
+	private List<ArrayList<Long>> pathsLeft;
+	private List<ArrayList<Long>> pathsRight;
 	
 	
 	//Get the input graph, current columnNumber and the vertex and edges IDs
 	public BinaryOperators(
-			DataSet<ArrayList<Long>> pathsLeft,
-			DataSet<ArrayList<Long>> pathsRight) {
+			List<ArrayList<Long>> pathsLeft,
+			List<ArrayList<Long>> pathsRight) {
 		this.pathsLeft = pathsLeft;
 		this.pathsRight = pathsRight;
 	}
 	
 	//Join on after vertices
-	public DataSet<ArrayList<Long>> joinOnAfterVertices(int firstCol, int secondCol) {
+	public List<ArrayList<Long>> joinOnAfterVertices(int firstCol, int secondCol) {
 		KeySelectorForColumns SelectorFisrt = new KeySelectorForColumns(firstCol);
 		KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
 		
-		DataSet<ArrayList<Long>> joinedResults = this.pathsLeft
+		List<ArrayList<Long>> joinedResults = this.pathsLeft
 				.join(this.pathsRight)
 				.where(SelectorFisrt)
 				.equalTo(SelectorSecond)
@@ -60,11 +60,11 @@ public class BinaryOperators {
 
 	
 	//Join on left vertices
-	public DataSet<ArrayList<Long>> joinOnBeforeVertices(int firstCol, int secondCol) {
+	public List<ArrayList<Long>> joinOnBeforeVertices(int firstCol, int secondCol) {
 		KeySelectorForColumns SelectorFisrt = new KeySelectorForColumns(firstCol);
 		KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
 		
-		DataSet<ArrayList<Long>> joinedResults = this.pathsLeft
+		List<ArrayList<Long>> joinedResults = this.pathsLeft
 				.join(this.pathsRight)
 				.where(SelectorFisrt)
 				.equalTo(SelectorSecond)
@@ -88,16 +88,16 @@ public class BinaryOperators {
 	}
 	
 	//Union
-	public DataSet<ArrayList<Long>> union(){
-		DataSet<ArrayList<Long>> unitedResults = this.pathsLeft
+	public List<ArrayList<Long>> union(){
+		List<ArrayList<Long>> unitedResults = this.pathsLeft
 				.union(this.pathsRight)
 				.distinct();
 		return unitedResults;
 	}
 	
 	//Intersection
-	public DataSet<ArrayList<Long>> intersection() {
-		DataSet<ArrayList<Long>> intersectedResults = this.pathsLeft
+	public List<ArrayList<Long>> intersection() {
+		List<ArrayList<Long>> intersectedResults = this.pathsLeft
 				.join(this.pathsRight)
 				.where(0)
 				.equalTo(0)

@@ -1,19 +1,20 @@
 package queryplan.querygraph;
 import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.flink.api.java.DataSet;
+// import org.apache.flink.api.java.List;
 public class QueryGraphComponent {
 	//indicate the estimated cardinality of the current graph component
 	double est;
 
 	//indicate the positions of all retrieved results in returned paths
-	DataSet<ArrayList<Long>> data;
+	List<ArrayList<Long>> data;
 
 	//store vertices and edges are contained in this graph component
 	ArrayList<Object> columns;
 	
 	
-	public QueryGraphComponent(double e, DataSet<ArrayList<Long>> d, ArrayList<Object> cols) {
+	public QueryGraphComponent(double e, List<ArrayList<Long>> d, ArrayList<Object> cols) {
 		est = e;
 		data = d;
 		columns = cols;
@@ -23,7 +24,7 @@ public class QueryGraphComponent {
 		return est;
 	} 
 	
-	public DataSet<ArrayList<Long>> getData() {
+	public List<ArrayList<Long>> getData() {
 		return data;
 	}
 	

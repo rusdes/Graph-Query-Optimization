@@ -13,9 +13,10 @@ import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
-// import org.apache.flink.api.java.DataSet;
+// import org.apache.flink.api.java.List;
 // import org.apache.flink.api.java.tuple.Pair;
-import org.javatuples.*;
+import org.javatuples.Pair;
+
 import queryplan.querygraph.QueryEdge;
 import queryplan.querygraph.QueryGraph;
 import queryplan.querygraph.QueryGraphComponent;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 /*
@@ -52,10 +54,10 @@ public class CostBasedOptimzer {
 	}
 	
 	
-	public VertexExtended<Long, HashSet<String>, HashMap<String, String>> generateQueryPlan() throws Exception {
+	public List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> generateQueryPlan() throws Exception {
 		//Traverse each query vertex and generate a initial component
 		for(QueryVertex qv: query.getQueryVertices()){
-			double est = verticesStats.get(qv.getLabel()).f1;
+			double est = verticesStats.get(qv.getLabel()).getValue1();
 			ScanOperators s = new ScanOperators(graph);
 			
 			FilterFunction vf;
@@ -64,12 +66,12 @@ public class CostBasedOptimzer {
 			if(!qv.getProps().isEmpty()) {
 				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) qv.getProps().clone();
 				for(String k: props.keySet()){
-					newvf =  new PropertyFilterForVertices(k, props.get(k).f0, props.get(k).f1);
+					newvf =  new PropertyFilterForVertices(k, props.get(k).getValue0(), props.get(k).getValue1());
 					vf = new AND<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>(vf, newvf);
 				}
 			} 
 			
-			ArrayList<Long> paths = s.getInitialVerticesByBooleanExpressions(vf);
+			List<ArrayList<Long>> paths = s.getInitialVerticesByBooleanExpressions(vf);
 			
 			ArrayList<Object> cols = new ArrayList<>();
 			cols.add(qv);
@@ -84,7 +86,7 @@ public class CostBasedOptimzer {
 			for(QueryEdge cand: edges){
 				double estSrc = cand.getSourceVertex().getComponent().getEst();
 				double estTar = cand.getTargetVertex().getComponent().getEst();
-				double estEdge = edgesStats.get(cand.getLabel()).f0 * estSrc * estTar;
+				double estEdge = edgesStats.get(cand.getLabel()).getValue0() * estSrc * estTar;
 				if (minEst > estEdge) {
 					minEst = estEdge;
 					e = cand;
@@ -92,7 +94,7 @@ public class CostBasedOptimzer {
 			}
 			edges.remove(e);
 			
-			ArrayList<Long> paths, joinedPaths;
+			List<ArrayList<Long>> paths, joinedPaths;
 			ArrayList<Object> leftColumns, rightColumns;
 			FilterFunction ef;
 			FilterFunction newef;
@@ -100,7 +102,7 @@ public class CostBasedOptimzer {
 			if(!e.getProps().isEmpty()) {
 				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) e.getProps().clone();
 				for(String k: props.keySet()){
-					newef =  new PropertyFilterForEdges(k, props.get(k).f0, props.get(k).f1);
+					newef =  new PropertyFilterForEdges(k, props.get(k).getValue0(), props.get(k).getValue1());
 					ef = new AND<EdgeExtended<Long, Long, String, HashMap<String, String>>>(ef, newef);
 				}
 			} 
@@ -142,7 +144,7 @@ public class CostBasedOptimzer {
 			columns.add(e);
 			columns.addAll(rightColumns);
 
-			double est = minEst / verticesStats.get("vertices").f0;
+			double est = minEst / verticesStats.get("vertices").getValue0();
 			QueryGraphComponent gc = new QueryGraphComponent(est, joinedPaths, columns);
 			
 			for(Object o: columns) { 

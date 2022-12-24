@@ -46,7 +46,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 
 			@Override
 			public Unit<K> map(VertexExtended<K, VL, VP> vertex) throws Exception {
-				return new Unit<K>(vertex.f0);
+				return new Unit<K>(vertex.getVertexId());
 			}	
 		});
 		return vertexIds;
@@ -59,7 +59,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 			@Override
 			public Unit<E> map(EdgeExtended<E, K, EL, EP> edge)
 					throws Exception {
-				return new Unit<E>(edge.f0);
+				return new Unit<E>(edge.getEdgeId());
 			}
 			
 		});

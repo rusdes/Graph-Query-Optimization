@@ -1,7 +1,6 @@
 package operators.datastructures;
 
 // import org.apache.flink.api.java.tuple.Tuple3;
-import org.javatuples.*;
 
 /**
  * Extended vertex for Cypher Implementation
@@ -9,10 +8,13 @@ import org.javatuples.*;
  * @param <L> the vertex label type
  * @param <P> the vertex properties type
  */
-public class VertexExtended<K, L, P> extends Triplet<K, L, P>{
+public class VertexExtended<K, L, P>{
 	
-	private static final long serialVersionUID = 1L;
-	
+	// private static final long serialVersionUID = 1L;
+	private K f0;
+	private L f1;
+	private P f2;
+
 	public VertexExtended(){};
 	
 	public VertexExtended(K vertexId, L labels, P props) {

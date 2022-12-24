@@ -1,7 +1,8 @@
 package operators.datastructures;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.javatuples.Unit;
 
 /**
@@ -30,49 +31,38 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 	
 	/*get all edges in a graph*/
 	public List<EdgeExtended<E, K, EL, EP>> getEdges(){
-		return edges;
+		return this.edges;
 	}
 	
 	/*get all vertices in a graph*/
 	public List<VertexExtended<K, VL, VP>> getVertices(){
-		return vertices;
+		return this.vertices;
 	}
 	
 	/*get all vertex IDs*/
 	public List<Unit<K>> getAllVertexIds() {
-		List<Unit<K>> vertexIds = vertices.map(new MapFunction<VertexExtended<K, VL, VP>, Unit<K>>(){
+		List<Unit<K>> vertexIds = this.vertices.stream()
+											   .map(elt -> Unit.with(elt.getVertexId()))
+											   .collect(Collectors.toList());
 
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public Unit<K> map(VertexExtended<K, VL, VP> vertex) throws Exception {
-				return new Unit<K>(vertex.getVertexId());
-			}	
-		});
 		return vertexIds;
 	}
-	
+
 	public List<Unit<E>> getAllEdgeIds() {
-		List<Unit<E>> edgeIds = edges.map(new MapFunction<EdgeExtended<E, K, EL, EP>, Unit<E>>(){
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public Unit<E> map(EdgeExtended<E, K, EL, EP> edge)
-					throws Exception {
-				return new Unit<E>(edge.getEdgeId());
-			}
-			
-		});
+		List<Unit<E>> edgeIds = this.edges.stream()
+											   .map(elt -> Unit.with(elt.getEdgeId()))
+											   .collect(Collectors.toList());
+
 		return edgeIds;
 	}
 	
-	public static <K, VL, VP, E, EL, EP> GraphExtended<K, VL, VP, E, EL, EP> 
-		fromCollection(Collection<VertexExtended<K, VL, VP>> vertices,
-			Collection<EdgeExtended<E, K, EL, EP>> edges) {
+	// public static <K, VL, VP, E, EL, EP> GraphExtended<K, VL, VP, E, EL, EP> 
+	// 	fromCollection(Collection<VertexExtended<K, VL, VP>> vertices,
+	// 		Collection<EdgeExtended<E, K, EL, EP>> edges) {
 
-		return fromDataSet(context.fromCollection(vertices),
-				context.fromCollection(edges));
-	}
+	// 	return fromDataSet(context.fromCollection(vertices),
+	// 			context.fromCollection(edges));
+	// }
 	
 	public static <K, VL, VP, E, EL, EP> GraphExtended<K, VL, VP, E, EL, EP> 
 		fromDataSet(List<VertexExtended<K, VL, VP>> vertices,

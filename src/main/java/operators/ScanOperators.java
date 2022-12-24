@@ -9,7 +9,7 @@ import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 
-import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.List;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.FilterFunction;
 
@@ -33,9 +33,9 @@ public class ScanOperators {
 	}
 	
 	//Get vertex IDs of a graph
-	public DataSet<ArrayList<Long>> 
+	public List<ArrayList<Long>> 
 		getInitialVertices() {
-		DataSet<ArrayList<Long>> vertexIds = graph
+		List<ArrayList<Long>> vertexIds = graph
 			.getVertices()
 			.map(new InitialVerticesToLists());
 		return vertexIds;
@@ -55,8 +55,8 @@ public class ScanOperators {
 	
 	//Get edge IDs of a graph
 	//not very useful so far
-	public DataSet<ArrayList<Long>> getInitialEdges() {
-		DataSet<ArrayList<Long>> edgeIds = graph
+	public List<ArrayList<Long>> getInitialEdges() {
+		List<ArrayList<Long>> edgeIds = graph
 			.getEdges()
 			.map(new InitialEdgesToLists());
 		return edgeIds;
@@ -76,8 +76,8 @@ public class ScanOperators {
 	}
 	
 	//Get vertex ids with label constraints
-	public DataSet<ArrayList<Long>> getInitialVerticesByLabels(HashSet<String> labels) {
-		DataSet<ArrayList<Long>> vertexIds = graph
+	public List<ArrayList<Long>> getInitialVerticesByLabels(HashSet<String> labels) {
+		List<ArrayList<Long>> vertexIds = graph
 				.getVertices()
 				.filter(new FilterVerticesByLabel(labels))
 				.map(new InitialVerticesToLists());
@@ -102,8 +102,8 @@ public class ScanOperators {
 	}
 	
 	//Get vertex IDs with property constraints
-	public DataSet<ArrayList<Long>> getInitialVerticesByProperties(HashMap<String, String> properties) {
-		DataSet<ArrayList<Long>> vertexIds = graph
+	public List<ArrayList<Long>> getInitialVerticesByProperties(HashMap<String, String> properties) {
+		List<ArrayList<Long>> vertexIds = graph
 				.getVertices()
 				.filter(new FilterVerticesByProperties(properties))
 				.map(new InitialVerticesToLists());
@@ -133,10 +133,10 @@ public class ScanOperators {
 	}
 
 	//Get vertex IDs filtered by a combination of conditions related by complex boolean expressions
-	public DataSet<ArrayList<Long>> getInitialVerticesByBooleanExpressions(
+	public List<ArrayList<Long>> getInitialVerticesByBooleanExpressions(
 			FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices){
 		
-		DataSet<ArrayList<Long>> vertexIds = graph
+		List<ArrayList<Long>> vertexIds = graph
 				.getVertices()
 				.filter(filterVertices)
 				.map(new InitialVerticesToLists());

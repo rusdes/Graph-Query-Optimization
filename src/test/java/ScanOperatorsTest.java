@@ -8,7 +8,7 @@ import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import org.apache.flink.api.common.functions.FilterFunction;
-import org.apache.flink.api.java.ExecutionEnvironment;
+// import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ScanOperatorsTest {
  public static void main(String[] args) throws Exception {
-	final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+	// final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 	  //properties for vertices and edges
 	  HashMap<String, String> vp1 = new HashMap<>();
@@ -58,7 +58,7 @@ public class ScanOperatorsTest {
 	  vertexList.add(v2);
 
       GraphExtended<Long, HashSet<String>, HashMap<String, String>,
-      Long, String, HashMap<String, String>> graph = GraphExtended.fromCollection(vertexList, edgeList, env);
+      Long, String, HashMap<String, String>> graph = GraphExtended.fromCollection(vertexList, edgeList);
 
       //Use a scan operator
       ScanOperators s = new ScanOperators(graph);

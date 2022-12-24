@@ -72,9 +72,9 @@ public class LabelMatchingOperatorsTest {
      Long, String, HashMap<String, String>> graph = GraphExtended.fromCollection(vertexList, edgeList, env);
 	 
      //single input test
-    // ArrayList<Tuple2<String, Long>> init = new ArrayList<>();
-    // init.add(new Tuple2<String, Long>("e0", 4L));
-    // DataSet<ArrayList<Tuple2<String, Long>>> initial = env.fromElements(init);
+    // ArrayList<Pair<String, Long>> init = new ArrayList<>();
+    // init.add(new Pair<String, Long>("e0", 4L));
+    // List<ArrayList<Pair<String, Long>>> initial = env.fromElements(init);
      //LabelMatchingOperators l = new LabelMatchingOperators(graph, initial);
      //l.matchWithoutBounds(0, "Likes").print();
      

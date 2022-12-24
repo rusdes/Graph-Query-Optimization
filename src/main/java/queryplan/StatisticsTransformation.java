@@ -1,6 +1,6 @@
 package queryplan;
 
-// import org.apache.flink.api.java.DataSet;
+// import org.apache.flink.api.java.List;
 // import org.apache.flink.api.java.ExecutionEnvironment;
 import org.javatuples.*;
 // import org.apache.flink.api.java.tuple.Pair;

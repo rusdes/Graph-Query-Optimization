@@ -36,8 +36,7 @@ import java.util.List;
 
 public class CostBasedOptimzer {
 	QueryGraph query;
-	GraphExtended<Long, HashSet<String>, HashMap<String, String>,
-    	Long, String, HashMap<String, String>> graph;
+	GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph;
 	HashMap<String, Pair<Long, Double>> verticesStats;
 	HashMap<String, Pair<Long, Double>> edgesStats;
 

@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.flink.api.common.functions.CrossFunction;
-import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Triplet;
 import org.apache.flink.api.java.tuple.Tuple4;
 
 @SuppressWarnings("serial")
 public class TagMap implements CrossFunction<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>, 
-	Tuple3<Long, String, String>, Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> {
+	Triplet<Long, String, String>, Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> {
 	
 	private String[] tagItems;
 	private long newId = 1;
@@ -18,7 +18,7 @@ public class TagMap implements CrossFunction<Tuple4<Long, HashSet<String>, HashM
 	@Override
 	public Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> cross(
 			Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
-			Tuple3<Long, String, String> tag) throws Exception {
+			Triplet<Long, String, String> tag) throws Exception {
 
 
 		Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> tagWithOriginId = new Tuple4<>();

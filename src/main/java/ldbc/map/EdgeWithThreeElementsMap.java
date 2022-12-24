@@ -5,11 +5,11 @@ import java.util.HashMap;
 import operators.datastructures.EdgeExtended;
 
 import org.apache.flink.api.common.functions.CrossFunction;
-import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Pair;
+import org.apache.flink.api.java.tuple.Triplet;
 
 public class EdgeWithThreeElementsMap implements
-	CrossFunction<Tuple3<Long, Long, String>, EdgeExtended<Long, Long, String, HashMap<String, String>>, EdgeExtended<Long, Long, String, HashMap<String, String>>> {
+	CrossFunction<Triplet<Long, Long, String>, EdgeExtended<Long, Long, String, HashMap<String, String>>, EdgeExtended<Long, Long, String, HashMap<String, String>>> {
 
 	private long newId = 1;
 	private String label;
@@ -19,7 +19,7 @@ public class EdgeWithThreeElementsMap implements
 
 	@Override
 	public EdgeExtended<Long, Long, String, HashMap<String, String>> cross(
-			Tuple3<Long, Long, String> vertexIdsOfEdge,
+			Triplet<Long, Long, String> vertexIdsOfEdge,
 			EdgeExtended<Long, Long, String, HashMap<String, String>> maxId)
 					throws Exception {
 

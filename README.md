@@ -75,16 +75,16 @@ Note that so far the query optimizers only support conjunctive filtering conditi
 ## Query Execution Strategies
 Two types of query execution strategies have been implemented, which could be found [here](https://github.com/jiujieti/CypherImplementation/tree/master/src/main/java/queryplan).
 ### Cost-based optimizer
-The cost-based query optimization algorithm is mainly based on pre-computed statistical information about the datasets. The general idea here is to first collect statistical information, that the number of vertices and edges with a specific label and the proportion of this type taking up in the total number
+The cost-based query optimization algorithm is mainly based on pre-computed statistical information about the Lists. The general idea here is to first collect statistical information, that the number of vertices and edges with a specific label and the proportion of this type taking up in the total number
 and then utilize these statistics to estimate the cardinality of query graph components in the query graph.
 ### Rule-based optimizer
 The rule-based optimizer to generate a query plan is to use heuristic rules to estimate the cardinality of query graph components. Mainly, the idea here is that using the selectivity of a basic query graph pattern to estimate the cardinality of graph components. Besides, the join strategies offered by Flink are also utilized to facilitate the query optimization.
 ## Tools
-We use LDBC-SNB and gMark to generate our datasets. By setting the paths of files where the raw datasets are stored and running the class `GMarkDataGenerator` in package [gmark](https://github.com/jiujieti/CypherImplementation/tree/master/src/main/java/gmark) or the class `LDBCDataGenerator` in package [ldbc](https://github.com/jiujieti/CypherImplementation/tree/master/src/main/java/ldbc), the generated raw datasets will fit into our data model defined above.
+We use LDBC-SNB and gMark to generate our Lists. By setting the paths of files where the raw Lists are stored and running the class `GMarkDataGenerator` in package [gmark](https://github.com/jiujieti/CypherImplementation/tree/master/src/main/java/gmark) or the class `LDBCDataGenerator` in package [ldbc](https://github.com/jiujieti/CypherImplementation/tree/master/src/main/java/ldbc), the generated raw Lists will fit into our data model defined above.
 
 Refer to [this link](https://github.com/s1ck/ldbc-flink-import) for a more decent way to import LDBC-SNB data into Gelly model provided by others.
 ### gMark
-gMark is a dataset generator used in the project. Based on the design principles of gMark, gMark provides schema-driven generation of graphs and queries by utilizing a graph configuration. In term of generated graph instances, node types, edge types, both including proportions to the whole instance, and in- and out-degree distributions could all be defined by the users.
+gMark is a List generator used in the project. Based on the design principles of gMark, gMark provides schema-driven generation of graphs and queries by utilizing a graph configuration. In term of generated graph instances, node types, edge types, both including proportions to the whole instance, and in- and out-degree distributions could all be defined by the users.
 
 More information about [gMark](https://github.com/graphMark/gmark).
 ### LDBC-SNB
@@ -102,12 +102,12 @@ After previous steps, you could use the following command to clone this project 
 $ git clone https://github.com/jiujieti/CypherImplementation.git
 ```
 
-Then open the project with an IDE and here we recommend IntelliJ IDEA. If you have already correctly followed previous steps, you could already run a provided test example. Note that some test examples have built the graph data model while others may need datasets input.
+Then open the project with an IDE and here we recommend IntelliJ IDEA. If you have already correctly followed previous steps, you could already run a provided test example. Note that some test examples have built the graph data model while others may need Lists input.
 
 If you want to run a test example in a command prompt, refer to [this link](https://ci.apache.org/projects/flink/flink-docs-release-1.1/quickstart/setup_quickstart.html). 
 
 ### Run a Query Plan Generator
-If you want to build your queries, you could use either the cost-based optimizer or the rule-based optimizer. To use these two optimizers, you need to specify the paths where the edge dataset and the vertex dataset are stored as well as input the query graph as shown in classes named `CostBasedOptimizerTest` and `RuleBasedOptimizerTest`.
+If you want to build your queries, you could use either the cost-based optimizer or the rule-based optimizer. To use these two optimizers, you need to specify the paths where the edge List and the vertex List are stored as well as input the query graph as shown in classes named `CostBasedOptimizerTest` and `RuleBasedOptimizerTest`.
 
 A query graph requires to be constructed when inputting a query. The query graph is slightly different from the graph data model. A query vertex could be represented as:
 

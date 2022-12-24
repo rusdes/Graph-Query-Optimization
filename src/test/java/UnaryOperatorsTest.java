@@ -9,7 +9,7 @@ import operators.*;
 import operators.datastructures.*;
 
 import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
-import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.List;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 public class UnaryOperatorsTest {
@@ -69,7 +69,7 @@ public class UnaryOperatorsTest {
 	      
 	      HashSet<String> q1 = new HashSet<>();
 		  q1.add("User");
-		  DataSet<ArrayList<Long>> paths = s.getInitialVerticesByLabels(q1);
+		  List<ArrayList<Long>> paths = s.getInitialVerticesByLabels(q1);
 		    
 		  UnaryOperators unaryOps = new UnaryOperators(graph, paths);
 		

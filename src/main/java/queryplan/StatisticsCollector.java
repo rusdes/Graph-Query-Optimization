@@ -28,7 +28,7 @@ public class StatisticsCollector {
 		// env.setParallelism(1);
 		String srcDir = args[0];
 		String tarDir = args[1];
-		StatisticsCollector k = new StatisticsCollector(env, srcDir, tarDir);
+		StatisticsCollector k = new StatisticsCollector(srcDir, tarDir);
 		k.getEdgesStats();
 		k.getVerticesStats();
 	}	
@@ -95,7 +95,7 @@ public class StatisticsCollector {
 		@Override
 		public void flatMap(Triplet<Long, String, String> vertex, Collector<Pair<String, Long>> labels)
 				throws Exception {
-			String[] ls = vertex.f1.substring(1, vertex.f1.length()-1).split(",");
+			String[] ls = vertex.getValue1().substring(1, vertex.getValue1().length()-1).split(",");
 			for(String label : ls) {
 				labels.collect(new Pair<String, Long>(label, 1L));
 			}
@@ -119,7 +119,7 @@ public class StatisticsCollector {
 		@Override
 		public Triplet<String, Long, Double> map(Pair<String, Long> vertex)
 				throws Exception {
-			return new Triplet<String, Long, Double>(vertex.f0, vertex.f1, (double)vertex.f1 * 1.0/totalNum);
+			return new Triplet<String, Long, Double>(vertex.getValue0(), vertex.getValue1(), (double)vertex.getValue1() * 1.0/totalNum);
 		}
 	}
 	
@@ -129,7 +129,7 @@ public class StatisticsCollector {
 		public Pair<String, Long> map(
 				Quintet<Long, Long, Long, String, String> edge)
 				throws Exception {
-			return new Pair<String, Long>(edge.f3, 1L);
+			return new Pair<String, Long>(edge.getValue3(), 1L);
 		}
 	}
 }

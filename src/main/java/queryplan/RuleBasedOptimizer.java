@@ -13,7 +13,7 @@ import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
-// import org.apache.flink.api.java.DataSet;
+// import org.apache.flink.api.java.List;
 // import org.apache.flink.api.java.tuple.Pair;
 import org.javatuples.*;
 import queryplan.querygraph.QueryEdge;

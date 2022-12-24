@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 
 // import org.apache.flink.api.java.tuple.Pair;
-import org.javatuples.*;
+import org.javatuples.Pair;
 
 /**
  * Query Vertex

@@ -5,11 +5,11 @@ import java.util.HashMap;
 import operators.datastructures.EdgeExtended;
 
 import org.apache.flink.api.common.functions.CrossFunction;
-import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Pair;
 
 @SuppressWarnings("serial")
 public class EdgeWithTwoElementsMap implements
-		CrossFunction<Tuple2<Long, Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, EdgeExtended<Long, Long, String, HashMap<String, String>>> {
+		CrossFunction<Pair<Long, Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, EdgeExtended<Long, Long, String, HashMap<String, String>>> {
 
 	private long newId = 1;
 	private String label;
@@ -17,7 +17,7 @@ public class EdgeWithTwoElementsMap implements
 	public EdgeWithTwoElementsMap(String label) { this.label = label; }
 	@Override
 	public EdgeExtended<Long, Long, String, HashMap<String, String>> cross(
-			Tuple2<Long, Long> vertexIdsOfEdge,
+			Pair<Long, Long> vertexIdsOfEdge,
 			EdgeExtended<Long, Long, String, HashMap<String, String>> maxId)
 			throws Exception {
 		

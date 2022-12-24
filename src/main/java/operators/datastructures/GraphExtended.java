@@ -60,12 +60,12 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 	// 	fromCollection(Collection<VertexExtended<K, VL, VP>> vertices,
 	// 		Collection<EdgeExtended<E, K, EL, EP>> edges) {
 
-	// 	return fromDataSet(context.fromCollection(vertices),
+	// 	return fromList(context.fromCollection(vertices),
 	// 			context.fromCollection(edges));
 	// }
 	
 	public static <K, VL, VP, E, EL, EP> GraphExtended<K, VL, VP, E, EL, EP> 
-		fromDataSet(List<VertexExtended<K, VL, VP>> vertices,
+		fromList(List<VertexExtended<K, VL, VP>> vertices,
 			List<EdgeExtended<E, K, EL, EP>> edges) {
 
 		return new GraphExtended<K, VL, VP, E, EL, EP>(vertices, edges);

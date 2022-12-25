@@ -1,5 +1,6 @@
 package ldbc;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +19,15 @@ import org.javatuples.*;
 // import org.apache.flink.api.java.tuple.Sextet;
 // import org.apache.flink.api.java.tuple.Octet;
 // import org.apache.flink.api.java.tuple.Ennead;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+
 import org.apache.flink.core.fs.FileSystem;
 
 /*
@@ -35,61 +45,142 @@ public class LDBCToGraphDataModel {
 	
 	public void getGraph() throws Exception {
 		//Read and extract all vertices with label comment, store them into tuples
-		List<Sextet<Long, String, String, String, String, String>> comments = env.readCsvFile(dir + "comment_0_0.csv")
-				.ignoreFirstLine()
-				.fieldDelimiter("|")
-				.types(Long.class, String.class, String.class, String.class, String.class, String.class);
+		List<Sextet<Long, String, String, String, String, String>> comments = new ArrayList<>();
+		try (Reader reader = Files.newBufferedReader(Paths.get(dir ,"comment_0_0.csv"))) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
+				String[] line;
+				line = csvReader.readNext(); //Skip first line 
+				while ((line = csvReader.readNext()) != null) {
+					Sextet<Long, String, String, String, String, String> holder = new Sextet<Long, String, String, String, String, String>
+																							(Long.parseLong(line[0]), line[1], line[2], line[3], 
+																							line[4], line[5]);
+					comments.add(holder);
+				}
+			}
+		}
 		final String[] commentItems = {"comment", "id", "creationDate", "locationIP", "browserUsed", "content", "length"};
 
 
 		//Read and extract all vertices with label forum, store them into tuples
-		List<Triplet<Long, String, String>> forums = env.readCsvFile(dir + "forum_0_0.csv")
-				.ignoreFirstLine()
-				.fieldDelimiter("|")
-				.types(Long.class, String.class, String.class);
+		List<Triplet<Long, String, String>> forums = new ArrayList<>();
+		try (Reader reader = Files.newBufferedReader(Paths.get(dir ,"forum_0_0.csv"))) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
+				String[] line;
+				line = csvReader.readNext(); //Skip first line 
+				while ((line = csvReader.readNext()) != null) {
+					Triplet<Long, String, String> holder = new Triplet<Long, String, String>(Long.parseLong(line[0]), line[1], line[2]);
+					forums.add(holder);
+				}
+			}
+		}
 		final String[] forumItems = {"forum", "id", "title", "creationDate"};
 
+
 		//Read and extract all vertices with label tag, store them into tuples
-		List<Triplet<Long, String, String>> tags = env.readCsvFile(dir + "tag_0_0.csv")
-				.ignoreFirstLine()
-				.fieldDelimiter("|")
-				.types(Long.class, String.class, String.class);
+		List<Triplet<Long, String, String>> tags = new ArrayList<>();
+		try (Reader reader = Files.newBufferedReader(Paths.get(dir ,"tag_0_0.csv"))) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
+				String[] line;
+				line = csvReader.readNext(); //Skip first line 
+				while ((line = csvReader.readNext()) != null) {
+					Triplet<Long, String, String> holder = new Triplet<Long, String, String>(Long.parseLong(line[0]), line[1], line[2]);
+					tags.add(holder);
+				}
+			}
+		}
 		final String[] tagItems = {"tag", "id", "name", "url"};
 
 		//Read and extract all vertices with label tagclass, store them into tuples
-		List<Triplet<Long, String, String>> tagclasses = env.readCsvFile(dir + "tagclass_0_0.csv")
-				.ignoreFirstLine()
-				.fieldDelimiter("|")
-				.types(Long.class, String.class, String.class);
+		List<Triplet<Long, String, String>> tagclasses = new ArrayList<>();
+		try (Reader reader = Files.newBufferedReader(Paths.get(dir ,"tagclass_0_0.csv"))) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
+				String[] line;
+				line = csvReader.readNext(); //Skip first line 
+				while ((line = csvReader.readNext()) != null) {
+					Triplet<Long, String, String> holder = new Triplet<Long, String, String>(Long.parseLong(line[0]), line[1], line[2]);
+					tagclasses.add(holder);
+				}
+			}
+		}
 		final String[] tagclassItems = {"tagclass", "id", "name", "url"};
 
 		//Read and extract all vertices with label post, store them into tuples
-		List<Octet<Long, String, String, String, String, String, String, String>> posts = env.readCsvFile(dir + "post_0_0.csv")
-				.ignoreFirstLine()
-				.fieldDelimiter("|")
-				.types(Long.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class);
+		List<Octet<Long, String, String, String, String, String, String, String>> posts = new ArrayList<>();
+		try (Reader reader = Files.newBufferedReader(Paths.get(dir ,"post_0_0.csv"))) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
+				String[] line;
+				line = csvReader.readNext(); //Skip first line 
+				while ((line = csvReader.readNext()) != null) {
+					Octet<Long, String, String, String, String, String, String, String> holder = new Octet<Long, String, String, String, String, String, String, String>
+																									 (Long.parseLong(line[0]), line[1], line[2], line[3], line[4],
+																									  line[5], line[6], line[7]);
+					posts.add(holder);
+				}
+			}
+		}
 		final String[] postItems = {"post", "id", "imageFile", "creationDate", "locationIP", "browserUsed", "language", "content", "length"};
 
 		//Read and extract all vertices with label place, store them into tuples
-		List<Quartet<Long, String, String, String>> places = env.readCsvFile(dir + "place_0_0.csv")
-				.ignoreFirstLine()
-				.fieldDelimiter("|")
-				.types(Long.class, String.class, String.class, String.class);
+		List<Quartet<Long, String, String, String>> places = new ArrayList<>();
+		try (Reader reader = Files.newBufferedReader(Paths.get(dir ,"place_0_0.csv"))) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
+				String[] line;
+				line = csvReader.readNext(); //Skip first line 
+				while ((line = csvReader.readNext()) != null) {
+					Quartet<Long, String, String, String> holder = new Quartet<Long, String, String, String>
+																									 (Long.parseLong(line[0]), line[1], line[2], line[3]);
+					places.add(holder);
+				}
+			}
+		}
 		final String[] placeItems = {"place", "id", "name", "url", "type"};
 
 		//Read and extract all vertices with label organisation, store them into tuples
-		List<Quartet<Long, String, String, String>> organisation = env.readCsvFile(dir + "organisation_0_0.csv")
-				.ignoreFirstLine()
-				.fieldDelimiter("|")
-				.types(Long.class, String.class, String.class, String.class);
+		List<Quartet<Long, String, String, String>> organisation = new ArrayList<>();
+		try (Reader reader = Files.newBufferedReader(Paths.get(dir ,"organisation_0_0.csv"))) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
+				String[] line;
+				line = csvReader.readNext(); //Skip first line 
+				while ((line = csvReader.readNext()) != null) {
+					Quartet<Long, String, String, String> holder = new Quartet<Long, String, String, String>
+																									 (Long.parseLong(line[0]), line[1], line[2], line[3]);
+					organisation.add(holder);
+				}
+			}
+		}
 		final String[] organisationItems = {"organisation", "id", "type", "name", "url"};
 
 		//Read and extract all vertices with label person, store them into tuples
-		List<Octet<Long, String, String, String, String, String, String, String>> person = env.readCsvFile(dir + "person_0_0.csv")
-				.ignoreFirstLine()
-				.fieldDelimiter("|")
-				.types(Long.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class);
-
+		List<Octet<Long, String, String, String, String, String, String, String>> person = new ArrayList<>();
+		try (Reader reader = Files.newBufferedReader(Paths.get(dir ,"person_0_0.csv"))) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
+				String[] line;
+				line = csvReader.readNext(); //Skip first line 
+				while ((line = csvReader.readNext()) != null) {
+					Octet<Long, String, String, String, String, String, String, String> holder = new Octet<Long, String, String, String, String, String, String, String>
+																									 (Long.parseLong(line[0]), line[1], line[2], line[3], line[4],
+																									  line[5], line[6], line[7]);
+					person.add(holder);
+				}
+			}
+		}
+		
 		//Add the property "email" to tuples with label person
 		List<Ennead<Long, String, String, String, String, String, String, String, String>> personWithEmail = env.readCsvFile(dir + "person_email_emailaddress_0_0.csv")
 				.ignoreFirstLine()

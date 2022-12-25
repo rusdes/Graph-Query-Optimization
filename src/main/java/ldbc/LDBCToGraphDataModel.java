@@ -2,20 +2,22 @@ package ldbc;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import ldbc.group.*;
 import ldbc.join.*;
 import ldbc.map.*;
 import operators.datastructures.*;
 
-import org.apache.flink.api.java.List;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.tuple.Tuple10;
-import org.apache.flink.api.java.tuple.Triplet;
-import org.apache.flink.api.java.tuple.Tuple4;
-import org.apache.flink.api.java.tuple.Tuple6;
-import org.apache.flink.api.java.tuple.Tuple8;
-import org.apache.flink.api.java.tuple.Tuple9;
+// import org.apache.flink.api.java.List;
+import org.javatuples.*;
+// import org.apache.flink.api.java.ExecutionEnvironment;
+// import org.apache.flink.api.java.tuple.Decade;
+// import org.apache.flink.api.java.tuple.Triplet;
+// import org.apache.flink.api.java.tuple.Quartet;
+// import org.apache.flink.api.java.tuple.Sextet;
+// import org.apache.flink.api.java.tuple.Octet;
+// import org.apache.flink.api.java.tuple.Ennead;
 import org.apache.flink.core.fs.FileSystem;
 
 /*
@@ -24,16 +26,16 @@ import org.apache.flink.core.fs.FileSystem;
 
 public class LDBCToGraphDataModel {
 	private String dir;
-	private ExecutionEnvironment env;
-	public LDBCToGraphDataModel(String dir, ExecutionEnvironment env) {
+	// private ExecutionEnvironment env;
+	public LDBCToGraphDataModel(String dir) {
 		
 		this.dir = dir;
-		this.env = env;
+		// this.env = env;
 	}
 	
 	public void getGraph() throws Exception {
 		//Read and extract all vertices with label comment, store them into tuples
-		List<Tuple6<Long, String, String, String, String, String>> comments = env.readCsvFile(dir + "comment_0_0.csv")
+		List<Sextet<Long, String, String, String, String, String>> comments = env.readCsvFile(dir + "comment_0_0.csv")
 				.ignoreFirstLine()
 				.fieldDelimiter("|")
 				.types(Long.class, String.class, String.class, String.class, String.class, String.class);
@@ -62,34 +64,34 @@ public class LDBCToGraphDataModel {
 		final String[] tagclassItems = {"tagclass", "id", "name", "url"};
 
 		//Read and extract all vertices with label post, store them into tuples
-		List<Tuple8<Long, String, String, String, String, String, String, String>> posts = env.readCsvFile(dir + "post_0_0.csv")
+		List<Octet<Long, String, String, String, String, String, String, String>> posts = env.readCsvFile(dir + "post_0_0.csv")
 				.ignoreFirstLine()
 				.fieldDelimiter("|")
 				.types(Long.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class);
 		final String[] postItems = {"post", "id", "imageFile", "creationDate", "locationIP", "browserUsed", "language", "content", "length"};
 
 		//Read and extract all vertices with label place, store them into tuples
-		List<Tuple4<Long, String, String, String>> places = env.readCsvFile(dir + "place_0_0.csv")
+		List<Quartet<Long, String, String, String>> places = env.readCsvFile(dir + "place_0_0.csv")
 				.ignoreFirstLine()
 				.fieldDelimiter("|")
 				.types(Long.class, String.class, String.class, String.class);
 		final String[] placeItems = {"place", "id", "name", "url", "type"};
 
 		//Read and extract all vertices with label organisation, store them into tuples
-		List<Tuple4<Long, String, String, String>> organisation = env.readCsvFile(dir + "organisation_0_0.csv")
+		List<Quartet<Long, String, String, String>> organisation = env.readCsvFile(dir + "organisation_0_0.csv")
 				.ignoreFirstLine()
 				.fieldDelimiter("|")
 				.types(Long.class, String.class, String.class, String.class);
 		final String[] organisationItems = {"organisation", "id", "type", "name", "url"};
 
 		//Read and extract all vertices with label person, store them into tuples
-		List<Tuple8<Long, String, String, String, String, String, String, String>> person = env.readCsvFile(dir + "person_0_0.csv")
+		List<Octet<Long, String, String, String, String, String, String, String>> person = env.readCsvFile(dir + "person_0_0.csv")
 				.ignoreFirstLine()
 				.fieldDelimiter("|")
 				.types(Long.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class);
 
 		//Add the property "email" to tuples with label person
-		List<Tuple9<Long, String, String, String, String, String, String, String, String>> personWithEmail = env.readCsvFile(dir + "person_email_emailaddress_0_0.csv")
+		List<Ennead<Long, String, String, String, String, String, String, String, String>> personWithEmail = env.readCsvFile(dir + "person_email_emailaddress_0_0.csv")
 				.ignoreFirstLine()
 				.fieldDelimiter("|")
 				.types(Long.class, String.class)
@@ -99,7 +101,7 @@ public class LDBCToGraphDataModel {
 				.with(new PersonGroupEmail());
 
 		//Add the property "language" to tuples with label person
-		List<Tuple10<Long, String, String, String, String, String, String, String, String, String>> personWithEmailAndLanguage = env.readCsvFile(dir + "person_speaks_language_0_0.csv")
+		List<Decade<Long, String, String, String, String, String, String, String, String, String>> personWithEmailAndLanguage = env.readCsvFile(dir + "person_speaks_language_0_0.csv")
 				.ignoreFirstLine()
 				.fieldDelimiter("|")
 				.types(Long.class, String.class)
@@ -112,63 +114,49 @@ public class LDBCToGraphDataModel {
 
 
 		//Assign unique IDs to all vertex tuples
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> commentVertices = comments
-				.map(new CommentMap(commentItems)); 
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> commentVertices = comments.map(new CommentMap(commentItems)); 
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> commentMaxId = commentVertices.max(0);
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> commentMaxId = commentVertices.max(0);
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> forumVertices = commentMaxId
-				.cross(forums)
-				.with(new ForumMap(forumItems));
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> forumVertices = commentMaxId.cross(forums).with(new ForumMap(forumItems));
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> forumMaxId = forumVertices.max(0);
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> forumMaxId = forumVertices.max(0);
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> tagVertices = forumMaxId
-				.cross(tags)
-				.with(new TagMap(tagItems));
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> tagVertices = forumMaxId.cross(tags).with(new TagMap(tagItems));
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> tagMaxId = tagVertices.max(0);
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> tagMaxId = tagVertices.max(0);
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> tagclassVertices = tagMaxId
-				.cross(tagclasses)
-				.with(new TagClassMap(tagclassItems));
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> tagclassVertices = tagMaxId.cross(tagclasses).with(new TagClassMap(tagclassItems));
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> tagclassMaxId = tagclassVertices.max(0);
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> tagclassMaxId = tagclassVertices.max(0);
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> postVertices = tagclassMaxId
-				.cross(posts)
-				.with(new PostMap(postItems));
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> postVertices = tagclassMaxId.cross(posts).with(new PostMap(postItems));
 
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> postMaxId = postVertices.max(0);
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> postMaxId = postVertices.max(0);
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> placeVertices = postMaxId
-				.cross(places)
-				.with(new PlaceMap(placeItems));
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> placeVertices = postMaxId.cross(places).with(new PlaceMap(placeItems));
 
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> placeMaxId = placeVertices.max(0);
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> placeMaxId = placeVertices.max(0);
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> organisationVertices = placeMaxId
-				.cross(organisation)
-				.with(new OrganisationMap(organisationItems));
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> organisationVertices = placeMaxId.cross(organisation)
+																											 .with(new OrganisationMap(organisationItems));
 
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> organisationMaxId = organisationVertices.max(0);
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> organisationMaxId = organisationVertices.max(0);
 
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> personVertices = organisationMaxId
-				.cross(personWithEmailAndLanguage)
-				.with(new PersonMap(personItems));
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> personVertices = organisationMaxId.cross(personWithEmailAndLanguage)
+																											  .with(new PersonMap(personItems));
 		
-		List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> personMaxId = personVertices.max(0);
+		List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> personMaxId = personVertices.max(0);
 
 		//Merge tuples into a List and convert them into vertices
-		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = commentVertices
-				.union(forumVertices)
-				.union(tagVertices)
-				.union(tagclassVertices)
-				.union(placeVertices)
-				.union(organisationVertices)
-				.union(postVertices)
-				.union(personVertices)
-				.map(new DeleteOriginalId());
+		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = commentVertices.union(forumVertices)
+																									   .union(tagVertices)
+																									   .union(tagclassVertices)
+																									   .union(placeVertices)
+																									   .union(organisationVertices)
+																									   .union(postVertices)
+																									   .union(personVertices)
+																									   .map(new DeleteOriginalId());
 
 		//Return source vertex IDs with edge IDs
 		EdgeIdReplacerLeft getSourceIds = new EdgeIdReplacerLeft();
@@ -177,29 +165,28 @@ public class LDBCToGraphDataModel {
 		
 		//Extract edges with label hasCreater between source vertices with label comment and a target vertices with label person, also assign unique IDs to edges
 		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> hasCreatorFromComment = env.readCsvFile(dir + "comment_hasCreator_person_0_0.csv")
-				.ignoreFirstLine()
-				.fieldDelimiter("|")
-				.types(Long.class, Long.class)
-				.join(commentVertices)
-				.where(0)
-				.equalTo(3)
-				.with(getSourceIds)
-				.join(personVertices)
-				.where(1)
-				.equalTo(3)
-				.with(getTargetIds)
-				.cross(personMaxId)
-				.with(new HasCreatorMap("hasCreator"));
+																									.ignoreFirstLine()
+																									.fieldDelimiter("|")
+																									.types(Long.class, Long.class)
+																									.join(commentVertices)
+																									.where(0)
+																									.equalTo(3)
+																									.with(getSourceIds)
+																									.join(personVertices)
+																									.where(1)
+																									.equalTo(3)
+																									.with(getTargetIds)
+																									.cross(personMaxId)
+																									.with(new HasCreatorMap("hasCreator"));
 		
 		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> hasCreatorFromCommentMaxId = hasCreatorFromComment.max(0);
 
 		//Extract edges with label hasTag between source vertices with label comment and target vertices with label tag, also assign unique IDs to edges
-		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> hasTagFromComment =
-				getEdges(dir + "comment_hasTag_tag_0_0.csv", 
-						commentVertices,
-						tagVertices,
-						hasCreatorFromCommentMaxId,
-						"hasTag");
+		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> hasTagFromComment = getEdges(dir + "comment_hasTag_tag_0_0.csv", 
+																									 commentVertices,
+																									 tagVertices,
+																									 hasCreatorFromCommentMaxId,
+																							  "hasTag");
 		
 		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> hasTagFromCommentMaxId = hasTagFromComment.max(0);
 
@@ -447,16 +434,16 @@ public class LDBCToGraphDataModel {
 		edges.writeAsCsv(dir + "edges.csv", "\n", "|", FileSystem.WriteMode.OVERWRITE);
 
 		//Set the parallelism level of Flink to 1 for generating unique IDs, other number will introduce duplicated IDs
-		env.setParallelism(1);
+		// env.setParallelism(1);
 		//Start execution
-		env.execute();
+		// env.execute();
 	}
 
 	//Generate edges by joining edges with source and target vertices, also assign unique IDs to edges
 	private List<EdgeExtended<Long, Long, String, HashMap<String, String>>> getEdges(
 			String path,
-			List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> verticesLeft, 
-			List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> verticesRight,
+			List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> verticesLeft, 
+			List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> verticesRight,
 			List<EdgeExtended<Long, Long, String, HashMap<String, String>>> lastMaxId,
 			String label) {
 		EdgeIdReplacerLeft getSourceIds = new EdgeIdReplacerLeft();
@@ -481,8 +468,8 @@ public class LDBCToGraphDataModel {
 	//Generate edges by joining edges with source and target vertices, also assign unique IDs to edges
 	private List<EdgeExtended<Long, Long, String, HashMap<String, String>>> getEdgesWithThreeElements(
 			String path,
-			List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> verticesLeft, 
-			List<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> verticesRight,
+			List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> verticesLeft, 
+			List<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> verticesRight,
 			List<EdgeExtended<Long, Long, String, HashMap<String, String>>> lastMaxId,
 			String label,
 			String key) {

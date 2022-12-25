@@ -5,23 +5,23 @@ import java.util.HashSet;
 
 import org.apache.flink.api.common.functions.CrossFunction;
 import org.apache.flink.api.java.tuple.Triplet;
-import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.tuple.Quartet;
 
 @SuppressWarnings("serial")
-public class TagMap implements CrossFunction<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>, 
-	Triplet<Long, String, String>, Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> {
+public class TagMap implements CrossFunction<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>, 
+	Triplet<Long, String, String>, Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> {
 	
 	private String[] tagItems;
 	private long newId = 1;
 	public TagMap(String[] tagItems) { this.tagItems = tagItems; }
 
 	@Override
-	public Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> cross(
-			Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
+	public Quartet<Long, HashSet<String>, HashMap<String, String>, Long> cross(
+			Quartet<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
 			Triplet<Long, String, String> tag) throws Exception {
 
 
-		Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> tagWithOriginId = new Tuple4<>();
+		Quartet<Long, HashSet<String>, HashMap<String, String>, Long> tagWithOriginId = new Quartet<>();
 
 		//set vertex id
 		tagWithOriginId.f0 = newId + maxId.f0;

@@ -5,12 +5,12 @@ import java.util.HashSet;
 
 
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.tuple.Tuple4;
-import org.apache.flink.api.java.tuple.Tuple6;
+import org.apache.flink.api.java.tuple.Quartet;
+import org.apache.flink.api.java.tuple.Sextet;
 
 @SuppressWarnings("serial")
-public class CommentMap implements MapFunction<Tuple6<Long, String, String, String, String, String>,
-		Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> {
+public class CommentMap implements MapFunction<Sextet<Long, String, String, String, String, String>,
+		Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> {
 
 	private String[] commentItems;
 	private long newId = 0;
@@ -20,11 +20,11 @@ public class CommentMap implements MapFunction<Tuple6<Long, String, String, Stri
 	}
 
 	@Override
-	public Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>
- 		map(Tuple6<Long, String, String, String, String, String> comment)
+	public Quartet<Long, HashSet<String>, HashMap<String, String>, Long>
+ 		map(Sextet<Long, String, String, String, String, String> comment)
  				throws Exception {
 
-		Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> commentWithOriginId = new Tuple4<>();
+		Quartet<Long, HashSet<String>, HashMap<String, String>, Long> commentWithOriginId = new Quartet<>();
 
 		//set vertex id
 

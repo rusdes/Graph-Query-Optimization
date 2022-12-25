@@ -4,22 +4,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.flink.api.common.functions.CrossFunction;
-import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.tuple.Quartet;
 
 @SuppressWarnings("serial")
-public class PlaceMap implements CrossFunction<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>, 
-		Tuple4<Long, String, String, String>, Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> {
+public class PlaceMap implements CrossFunction<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>, 
+		Quartet<Long, String, String, String>, Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> {
 
 	private String[] placeItems;
 	private long newId = 1;
 	public PlaceMap(String[] placeItems) { this.placeItems = placeItems; }
 
 	@Override
-	public Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> cross(
-			Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
-			Tuple4<Long, String, String, String> place) throws Exception {
+	public Quartet<Long, HashSet<String>, HashMap<String, String>, Long> cross(
+			Quartet<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
+			Quartet<Long, String, String, String> place) throws Exception {
 		
-		Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> placeWithOriginId = new Tuple4<>();
+		Quartet<Long, HashSet<String>, HashMap<String, String>, Long> placeWithOriginId = new Quartet<>();
 
 		//set vertex id
 		placeWithOriginId.f0 = newId + maxId.f0;

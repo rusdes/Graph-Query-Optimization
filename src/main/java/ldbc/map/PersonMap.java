@@ -4,24 +4,24 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.flink.api.common.functions.CrossFunction;
-import org.apache.flink.api.java.tuple.Tuple10;
-import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.tuple.Decade;
+import org.apache.flink.api.java.tuple.Quartet;
 
 
 @SuppressWarnings("serial")
-public class PersonMap implements CrossFunction<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>, 
-		Tuple10<Long, String, String, String, String, String, String, String, String, String>, Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> {
+public class PersonMap implements CrossFunction<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>, 
+		Decade<Long, String, String, String, String, String, String, String, String, String>, Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> {
 
 	private String[] personItems;
 	private long newId = 1;
 	public PersonMap(String[] personItems) { this.personItems = personItems; }
 
 	@Override
-	public Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> cross(
-			Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
-			Tuple10<Long, String, String, String, String, String, String, String, String, String> person) throws Exception {
+	public Quartet<Long, HashSet<String>, HashMap<String, String>, Long> cross(
+			Quartet<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
+			Decade<Long, String, String, String, String, String, String, String, String, String> person) throws Exception {
 		
-		Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> personWithOriginId= new Tuple4<>();
+		Quartet<Long, HashSet<String>, HashMap<String, String>, Long> personWithOriginId= new Quartet<>();
 		
 		//set id
 		personWithOriginId.f0 = newId + maxId.f0;

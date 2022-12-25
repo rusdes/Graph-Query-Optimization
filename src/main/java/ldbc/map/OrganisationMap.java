@@ -4,22 +4,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.flink.api.common.functions.CrossFunction;
-import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.tuple.Quartet;
 
 @SuppressWarnings("serial")
-public class OrganisationMap implements CrossFunction<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>, 
-		Tuple4<Long, String, String, String>, Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> {
+public class OrganisationMap implements CrossFunction<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>, 
+		Quartet<Long, String, String, String>, Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> {
 	
 	private String[] organisationItems;
 	private long newId = 1;
 	public OrganisationMap(String[] organisationItems) { this.organisationItems = organisationItems; }
 
 	@Override
-	public Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> cross(
-			Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
-			Tuple4<Long, String, String, String> organisation) throws Exception {
+	public Quartet<Long, HashSet<String>, HashMap<String, String>, Long> cross(
+			Quartet<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
+			Quartet<Long, String, String, String> organisation) throws Exception {
 		
-		Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> organisationWithOriginId = new Tuple4<>();
+		Quartet<Long, HashSet<String>, HashMap<String, String>, Long> organisationWithOriginId = new Quartet<>();
 
 		//set vertex id
 		organisationWithOriginId.f0 = newId + maxId.f0;

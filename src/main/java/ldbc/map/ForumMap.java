@@ -5,11 +5,11 @@ import java.util.HashSet;
 
 import org.apache.flink.api.common.functions.CrossFunction;
 import org.apache.flink.api.java.tuple.Triplet;
-import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.tuple.Quartet;
 
 @SuppressWarnings("serial")
-public class ForumMap implements CrossFunction<Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>, 
-	Triplet<Long, String, String>, Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>> {
+public class ForumMap implements CrossFunction<Quartet<Long, HashSet<String>, HashMap<String, String>, Long>, 
+	Triplet<Long, String, String>, Quartet<Long, HashSet<String>, HashMap<String, String>, Long>> {
 	
 	private String[] forumItems;
 	private long newId = 1;
@@ -19,11 +19,11 @@ public class ForumMap implements CrossFunction<Tuple4<Long, HashSet<String>, Has
 	}
 
 	@Override
-	public Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> cross(
-			Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
+	public Quartet<Long, HashSet<String>, HashMap<String, String>, Long> cross(
+			Quartet<Long, HashSet<String>, HashMap<String, String>, Long> maxId,
 			Triplet<Long, String, String> forum) throws Exception {
 		
-		Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> forumWithOriginId = new Tuple4<>();
+		Quartet<Long, HashSet<String>, HashMap<String, String>, Long> forumWithOriginId = new Quartet<>();
 
 		//set vertex id
 		forumWithOriginId.f0 = newId + maxId.f0;

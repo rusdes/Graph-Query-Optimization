@@ -7,11 +7,11 @@ import operators.datastructures.EdgeExtended;
 
 import org.apache.flink.api.common.functions.CrossFunction;
 import org.apache.flink.api.java.tuple.Pair;
-import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.tuple.Quartet;
 
 @SuppressWarnings("serial")
 public class HasCreatorMap implements CrossFunction<Pair<Long, Long>, 
-		Tuple4<Long, HashSet<String>, HashMap<String, String>, Long>, 
+		Quartet<Long, HashSet<String>, HashMap<String, String>, Long>, 
 		EdgeExtended<Long, Long, String, HashMap<String, String>>> {
 	private long newId = 1L;
 	private String label; 
@@ -20,7 +20,7 @@ public class HasCreatorMap implements CrossFunction<Pair<Long, Long>,
 	@Override
 	public EdgeExtended<Long, Long, String, HashMap<String, String>> cross(
 			Pair<Long, Long> vertexIdsOfEdge,
-			Tuple4<Long, HashSet<String>, HashMap<String, String>, Long> maxId)
+			Quartet<Long, HashSet<String>, HashMap<String, String>, Long> maxId)
 			throws Exception {
 		
 		EdgeExtended<Long, Long, String, HashMap<String, String>> edge = new EdgeExtended<>();

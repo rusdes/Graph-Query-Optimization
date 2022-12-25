@@ -11,7 +11,9 @@ import operators.datastructures.VertexExtended;
 // import org.apache.flink.api.java.tuple.Quintet;
 import org.javatuples.*;
 
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 // import org.apache.flink.core.fs.FileSystem.WriteMode;
 import queryplan.querygraph.QueryEdge;
@@ -36,8 +38,7 @@ public class CostBasedOptimizerTest {
 		
 		// ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 		
-		//String dir = "C:/Users/s146508/Desktop/ubuntu/5kPerson/";
-		String dir = args[0];
+		String dir = "src/test/java/Dataset";
 		// Path path = Paths.get(dir);
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir ,"vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(Paths.get(dir, "edges.csv"));
@@ -576,10 +577,13 @@ public class CostBasedOptimizerTest {
 	public static List<Triplet<Long, String, String>> readVerticesLineByLine(Path filePath) throws Exception {
 		List<Triplet<Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
-			try (CSVReader csvReader = new CSVReader(reader)) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
 				String[] line;
+				line = csvReader.readNext(); //Skip first line 
 				while ((line = csvReader.readNext()) != null) {
-					Triplet<Long, String, String> holder = new Triplet<Long, String, String>(Long.parseLong(line[0]), line[1], line[2]);
+					Triplet<Long, String, String> holder = new Triplet<Long, String, String> (Long.parseLong(line[0]), line[1], line[2]);
 					list.add(holder);
 				}
 			}
@@ -590,11 +594,14 @@ public class CostBasedOptimizerTest {
 	public static List<Quintet<Long, Long, Long, String, String>> readEdgesLineByLine(Path filePath) throws Exception {
 		List<Quintet<Long, Long, Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
-			try (CSVReader csvReader = new CSVReader(reader)) {
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+																   .build()) {
 				String[] line;
+				line = csvReader.readNext(); //Skip first line 
 				while ((line = csvReader.readNext()) != null) {
-					Quintet<Long, Long, Long, String, String> holder = new Quintet<Long, Long, Long, String, String>(Long.parseLong(line[0]), Long.parseLong(line[1]),
-																														Long.parseLong(line[2]), line[3], line[4]);
+					Quintet<Long, Long, Long, String, String> holder = new Quintet<Long, Long, Long, String, String> (Long.parseLong(line[0]), Long.parseLong(line[1]),
+																													  Long.parseLong(line[2]), line[3], line[4]);
 					list.add(holder);
 				}
 			}
@@ -607,59 +614,20 @@ public class CostBasedOptimizerTest {
 		vertex.setVertexId(vertexFromFile.getValue0());
 
 		HashSet<String> labels = new HashSet<>();
-		String[] labs = vertexFromFile.getValue1().substring(1, vertexFromFile.getValue1().length() - 1).split(",");
+		String[] labs = vertexFromFile.getValue1().split(",");
 		for (String label : labs) {
 			labels.add(label);
 		}
 		vertex.setLabels(labels);
 
 		HashMap<String, String> properties = new HashMap<>();
-		/*
-		 * String pattern = "[^=]+=([^= ]*( |$))*";
-		 * Pattern r = Pattern.compile(pattern);
-		 * Matcher m = r.matcher(vertexFromFile.f2.substring(1,
-		 * vertexFromFile.f2.length()-1));
-		 * while(m.find()) {
-		 * String[] keyAndValue = m.group(0).split("=");
-		 * if(keyAndValue.length >= 2){
-		 * String key = keyAndValue[0];
-		 * String value = keyAndValue[1];
-		 * if(value.length() >= 2){
-		 * if(value.substring(value.length() - 2, value.length()).equals(", ")){
-		 * properties.put(key, value.substring(0, value.length() - 2));
-		 * }
-		 * else{
-		 * properties.put(key, value);
-		 * }
-		 * }
-		 * }
-		 * else {
-		 * String key = keyAndValue[0];
-		 * String value = "";
-		 * properties.put(key, value);
-		 * }
-		 * }
-		 */
-		/*
-		 * String propString = vertexFromFile.f2.substring(1,
-		 * vertexFromFile.f2.length()-1);
-		 * String[] fields = propString.split(", ");
-		 * String lastk = null;
-		 * for (String f: fields) {
-		 * String[] kv = f.split("=", 2);
-		 * if (kv.length == 1) {
-		 * // Continuation of last field
-		 * if (lastk == null) {
-		 * throw new Exception("bad property string " + propString);
-		 * }
-		 * properties.put(lastk, properties.get(lastk) + ", " + kv[0]);
-		 * } else {
-		 * // New field
-		 * properties.put(kv[0], kv[1]);
-		 * lastk = kv[0];
-		 * }
-		 * }
-		 */
+		String[] props = vertexFromFile.getValue2().split(",");
+
+		if (props.length > 1) {
+			for (int i = 0; i < props.length-1; i=i+2) {
+				properties.put(props[i], props[i+1]);
+			}
+		}
 		vertex.setProps(properties);
 
 		return vertex;
@@ -674,12 +642,12 @@ public class CostBasedOptimizerTest {
 			edge.setSourceId(edgeFromFile.getValue1());
 			edge.setTargetId(edgeFromFile.getValue2());
 			edge.setLabel(edgeFromFile.getValue3());
-
+			
 			HashMap<String, String> properties = new HashMap<>();
-			if (edgeFromFile.getValue4().length() > 2) {
-				String[] keyAndValue = edgeFromFile.getValue4().substring(1, edgeFromFile.getValue4().length() - 2).split("=");
-				if (keyAndValue.length >= 2) {
-					properties.put(keyAndValue[0], keyAndValue[1]);
+			String[] props = edgeFromFile.getValue4().split(",");
+			if (props.length > 1) {
+				for (int i = 0; i < props.length-1; i=i+2) {
+					properties.put(props[i], props[i+1]);
 				}
 			}
 			edge.setProps(properties);

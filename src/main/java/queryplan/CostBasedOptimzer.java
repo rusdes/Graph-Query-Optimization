@@ -121,9 +121,7 @@ public class CostBasedOptimzer {
 				rightColumns = (ArrayList<Object>) e.getTargetVertex().getComponent().getColumns().clone();
 				rightColumns.remove(secondCol);
 				rightColumns.add(0, e.getTargetVertex());
-			}
-			
-			else {
+			} else {
 				UnaryOperators u = new UnaryOperators(graph, e.getTargetVertex().getComponent().getData()) ;
 				int firstCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
 				paths = u.selectInEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);

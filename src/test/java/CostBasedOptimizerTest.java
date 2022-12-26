@@ -51,7 +51,7 @@ public class CostBasedOptimizerTest {
 																							 .map(elt -> EdgeFromFileToDataSet(elt))
 																							 .collect(Collectors.toList());
 		
-		StatisticsTransformation sts = new StatisticsTransformation(dir);
+		StatisticsTransformation sts = new StatisticsTransformation();
 		HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
 		HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
 		GraphExtended<Long, HashSet<String>, HashMap<String, String>, 

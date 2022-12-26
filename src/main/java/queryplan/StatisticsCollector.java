@@ -94,7 +94,7 @@ public class StatisticsCollector {
 			}
 		}
 		List<Triplet<String, Long, Double>> retList = new ArrayList<>();
-		retList.add(Triplet.with("bertices", num, 1.0));
+		retList.add(Triplet.with("vertices", num, 1.0));
 		for (Map.Entry<String, Long> entry : labels.entrySet()) {
 			Triplet<String, Long, Double> p = Triplet.with(entry.getKey(), entry.getValue(), (double)entry.getValue() * 1.0/num);
 			retList.add(p);

@@ -1,7 +1,5 @@
 package queryplan;
 
-// import org.apache.commons.lang3.tuple.Pair;
-// import org.apache.flink.api.java.List;
 
 import org.javatuples.*;
 
@@ -24,11 +22,6 @@ import java.util.List;
 public class StatisticsTransformation {
 	String dir = "src/test/java/Dataset_Statistics/";
 	
-	// public StatisticsTransformation(String d) {
-	// 	dir = d;
-	// 	// env = e;
-	// }
-	
 	public HashMap<String, Pair<Long, Double>> getVerticesStatistics() throws Exception {
 		List<Triplet<String, Long, Double>> vertices = readLineByLine(Paths.get(dir + "vertices.csv"));
 		
@@ -38,7 +31,6 @@ public class StatisticsTransformation {
 		}
 		return vsi;
 	}
-
 
 	public HashMap<String, Pair<Long, Double>> getEdgesStatistics() throws Exception {
 		List<Triplet<String, Long, Double>> edges = readLineByLine(Paths.get(dir + "edges.csv"));

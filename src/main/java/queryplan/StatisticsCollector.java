@@ -26,12 +26,8 @@ import com.opencsv.CSVWriter;
  * Information includes the total number of edges and vertices,
  * vertex and edge labels and their corresponding proportion of the total number
  * */
-// @SuppressWarnings("serial")
 public class StatisticsCollector {
 	public static void main(String[] args) throws Exception {
-		
-		// ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-		// env.setParallelism(1);
 		String srcDir = "src/test/java/Dataset";
 		String tarDir = "src/test/java/Dataset_Statistics";
 		StatisticsCollector k = new StatisticsCollector(srcDir, tarDir);
@@ -118,7 +114,7 @@ public class StatisticsCollector {
 	}
 
 
-	// Read Vertex from file
+	// Read Vertices from file
 	public static List<Triplet<Long, String, String>> readVerticesLineByLine(Path filePath) throws Exception {
 		List<Triplet<Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
@@ -135,6 +131,7 @@ public class StatisticsCollector {
 		return list;
 	}
 
+	// Read Edges from file
 	public static List<Quintet<Long, Long, Long, String, String>> readEdgesLineByLine(Path filePath) throws Exception {
 		List<Quintet<Long, Long, Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
@@ -173,7 +170,6 @@ public class StatisticsCollector {
 			writer.close();
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

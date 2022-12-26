@@ -20,11 +20,10 @@ import java.util.List;
 * */
 
 public class StatisticsTransformation {
-	String dir = "src/test/java/Dataset_Statistics/";
+	String dir = "src/test/java/Dataset_Statistics";
 	
 	public HashMap<String, Pair<Long, Double>> getVerticesStatistics() throws Exception {
-		List<Triplet<String, Long, Double>> vertices = readLineByLine(Paths.get(dir + "vertices.csv"));
-		
+		List<Triplet<String, Long, Double>> vertices = readLineByLine(Paths.get(dir, "vertices.csv"));
 		HashMap<String, Pair<Long, Double>> vsi = new HashMap<>();
 		for(Triplet<String, Long, Double> v: vertices) {
 			vsi.put(v.getValue0(), new Pair<Long, Double>(v.getValue1(), v.getValue2()));
@@ -33,7 +32,7 @@ public class StatisticsTransformation {
 	}
 
 	public HashMap<String, Pair<Long, Double>> getEdgesStatistics() throws Exception {
-		List<Triplet<String, Long, Double>> edges = readLineByLine(Paths.get(dir + "edges.csv"));
+		List<Triplet<String, Long, Double>> edges = readLineByLine(Paths.get(dir, "edges.csv"));
 
 		HashMap<String, Pair<Long, Double>> esi = new HashMap<>();
 		for(Triplet<String, Long, Double> e: edges) {
@@ -46,7 +45,7 @@ public class StatisticsTransformation {
 		List<Triplet<String, Long, Double>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
 			try (CSVReader csvReader = new CSVReaderBuilder(reader)
-																//    .withSkipLines(0)
+																   .withSkipLines(1)
 																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
 																   .build()) {
 				String[] line;

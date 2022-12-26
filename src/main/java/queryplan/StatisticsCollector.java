@@ -1,15 +1,13 @@
 package queryplan;
 
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +17,6 @@ import org.javatuples.*;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import com.opencsv.CSVWriter;
 
 /**
  * Collect statistic information from graph database
@@ -43,27 +40,43 @@ public class StatisticsCollector {
 		tarDir = t;
 	}
 
+	public static class TupleFormat {
+		private String label;
+		private Long freq;
+		private Double proportion;
+
+		public TupleFormat(String label, Long freq, Double proportion){
+			super();
+			this.label = label;
+			this.freq = freq;
+			this.proportion = proportion;
+		}
+
+		@Override
+		public String toString(){
+		return this.label + "|" + String.valueOf(this.freq) + "|" + String.valueOf(this.proportion);
+		}
+	}
+
 	//This function will write a three-column file to the target directory. The three column consists of the vertex label names, the number of the vertices and the proportion.
-	public List<Triplet<String, Long, Double>>  getVerticesStats () throws Exception {
-		
+	public void getVerticesStats () throws Exception {
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(srcDir ,"vertices.csv"));
-		List<Triplet<String, Long, Double>> vertices = ProportionComputationVertices(verticesFromFile); 
+		List<TupleFormat> vertices = ProportionComputationVertices(verticesFromFile); 
 		
-		writeDataForCustomSeparatorCSV(tarDir + "vertices", vertices);
-		return vertices;
+		writeDataForCustomSeparatorCSV(tarDir + "/vertices.csv", vertices);
+		// return vertices;
 	}
 
 	//This function will write a three-column file to the target directory. The three column consists of the edge label names, the number of the vertices and the proportion.
-	public List<Triplet<String, Long, Double>> getEdgesStats () throws Exception {
-		
+	public void getEdgesStats () throws Exception {
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(Paths.get(srcDir ,"edges.csv"));
-		List<Triplet<String, Long, Double>> edges = ProportionComputationEdges(edgesFromFile); 
+		List<TupleFormat> edges = ProportionComputationEdges(edgesFromFile); 
 		
-		writeDataForCustomSeparatorCSV(tarDir + "edges", edges);
-		return edges;
+		writeDataForCustomSeparatorCSV(tarDir + "/edges.csv", edges);
+		// return edges;
 	}
 	
-	private static List<Triplet<String, Long, Double>> ProportionComputationVertices(List<Triplet<Long, String, String>> data){
+	private static List<TupleFormat> ProportionComputationVertices(List<Triplet<Long, String, String>> data){
 		long num = data.size();
 
 		HashMap<String, Long> labels = new HashMap<>();
@@ -78,17 +91,17 @@ public class StatisticsCollector {
 				}
 			}
 		}
-		List<Triplet<String, Long, Double>> retList = new ArrayList<>();
-		retList.add(Triplet.with("vertices", num, 1.0));
+		List<TupleFormat> retList = new ArrayList<>();
+		retList.add(new TupleFormat("vertices", num, 1.0));
 		for (Map.Entry<String, Long> entry : labels.entrySet()) {
-			Triplet<String, Long, Double> p = Triplet.with(entry.getKey(), entry.getValue(), (double)entry.getValue() * 1.0/num);
+			TupleFormat p = new TupleFormat(entry.getKey(), entry.getValue(), (double)entry.getValue() * 1.0/num);
 			retList.add(p);
 		}
 		// TODO: SORT THIS LIST IN DESCENDING ORDER
 		return retList;
 	}
 
-	private static List<Triplet<String, Long, Double>> ProportionComputationEdges(List<Quintet<Long, Long, Long, String, String>> data){
+	private static List<TupleFormat> ProportionComputationEdges(List<Quintet<Long, Long, Long, String, String>> data){
 		long num = data.size();
 
 		HashMap<String, Long> labels = new HashMap<>();
@@ -103,10 +116,10 @@ public class StatisticsCollector {
 				}
 			}
 		}
-		List<Triplet<String, Long, Double>> retList = new ArrayList<>();
-		retList.add(Triplet.with("edges", num, 1.0));
+		List<TupleFormat> retList = new ArrayList<>();
+		retList.add(new TupleFormat("edges", num, 1.0));
 		for (Map.Entry<String, Long> entry : labels.entrySet()) {
-			Triplet<String, Long, Double> p = Triplet.with(entry.getKey(), entry.getValue(), (double)entry.getValue() * 1.0/num);
+			TupleFormat p = new TupleFormat(entry.getKey(), entry.getValue(), (double)entry.getValue() * 1.0/num);
 			retList.add(p);
 		}
 		// TODO: SORT THIS LIST IN DESCENDING ORDER
@@ -118,7 +131,7 @@ public class StatisticsCollector {
 	public static List<Triplet<Long, String, String>> readVerticesLineByLine(Path filePath) throws Exception {
 		List<Triplet<Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
-			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1)
 																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
 																   .build()) {
 				String[] line;
@@ -135,7 +148,7 @@ public class StatisticsCollector {
 	public static List<Quintet<Long, Long, Long, String, String>> readEdgesLineByLine(Path filePath) throws Exception {
 		List<Quintet<Long, Long, Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
-			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1)
 																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
 																   .build()) {
 				String[] line;
@@ -149,23 +162,17 @@ public class StatisticsCollector {
 		return list;
 	}
 
-	public static void writeDataForCustomSeparatorCSV(String filePath, List<Triplet<String, Long, Double>> data){
+	public static void writeDataForCustomSeparatorCSV(String filePath, List<TupleFormat> data){
 		// first create file object for file placed at location
 		// specified by filepath
-		File file = new File(filePath);
-
 		try {
 			// create FileWriter object with file as parameter
-			FileWriter outputfile = new FileWriter(file);
-
-			// create CSVWriter with '|' as separator
-			CSVWriter writer = new CSVWriter(outputfile, '|',
-											CSVWriter.NO_QUOTE_CHARACTER,
-											CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-											CSVWriter.DEFAULT_LINE_END);
-
-			writer.writeAll(data);
+			PrintWriter writer = new PrintWriter(filePath);
+			writer.println("Label|Frequency|Proportion");
 			
+			for(TupleFormat line : data){
+				writer.println(line.toString());
+			}
 			// closing writer connection
 			writer.close();
 		}

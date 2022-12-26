@@ -39,8 +39,9 @@ public class CostBasedOptimizerTest {
 		// ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 		
 		String dir = "src/test/java/Dataset";
+		String testQuery = "0";
 		// Path path = Paths.get(dir);
-		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir ,"vertices.csv"));
+		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(Paths.get(dir, "edges.csv"));
 
 		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = verticesFromFile.stream()
@@ -57,7 +58,7 @@ public class CostBasedOptimizerTest {
 		GraphExtended<Long, HashSet<String>, HashMap<String, String>, 
 	      Long, String, HashMap<String, String>> graph = GraphExtended.fromList(vertices, edges);
 				
-		switch(args[1]) {
+		switch(testQuery) {
 			case "0" : {
 				//MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment) - [:hasTag] -> (k:Tag)
 				//WHERE l.length >= 150
@@ -577,11 +578,10 @@ public class CostBasedOptimizerTest {
 	public static List<Triplet<Long, String, String>> readVerticesLineByLine(Path filePath) throws Exception {
 		List<Triplet<Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
-			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1)
 																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
 																   .build()) {
 				String[] line;
-				line = csvReader.readNext(); //Skip first line 
 				while ((line = csvReader.readNext()) != null) {
 					Triplet<Long, String, String> holder = new Triplet<Long, String, String> (Long.parseLong(line[0]), line[1], line[2]);
 					list.add(holder);
@@ -594,11 +594,10 @@ public class CostBasedOptimizerTest {
 	public static List<Quintet<Long, Long, Long, String, String>> readEdgesLineByLine(Path filePath) throws Exception {
 		List<Quintet<Long, Long, Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
-			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(0)
+			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1)
 																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
 																   .build()) {
 				String[] line;
-				line = csvReader.readNext(); //Skip first line 
 				while ((line = csvReader.readNext()) != null) {
 					Quintet<Long, Long, Long, String, String> holder = new Quintet<Long, Long, Long, String, String> (Long.parseLong(line[0]), Long.parseLong(line[1]),
 																													  Long.parseLong(line[2]), line[3], line[4]);

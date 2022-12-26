@@ -137,7 +137,6 @@ public class StatisticsCollector {
 																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
 																   .build()) {
 				String[] line;
-				line = csvReader.readNext(); //Skip first line 
 				while ((line = csvReader.readNext()) != null) {
 					Triplet<Long, String, String> holder = new Triplet<Long, String, String> (Long.parseLong(line[0]), line[1], line[2]);
 					list.add(holder);
@@ -154,7 +153,6 @@ public class StatisticsCollector {
 																   .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
 																   .build()) {
 				String[] line;
-				line = csvReader.readNext(); //Skip first line 
 				while ((line = csvReader.readNext()) != null) {
 					Quintet<Long, Long, Long, String, String> holder = new Quintet<Long, Long, Long, String, String> (Long.parseLong(line[0]), Long.parseLong(line[1]),
 																													  Long.parseLong(line[2]), line[3], line[4]);

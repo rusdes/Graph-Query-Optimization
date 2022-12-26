@@ -14,15 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Triple;
-// import org.apache.flink.api.common.functions.FlatMapFunction;
-// import org.apache.flink.api.common.functions.MapFunction;
-// import org.apache.flink.api.common.operators.Order;
-// import org.apache.flink.api.java.List;
-// import org.apache.flink.api.java.tuple.Pair;
-// import org.apache.flink.api.java.tuple.Triplet;
-// import org.apache.flink.api.java.tuple.Quintet;
-
 import org.javatuples.*;
 
 import com.opencsv.CSVParserBuilder;
@@ -30,8 +21,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
 
-// import org.apache.flink.api.java.ExecutionEnvironment;
-// import org.apache.flink.util.Collector;
 /**
  * Collect statistic information from graph database
  * Information includes the total number of edges and vertices,

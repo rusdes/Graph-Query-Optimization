@@ -11,7 +11,8 @@ import operators.datastructures.VertexExtended;
 
 import org.apache.flink.api.java.List;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.functions.FilterFunction;
+// import org.apache.flink.api.common.functions.FilterFunction;
+import operators.flinkdependencies.FilterFunction;
 
 /*
 * A scan operator is used to extract all vertex IDs which satisfy certain filtering conditions.

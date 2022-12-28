@@ -6,7 +6,8 @@ import java.util.HashSet;
 
 import operators.datastructures.VertexExtended;
 
-import org.apache.flink.api.common.functions.FilterFunction;
+// import org.apache.flink.api.common.functions.FilterFunction;
+import operators.flinkdependencies.FilterFunction;
 import org.apache.flink.api.common.functions.FlatJoinFunction;
 import org.apache.flink.util.Collector;
 

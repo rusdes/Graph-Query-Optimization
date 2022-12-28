@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import operators.datastructures.EdgeExtended;
 
-import org.apache.flink.api.common.functions.FilterFunction;
+import operators.flinkdependencies.FilterFunction;
 
 @SuppressWarnings("serial")
 public class LabelComparisonForEdges implements FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>>{

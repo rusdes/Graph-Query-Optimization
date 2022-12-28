@@ -94,7 +94,7 @@ public class CostBasedOptimzer {
 			}
 			edges.remove(e);
 			
-			List<ArrayList<Long>> paths, joinedPaths;
+			List<Long> paths, joinedPaths;
 			ArrayList<Object> leftColumns, rightColumns;
 			FilterFunction ef;
 			FilterFunction newef;

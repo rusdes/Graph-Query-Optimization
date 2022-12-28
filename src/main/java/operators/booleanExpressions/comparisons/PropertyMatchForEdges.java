@@ -5,7 +5,8 @@ import java.util.Map;
 
 import operators.datastructures.EdgeExtended;
 
-import org.apache.flink.api.common.functions.FilterFunction;
+// import org.apache.flink.api.common.functions.FilterFunction;
+import operators.flinkdependencies.FilterFunction;
 
 @SuppressWarnings("serial")
 public class PropertyMatchForEdges implements FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>>{

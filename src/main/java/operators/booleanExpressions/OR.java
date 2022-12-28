@@ -1,6 +1,7 @@
 package operators.booleanExpressions;
 
-import org.apache.flink.api.common.functions.FilterFunction;
+// import org.apache.flink.api.common.functions.FilterFunction;
+import operators.flinkdependencies.FilterFunction;
 
 @SuppressWarnings("serial")
 public class OR <T> implements FilterFunction<T> {

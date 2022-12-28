@@ -7,9 +7,7 @@ import operators.booleanExpressions.comparisons.PropertyFilterForVertices;
 import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
-// import org.apache.flink.api.common.functions.FilterFunction;
-import operators.flinkdependencies.FilterFunction;
-// import org.apache.flink.api.java.ExecutionEnvironment;
+import operators.helper.FilterFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;

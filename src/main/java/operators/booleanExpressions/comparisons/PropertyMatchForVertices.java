@@ -5,9 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import operators.datastructures.VertexExtended;
-
-// import org.apache.flink.api.common.functions.FilterFunction;
-import operators.flinkdependencies.FilterFunction;
+import operators.helper.FilterFunction;
 
 @SuppressWarnings("serial")
 public class PropertyMatchForVertices implements FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>{

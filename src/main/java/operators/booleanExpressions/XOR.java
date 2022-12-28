@@ -1,9 +1,6 @@
 package operators.booleanExpressions;
-// 
-// import org.apache.flink.api.common.functions.FilterFunction;
-import operators.flinkdependencies.FilterFunction;
+import operators.helper.FilterFunction;
 
-@SuppressWarnings("serial")
 public class XOR<T> implements FilterFunction<T> {
 	private FilterFunction<T> lhs, rhs;
   
@@ -13,7 +10,7 @@ public class XOR<T> implements FilterFunction<T> {
     }
 
 	@Override
-	public boolean filter(T element) throws Exception {
+	public boolean filter(T element) {
 		return (this.lhs.filter(element) && !this.rhs.filter(element)) || (!this.lhs.filter(element) && this.rhs.filter(element));
 	}
   

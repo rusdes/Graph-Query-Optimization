@@ -1,9 +1,7 @@
 package operators.booleanExpressions;
 
-// import org.apache.flink.api.common.functions.FilterFunction;
-import operators.flinkdependencies.FilterFunction;
+import operators.helper.FilterFunction;
 
-@SuppressWarnings("serial")
 public class NOT<T> implements FilterFunction<T> {
 	
 	private FilterFunction<T> ft;
@@ -11,7 +9,7 @@ public class NOT<T> implements FilterFunction<T> {
 	public NOT(FilterFunction<T> ft) {this.ft = ft;}
 	
 	@Override
-	public boolean filter(T element) throws Exception {
+	public boolean filter(T element) {
 		return !ft.filter(element);
 	}	
 }

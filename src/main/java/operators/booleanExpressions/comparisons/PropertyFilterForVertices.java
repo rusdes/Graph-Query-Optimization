@@ -4,43 +4,39 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import operators.datastructures.VertexExtended;
+import operators.helper.FilterFunction;
 
-// import org.apache.flink.api.common.functions.FilterFunction;
-import operators.flinkdependencies.FilterFunction;
+public class PropertyFilterForVertices
+		implements FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> {
 
-@SuppressWarnings("serial")
-public class PropertyFilterForVertices implements FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>{
-	
 	private String propertyKey;
 	private String op;
 	private String propertyValue;
-	private double propertyValueDouble; 
-	
+	private double propertyValueDouble;
+
 	public PropertyFilterForVertices(String propertyKey, String op, String propertyValue) {
 		this.propertyKey = propertyKey;
 		this.op = op;
 		this.propertyValue = propertyValue;
 		try {
 			this.propertyValueDouble = Double.parseDouble(propertyValue);
-		} 
-		catch (Exception e) {}
+		} catch (Exception e) {
+		}
 	}
-	
+
 	@Override
-	public boolean filter(
-			VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex)
-			throws Exception {
-		if(vertex.getProps().get(this.propertyKey) == null) {
+	public boolean filter(VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex) throws Exception {
+		if (vertex.getProps().get(this.propertyKey) == null) {
 			return false;
 		}
 		double vp = 0;
 		try {
-			vp = Double.parseDouble(vertex.f2.get(this.propertyKey));
+			vp = Double.parseDouble(vertex.getProps().get(this.propertyKey));
+		} catch (Exception e) {
 		}
-		catch(Exception e) {}
-		switch(op) {
+		switch (op) {
 			case ">": {
-				return vp > propertyValueDouble;	
+				return vp > propertyValueDouble;
 			}
 			case "<": {
 				return vp < propertyValueDouble;
@@ -58,9 +54,10 @@ public class PropertyFilterForVertices implements FilterFunction<VertexExtended<
 				return vp != propertyValueDouble;
 			}
 			case "eq": {
-				return vertex.f2.get(this.propertyKey).equals(propertyValue);
+				return vertex.getProps().get(this.propertyKey).equals(propertyValue);
 			}
-			default: throw new Exception("Bad operator " + op + " !");
+			default:
+				throw new Exception("Bad operator " + op + " !");
 		}
 	}
 }

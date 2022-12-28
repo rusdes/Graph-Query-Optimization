@@ -11,8 +11,8 @@ import operators.booleanExpressions.comparisons.PropertyFilterForVertices;
 import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
-// import org.apache.flink.api.common.functions.FilterFunction;
-import operators.flinkdependencies.FilterFunction;
+import operators.helper.FilterFunction;
+
 // import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
 // import org.apache.flink.api.java.Dataset;
 // import org.apache.flink.api.java.tuple.Pair;
@@ -71,7 +71,7 @@ public class CostBasedOptimzer {
 				}
 			} 
 			
-			List<ArrayList<Long>> paths = s.getInitialVerticesByBooleanExpressions(vf);
+			List<Long> paths = s.getInitialVerticesByBooleanExpressions(vf);
 			
 			ArrayList<Object> cols = new ArrayList<>();
 			cols.add(qv);
@@ -126,7 +126,7 @@ public class CostBasedOptimzer {
 				UnaryOperators u = new UnaryOperators(graph, e.getTargetVertex().getComponent().getData()) ;
 				int firstCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
 				paths = u.selectInEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);
-					
+
 				leftColumns = e.getTargetVertex().getComponent().getColumns();
 				
 				BinaryOperators b = new BinaryOperators(paths, e.getSourceVertex().getComponent().getData());

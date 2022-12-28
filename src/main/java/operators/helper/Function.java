@@ -1,4 +1,4 @@
-package operators.flinkdependencies;
+package operators.helper;
 
 /**
  * The base interface for all user-defined functions.

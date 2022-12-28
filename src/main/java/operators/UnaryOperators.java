@@ -11,9 +11,8 @@ import operators.booleanExpressions.FilterOutEdgesByBooleanExpressions;
 import operators.booleanExpressions.FilterVerticesByBooleanExpressions;
 import operators.booleanExpressions.comparisons.PropertyComparisonForVertices;
 import operators.datastructures.*;
+import operators.helper.FilterFunction;
 
-// import org.apache.flink.api.common.functions.FilterFunction;
-import operators.flinkdependencies.FilterFunction;
 import org.apache.flink.api.common.functions.FlatJoinFunction;
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.common.functions.MapFunction;

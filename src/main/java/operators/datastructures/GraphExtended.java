@@ -3,8 +3,6 @@ package operators.datastructures;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.javatuples.Unit;
-
 /**
  * Extended graph for Cypher Implementation
  * @param <K> the key type for vertex identifiers
@@ -40,18 +38,18 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 	}
 	
 	/*get all vertex IDs*/
-	public List<Unit<K>> getAllVertexIds() {
-		List<Unit<K>> vertexIds = this.vertices.stream()
-											   .map(elt -> Unit.with(elt.getVertexId()))
-											   .collect(Collectors.toList());
+	public List<K> getAllVertexIds() {
+		List<K> vertexIds = this.vertices.stream()
+										 .map(elt -> elt.getVertexId())
+										 .collect(Collectors.toList());
 
 		return vertexIds;
 	}
 
-	public List<Unit<E>> getAllEdgeIds() {
-		List<Unit<E>> edgeIds = this.edges.stream()
-											   .map(elt -> Unit.with(elt.getEdgeId()))
-											   .collect(Collectors.toList());
+	public List<E> getAllEdgeIds() {
+		List<E> edgeIds = this.edges.stream()
+									.map(elt -> elt.getEdgeId())
+									.collect(Collectors.toList());
 
 		return edgeIds;
 	}

@@ -1,10 +1,8 @@
 package operators.booleanExpressions;
 
 
-// import org.apache.flink.api.common.functions.FilterFunction;
-import operators.flinkdependencies.FilterFunction;
+import operators.helper.FilterFunction;
 
-// @SuppressWarnings("serial")
 public class AND<T> implements FilterFunction<T> {
 	private FilterFunction<T> lhs, rhs;
 

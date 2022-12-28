@@ -1,5 +1,5 @@
 
-package operators.flinkdependencies;
+package operators.helper;
 
 @Public
 @FunctionalInterface

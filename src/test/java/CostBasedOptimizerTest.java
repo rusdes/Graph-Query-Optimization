@@ -64,7 +64,7 @@ public class CostBasedOptimizerTest {
 				//WHERE l.length >= 150
 				//RETURN n
 				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
-				canelaCoxProps.put("Name", new Pair<String, String>("=", "Canela Cox"));
+				canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
 				QueryVertex a = new QueryVertex("Artist",  canelaCoxProps, false);
 				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
 				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), false);

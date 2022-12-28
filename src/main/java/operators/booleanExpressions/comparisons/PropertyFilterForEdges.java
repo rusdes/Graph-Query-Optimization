@@ -5,7 +5,6 @@ import java.util.HashMap;
 import operators.datastructures.EdgeExtended;
 import operators.helper.FilterFunction;
 
-@SuppressWarnings("serial")
 public class PropertyFilterForEdges implements FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>>{
 
 
@@ -32,7 +31,7 @@ public class PropertyFilterForEdges implements FilterFunction<EdgeExtended<Long,
 		}
 		double ep = 0;
 		try {
-			ep = Double.parseDouble(edge.f4.get(this.propertyKey));
+			ep = Double.parseDouble(edge.getProps().get(this.propertyKey));
 		}
 		catch(Exception e) {}
 		switch(op) {
@@ -55,7 +54,7 @@ public class PropertyFilterForEdges implements FilterFunction<EdgeExtended<Long,
 				return ep != propertyValueDouble; 
 			}
 			case "eq": {
-				return edge.f4.get(this.propertyKey).equals(propertyValue);
+				return edge.getProps().get(this.propertyKey).equals(propertyValue);
 			}
 			default: return false;
 			}

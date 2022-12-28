@@ -11,7 +11,7 @@ public class OR <T> implements FilterFunction<T> {
     }
 
 	@Override
-	public boolean filter(T element) {
+	public boolean filter(T element) throws Exception {
 		return this.lhs.filter(element) || this.rhs.filter(element);
 	}
   

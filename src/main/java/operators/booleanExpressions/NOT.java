@@ -9,7 +9,7 @@ public class NOT<T> implements FilterFunction<T> {
 	public NOT(FilterFunction<T> ft) {this.ft = ft;}
 	
 	@Override
-	public boolean filter(T element) {
+	public boolean filter(T element) throws Exception {
 		return !ft.filter(element);
 	}	
 }

@@ -8,7 +8,7 @@ import operators.datastructures.VertexExtended;
 // import org.apache.flink.api.common.functions.FilterFunction;
 import operators.flinkdependencies.FilterFunction;
 
-@SuppressWarnings("serial")
+// @SuppressWarnings("serial")
 public class LabelComparisonForVertices implements FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>{
 
 	private String label;

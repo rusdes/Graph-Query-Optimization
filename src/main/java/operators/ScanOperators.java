@@ -3,13 +3,14 @@ package operators;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 
-import org.apache.flink.api.java.List;
+// import org.apache.flink.api.java.List;
 import org.apache.flink.api.common.functions.MapFunction;
 // import org.apache.flink.api.common.functions.FilterFunction;
 import operators.flinkdependencies.FilterFunction;

@@ -63,30 +63,21 @@ public class CostBasedOptimizerTest {
 				//MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment) - [:hasTag] -> (k:Tag)
 				//WHERE l.length >= 150
 				//RETURN n
-				HashMap<String, Pair<String, String>> commentProps = new HashMap<>();
-				
-				//browserUsed=Chrome
-				commentProps.put("length", new Pair<String, String>(">=", "150")); 
-				
-				QueryVertex a = new QueryVertex("post",  new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex b = new QueryVertex("person",  new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex c = new QueryVertex("comment", commentProps, false);
-				QueryVertex d = new QueryVertex("tag",  new HashMap<String, Pair<String, String>>(), false);
-				
-				QueryEdge ab = new QueryEdge(a, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cb = new QueryEdge(c, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cd = new QueryEdge(c, d, "hasTag", new HashMap<String, Pair<String, String>>());
-				
-				QueryVertex[] vs = {a, b, c, d};
-				QueryEdge[] es = {ab, cb, cd};
-				
-				QueryGraph g = new QueryGraph(vs, es);
+				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
+				canelaCoxProps.put("Name", new Pair<String, String>("=", "Canela Cox"));
+				QueryVertex a = new QueryVertex("Artist",  canelaCoxProps, false);
+				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), false);
 
+				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(c, b, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, b, c};
+				QueryEdge[] es = {ab, bc};
+				QueryGraph g = new QueryGraph(vs, es);
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
 				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
 				System.out.print(res);
-				// res.writeAsText(args[2], WriteMode.OVERWRITE);
-				// env.execute();
 				break;
 			} 
 			

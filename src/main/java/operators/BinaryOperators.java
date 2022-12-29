@@ -3,8 +3,10 @@ package operators;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.flink.api.common.functions.FlatJoinFunction;
-import org.apache.flink.api.common.functions.JoinFunction;
+import operators.helper.FlatJoinFunction;
+// import org.apache.flink.api.common.functions.JoinFunction;
+import operators.helper.JoinFunction;
+import operators.helper.JoinFunction;
 import org.apache.flink.util.Collector;
 /*
 *

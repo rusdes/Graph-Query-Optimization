@@ -13,8 +13,10 @@ import operators.booleanExpressions.comparisons.PropertyComparisonForVertices;
 import operators.datastructures.*;
 import operators.helper.FilterFunction;
 
-import org.apache.flink.api.common.functions.FlatJoinFunction;
-import org.apache.flink.api.common.functions.JoinFunction;
+// import org.apache.flink.api.common.functions.FlatJoinFunction;
+import operators.helper.FlatJoinFunction;
+// import org.apache.flink.api.common.functions.JoinFunction;
+import operators.helper.JoinFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
 // import org.apache.flink.api.java.List;

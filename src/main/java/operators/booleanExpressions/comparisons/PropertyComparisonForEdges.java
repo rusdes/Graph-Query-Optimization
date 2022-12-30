@@ -5,7 +5,8 @@ import java.util.HashMap;
 
 import operators.datastructures.EdgeExtended;
 
-import org.apache.flink.api.common.functions.FlatJoinFunction;
+// import org.apache.flink.api.common.functions.FlatJoinFunction;
+import operators.helper.FlatJoinFunction;
 import org.apache.flink.util.Collector;
 
 @SuppressWarnings("serial")

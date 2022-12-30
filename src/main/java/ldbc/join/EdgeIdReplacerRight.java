@@ -3,7 +3,8 @@ package ldbc.join;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.apache.flink.api.common.functions.JoinFunction;
+// import org.apache.flink.api.common.functions.JoinFunction;
+import operators.helper.JoinFunction;
 import org.apache.flink.api.java.tuple.Pair;
 import org.apache.flink.api.java.tuple.Quartet;
 

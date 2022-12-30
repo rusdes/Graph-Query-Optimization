@@ -7,7 +7,8 @@ import java.util.HashSet;
 import operators.datastructures.VertexExtended;
 import operators.helper.FilterFunction;
 
-import org.apache.flink.api.common.functions.FlatJoinFunction;
+// import org.apache.flink.api.common.functions.FlatJoinFunction;
+import operators.helper.FlatJoinFunction;
 import org.apache.flink.util.Collector;
 
 @SuppressWarnings("serial")

@@ -1,7 +1,5 @@
 package operators.helper;
 
-import operators.helper.Public;
-
 /**
  * Collects a record and forwards it. The collector is the "push" counterpart of the {@link
 * java.util.Iterator}, which "pulls" data in.

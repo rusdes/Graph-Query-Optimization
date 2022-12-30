@@ -67,7 +67,7 @@ public class LabelMatchingOperatorsTest {
 	  vertexList.add(v4);
 	  
      GraphExtended<Long, HashSet<String>, HashMap<String, String>, 
-     Long, String, HashMap<String, String>> graph = GraphExtended.fromCollection(vertexList, edgeList);
+     Long, String, HashMap<String, String>> graph = GraphExtended.fromList(vertexList, edgeList);
 	 
      //single input test
     // ArrayList<Pair<String, Long>> init = new ArrayList<>();

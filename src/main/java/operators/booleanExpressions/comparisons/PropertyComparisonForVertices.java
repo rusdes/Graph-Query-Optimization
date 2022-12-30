@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import operators.datastructures.VertexExtended;
-
+import operators.helper.Collector;
 // import org.apache.flink.api.common.functions.FlatJoinFunction;
 import operators.helper.FlatJoinFunction;
-import org.apache.flink.util.Collector;
+// import org.apache.flink.util.Collector;
 
-@SuppressWarnings("serial")
+
 public class PropertyComparisonForVertices implements
 		FlatJoinFunction<ArrayList<Long>, VertexExtended<Long, HashSet<String>, HashMap<String, String>>, ArrayList<Long>> {
 

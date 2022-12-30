@@ -1,5 +1,3 @@
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,8 +7,6 @@ import operators.*;
 import operators.datastructures.*;
 
 import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
-// import org.apache.flink.api.java.List;
-// import org.apache.flink.api.java.ExecutionEnvironment;
 
 public class UnaryOperatorsTest {
 	public static void main(String[] args) throws Exception {		 

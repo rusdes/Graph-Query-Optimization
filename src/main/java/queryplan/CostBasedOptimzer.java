@@ -13,9 +13,6 @@ import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import operators.helper.FilterFunction;
 
-// import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
-// import org.apache.flink.api.java.Dataset;
-// import org.apache.flink.api.java.tuple.Pair;
 import org.javatuples.Pair;
 
 import queryplan.querygraph.QueryEdge;
@@ -29,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-// @SuppressWarnings("unchecked")
 /*
 * Cost-based graph query optimizer
 * For filtering conditions, so far the optimizer can only process conjunctive filtering conditions
@@ -111,7 +107,7 @@ public class CostBasedOptimzer {
 				UnaryOperators u = new UnaryOperators(graph, e.getSourceVertex().getComponent().getData()) ;
 				int firstCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
 				
-				paths = u.selectOutEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);
+				// paths = u.selectOutEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);
 				
 				leftColumns = e.getSourceVertex().getComponent().getColumns();
 				

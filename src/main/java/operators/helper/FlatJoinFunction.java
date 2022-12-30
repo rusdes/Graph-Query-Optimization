@@ -1,15 +1,8 @@
 package operators.helper;
 
-
-
-import operators.helper.Public;
-import operators.helper.Collector;
-
-import java.io.Serializable;
-
 @Public
 @FunctionalInterface
-public interface FlatJoinFunction<IN1, IN2, OUT> extends Function, Serializable {
+public interface FlatJoinFunction<IN1, IN2, OUT> extends Function {
 
     /**
      * The join method, called once per joined pair of elements.

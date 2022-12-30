@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import operators.helper.FlatJoinFunction;
-// import org.apache.flink.api.common.functions.JoinFunction;
 import operators.helper.JoinFunction;
-import operators.helper.JoinFunction;
-import org.apache.flink.util.Collector;
+import operators.helper.Collector;
+import operators.helper.MapFunction;
 /*
 *
 * All binary operators are implemented here.

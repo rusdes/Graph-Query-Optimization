@@ -11,6 +11,7 @@ import operators.booleanExpressions.FilterOutEdgesByBooleanExpressions;
 import operators.booleanExpressions.FilterVerticesByBooleanExpressions;
 import operators.booleanExpressions.comparisons.PropertyComparisonForVertices;
 import operators.datastructures.*;
+import operators.helper.Collector;
 import operators.helper.FilterFunction;
 
 // import org.apache.flink.api.common.functions.FlatJoinFunction;
@@ -18,11 +19,11 @@ import operators.helper.FlatJoinFunction;
 // import org.apache.flink.api.common.functions.JoinFunction;
 import operators.helper.JoinFunction;
 
-import org.apache.flink.api.common.functions.MapFunction;
+// import org.apache.flink.api.common.functions.MapFunction;
+import operators.helper.MapFunction;
 import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
-// import org.apache.flink.api.java.List;
-// import org.apache.flink.api.java.tuple.Tuple1;
-// import org.apache.flink.util.Collector;
+
+import org.javatuples.Unit;
 
 @SuppressWarnings("serial")
 /*
@@ -41,25 +42,25 @@ public class UnaryOperators {
 	private GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph;
 
 	// Each list contains the vertex IDs and edge IDs of a selected path so far
-	private List<ArrayList<Long>> paths;
+	private List<Long> paths;
 
 	// Get the input graph, current columnNumber and the vertex and edges IDs
 	public UnaryOperators(
 			GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> g,
-			List<ArrayList<Long>> paths) {
+			List<Long> paths) {
 		this.graph = g;
 		this.paths = paths;
 	}
 
 	// No specific queries on the current vertices
-	public List<ArrayList<Long>> selectVertices() {
+	public List<Long> selectVertices() {
 		return paths;
 	}
 
 	// Select all vertices by their labels
-	public List<ArrayList<Long>> selectVerticesByLabels(int col, HashSet<String> labs) {
+	public ArrayList<Long> selectVerticesByLabels(int col, HashSet<String> labs) {
 		KeySelectorForColumns verticesSelector = new KeySelectorForColumns(col);
-		List<ArrayList<Long>> selectedResults = paths
+		ArrayList<Long> selectedResults = paths
 				// Join with the vertices in the input graph then filter these vertices based on
 				// labels
 				.join(graph.getVertices())
@@ -341,8 +342,8 @@ public class UnaryOperators {
 		public ArrayList<Long> join(
 				ArrayList<Long> vertexAndEdgeIds,
 				EdgeExtended<Long, Long, String, HashMap<String, String>> edge) throws Exception {
-			vertexAndEdgeIds.add(edge.f0);
-			vertexAndEdgeIds.add(edge.f1);
+			vertexAndEdgeIds.add(edge.getEdgeId());
+			vertexAndEdgeIds.add(edge.getSourceId());
 			return vertexAndEdgeIds;
 		}
 	}
@@ -374,9 +375,9 @@ public class UnaryOperators {
 				EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
 				Collector<ArrayList<Long>> outEdgesAndVertices)
 				throws Exception {
-			if (edge.f3.equals(this.label)) {
-				vertexAndEdgeIds.add(edge.f0);
-				vertexAndEdgeIds.add(edge.f2);
+			if (edge.getLabel().equals(this.label)) {
+				vertexAndEdgeIds.add(edge.getEdgeId());
+				vertexAndEdgeIds.add(edge.getTargetId());
 				outEdgesAndVertices.collect(vertexAndEdgeIds);
 			}
 		}
@@ -409,9 +410,9 @@ public class UnaryOperators {
 				EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
 				Collector<ArrayList<Long>> outEdgesAndVertices)
 				throws Exception {
-			if (edge.f3.equals(this.label)) {
-				vertexAndEdgeIds.add(edge.f0);
-				vertexAndEdgeIds.add(edge.f1);
+			if (edge.getLabel().equals(this.label)) {
+				vertexAndEdgeIds.add(edge.getEdgeId());
+				vertexAndEdgeIds.add(edge.getSourceId());
 				outEdgesAndVertices.collect(vertexAndEdgeIds);
 			}
 		}
@@ -444,9 +445,9 @@ public class UnaryOperators {
 				EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
 				Collector<ArrayList<Long>> outEdgesAndVertices)
 				throws Exception {
-			if (!edge.f3.equals(this.label)) {
-				vertexAndEdgeIds.add(edge.f0);
-				vertexAndEdgeIds.add(edge.f2);
+			if (!edge.getLabel().equals(this.label)) {
+				vertexAndEdgeIds.add(edge.getEdgeId());
+				vertexAndEdgeIds.add(edge.getTargetId());
 				outEdgesAndVertices.collect(vertexAndEdgeIds);
 			}
 		}
@@ -485,8 +486,8 @@ public class UnaryOperators {
 						!edge.getProps().get(propInQuery.getKey()).equals(propInQuery.getValue()))
 					return;
 			}
-			vertexAndEdgeIds.add(edge.f0);
-			vertexAndEdgeIds.add(edge.f2);
+			vertexAndEdgeIds.add(edge.getEdgeId());
+			vertexAndEdgeIds.add(edge.getTargetId());
 			outEdgesAndVertices.collect(vertexAndEdgeIds);
 		}
 	}
@@ -524,8 +525,8 @@ public class UnaryOperators {
 						!edge.getProps().get(propInQuery.getKey()).equals(propInQuery.getValue()))
 					return;
 			}
-			vertexAndEdgeIds.add(edge.f0);
-			vertexAndEdgeIds.add(edge.f1);
+			vertexAndEdgeIds.add(edge.getEdgeId());
+			vertexAndEdgeIds.add(edge.getSourceId());
 			outEdgesAndVertices.collect(vertexAndEdgeIds);
 		}
 	}
@@ -614,7 +615,7 @@ public class UnaryOperators {
 		return returnedVertices;
 	}
 
-	private static class ExtractVertexIds implements MapFunction<ArrayList<Long>, Tuple1<Long>> {
+	private static class ExtractVertexIds implements MapFunction<ArrayList<Long>, Unit<Long>> {
 
 		private int column;
 
@@ -623,17 +624,17 @@ public class UnaryOperators {
 		}
 
 		@Override
-		public Tuple1<Long> map(ArrayList<Long> vertex) throws Exception {
-			return new Tuple1<Long>(vertex.get(this.column));
+		public Unit<Long> map(ArrayList<Long> vertex) throws Exception {
+			return new Unit<Long>(vertex.get(this.column));
 		}
 	}
 
 	private static class ProjectSelectedVertices implements
-			JoinFunction<Tuple1<Long>, VertexExtended<Long, HashSet<String>, HashMap<String, String>>, VertexExtended<Long, HashSet<String>, HashMap<String, String>>> {
+			JoinFunction<Unit<Long>, VertexExtended<Long, HashSet<String>, HashMap<String, String>>, VertexExtended<Long, HashSet<String>, HashMap<String, String>>> {
 
 		@Override
 		public VertexExtended<Long, HashSet<String>, HashMap<String, String>> join(
-				Tuple1<Long> vertexIds,
+				Unit<Long> vertexIds,
 				VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex)
 				throws Exception {
 			return vertex;
@@ -652,7 +653,7 @@ public class UnaryOperators {
 		return returnedVertices;
 	}
 
-	private static class ExtractEdgeIds implements MapFunction<ArrayList<Long>, Tuple1<Long>> {
+	private static class ExtractEdgeIds implements MapFunction<ArrayList<Long>, Unit<Long>> {
 
 		private int column;
 
@@ -661,17 +662,17 @@ public class UnaryOperators {
 		}
 
 		@Override
-		public Tuple1<Long> map(ArrayList<Long> edge) throws Exception {
-			return new Tuple1<Long>(edge.get(this.column));
+		public Unit<Long> map(ArrayList<Long> edge) throws Exception {
+			return new Unit<Long>(edge.get(this.column));
 		}
 	}
 
 	private static class ProjectSelectedEdges implements
-			JoinFunction<Tuple1<Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, EdgeExtended<Long, Long, String, HashMap<String, String>>> {
+			JoinFunction<Unit<Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, EdgeExtended<Long, Long, String, HashMap<String, String>>> {
 
 		@Override
 		public EdgeExtended<Long, Long, String, HashMap<String, String>> join(
-				Tuple1<Long> vertexIds,
+				Unit<Long> vertexIds,
 				EdgeExtended<Long, Long, String, HashMap<String, String>> edge)
 				throws Exception {
 			return edge;

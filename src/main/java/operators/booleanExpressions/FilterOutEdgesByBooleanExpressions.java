@@ -8,7 +8,8 @@ import operators.helper.FilterFunction;
 
 // import org.apache.flink.api.common.functions.FlatJoinFunction;
 import operators.helper.FlatJoinFunction;
-import org.apache.flink.util.Collector;
+// import org.apache.flink.util.Collector;
+import operators.helper.Collector;;
 
 @SuppressWarnings("serial")
 public class FilterOutEdgesByBooleanExpressions implements FlatJoinFunction<ArrayList<Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, ArrayList<Long>>{
@@ -26,8 +27,8 @@ public class FilterOutEdgesByBooleanExpressions implements FlatJoinFunction<Arra
 			EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
 			Collector<ArrayList<Long>> selectedVertexId) throws Exception {
 		if(this.filterEdges.filter(edge) == true) {
-			edgeId.add(edge.f0);
-			edgeId.add(edge.f2);
+			edgeId.add(edge.getEdgeId());
+			edgeId.add(edge.getTargetId());
 			selectedVertexId.collect(edgeId);
 		}
 	}

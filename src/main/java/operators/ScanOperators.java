@@ -1,13 +1,11 @@
 package operators;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import operators.helper.FilterFunction;

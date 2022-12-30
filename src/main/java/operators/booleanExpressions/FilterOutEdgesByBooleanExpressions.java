@@ -11,7 +11,7 @@ import operators.helper.FlatJoinFunction;
 // import org.apache.flink.util.Collector;
 import operators.helper.Collector;;
 
-@SuppressWarnings("serial")
+// @SuppressWarnings("serial")
 public class FilterOutEdgesByBooleanExpressions implements FlatJoinFunction<ArrayList<Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, ArrayList<Long>>{
 
 	private FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges;

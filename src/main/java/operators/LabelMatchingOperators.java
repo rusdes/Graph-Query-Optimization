@@ -9,6 +9,8 @@ import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 
 import org.apache.flink.api.common.functions.CoGroupFunction;
+
+import operators.helper.Collector;
 // import org.apache.flink.api.common.functions.FlatJoinFunction;
 import operators.helper.FlatJoinFunction;
 import org.apache.flink.api.common.functions.GroupReduceFunction;

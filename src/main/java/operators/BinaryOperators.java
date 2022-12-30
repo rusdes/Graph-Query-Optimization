@@ -18,33 +18,31 @@ import operators.helper.MapFunction;
 public class BinaryOperators {
 
 	// Each list contains the vertex IDs and edge IDs of a selected path so far
-	private List<ArrayList<Long>> pathsLeft;
-	private List<ArrayList<Long>> pathsRight;
+	private List<Long> pathsLeft;
+	private List<Long> pathsRight;
 
 	// Get the input graph, current columnNumber and the vertex and edges IDs
 	public BinaryOperators(
-			List<ArrayList<Long>> pathsLeft,
-			List<ArrayList<Long>> pathsRight) {
+			List<Long> pathsLeft,
+			List<Long> pathsRight) {
 		this.pathsLeft = pathsLeft;
 		this.pathsRight = pathsRight;
 	}
 
 	// Join on after vertices
-	public List<ArrayList<Long>> joinOnAfterVertices(int firstCol, int secondCol) {
-		KeySelectorForColumns SelectorFisrt = new KeySelectorForColumns(firstCol);
+	public List<Long> joinOnAfterVertices(int firstCol, int secondCol) {
+		KeySelectorForColumns SelectorFirst = new KeySelectorForColumns(firstCol);
 		KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
 
-		List<ArrayList<Long>> joinedResults = this.pathsLeft
+		List<Long> joinedResults = this.pathsLeft
 				.join(this.pathsRight)
-				.where(SelectorFisrt)
+				.where(SelectorFirst)
 				.equalTo(SelectorSecond)
 				.with(new JoinOnAfterVertices(secondCol));
 		return joinedResults;
 	}
 
-	private static class JoinOnAfterVertices
-			implements JoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
-
+	private static class JoinOnAfterVertices implements JoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
 		private int col;
 
 		public JoinOnAfterVertices(int secondCol) {
@@ -61,13 +59,13 @@ public class BinaryOperators {
 	}
 
 	// Join on left vertices
-	public List<ArrayList<Long>> joinOnBeforeVertices(int firstCol, int secondCol) {
-		KeySelectorForColumns SelectorFisrt = new KeySelectorForColumns(firstCol);
+	public List<Long> joinOnBeforeVertices(int firstCol, int secondCol) {
+		KeySelectorForColumns SelectorFirst = new KeySelectorForColumns(firstCol);
 		KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
 
-		List<ArrayList<Long>> joinedResults = this.pathsLeft
+		List<Long> joinedResults = this.pathsLeft
 				.join(this.pathsRight)
-				.where(SelectorFisrt)
+				.where(SelectorFirst)
 				.equalTo(SelectorSecond)
 				.with(new JoinOnBeforeVertices(firstCol));
 		return joinedResults;
@@ -92,16 +90,16 @@ public class BinaryOperators {
 	}
 
 	// Union
-	public List<ArrayList<Long>> union() {
-		List<ArrayList<Long>> unitedResults = this.pathsLeft
+	public List<Long> union() {
+		List<Long> unitedResults = this.pathsLeft
 				.union(this.pathsRight)
 				.distinct();
 		return unitedResults;
 	}
 
 	// Intersection
-	public List<ArrayList<Long>> intersection() {
-		List<ArrayList<Long>> intersectedResults = this.pathsLeft
+	public List<Long> intersection() {
+		List<Long> intersectedResults = this.pathsLeft
 				.join(this.pathsRight)
 				.where(0)
 				.equalTo(0)

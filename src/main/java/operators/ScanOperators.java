@@ -1,5 +1,7 @@
 package operators;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,14 +38,15 @@ public class ScanOperators {
 		return vertexIds;
 	}
 
-	//Extract vertex IDs into ArrayList from vertices
+	// Extract vertex IDs into ArrayList from vertices
 	// private static class InitialVerticesToLists {
-	// 	public ArrayList<Long> map(
-	// 			VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex) throws Exception {
-	// 		ArrayList<Long> row = new ArrayList<>();
-	// 		row.add(vertex.getVertexId());
-	// 		return row;
-	// 	}
+	// public ArrayList<Long> map(
+	// VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex) throws
+	// Exception {
+	// ArrayList<Long> row = new ArrayList<>();
+	// row.add(vertex.getVertexId());
+	// return row;
+	// }
 	// }
 
 	// Get edge IDs of a graph
@@ -56,11 +59,12 @@ public class ScanOperators {
 	// Extract edge IDs into ArrayList from edges
 	// also not very useful so far
 	// private static class InitialEdgesToLists {
-	// 	public ArrayList<Long> map(EdgeExtended<Long, Long, String, HashMap<String, String>> edge) throws Exception {
-	// 		ArrayList<Long> row = new ArrayList<>();
-	// 		row.add(edge.getEdgeId());
-	// 		return row;
-	// 	}
+	// public ArrayList<Long> map(EdgeExtended<Long, Long, String, HashMap<String,
+	// String>> edge) throws Exception {
+	// ArrayList<Long> row = new ArrayList<>();
+	// row.add(edge.getEdgeId());
+	// return row;
+	// }
 	// }
 
 	// Get vertex ids with label constraints
@@ -100,11 +104,10 @@ public class ScanOperators {
 
 	// Get vertex IDs filtered by a combination of conditions related by complex
 	// boolean expressions
-	public List<Long> getInitialVerticesByBooleanExpressions(
+	public List<List<Long>> getInitialVerticesByBooleanExpressions(
 			FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices) {
-		
-				
-		List<Long> vertexIds = graph
+
+		List<List<Long>> vertexIds = graph
 				.getVertices()
 				.stream()
 				.filter(v -> {
@@ -116,7 +119,7 @@ public class ScanOperators {
 						return true;
 					}
 				})
-				.map(v -> v.getVertexId())
+				.map(v -> new ArrayList<>(Arrays.asList(v.getVertexId())))
 				.collect(Collectors.toList());
 		return vertexIds;
 	}

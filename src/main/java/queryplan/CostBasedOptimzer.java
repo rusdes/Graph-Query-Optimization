@@ -67,13 +67,13 @@ public class CostBasedOptimzer {
 				}
 			}
 
-			List<Long> paths = s.getInitialVerticesByBooleanExpressions(vf);
+			List<List<Long>> paths = s.getInitialVerticesByBooleanExpressions(vf);
 			
 			ArrayList<Object> cols = new ArrayList<>();
 			cols.add(qv);
 			qv.setComponent(new QueryGraphComponent(est, paths, cols));
 		}
-		
+
 		ArrayList<QueryEdge> edges= new ArrayList<> (Arrays.asList(query.getQueryEdges()));
 		while (!edges.isEmpty()) {
 			//Traverse statistics, selects the edge with lowest cost
@@ -98,7 +98,7 @@ public class CostBasedOptimzer {
 			if(!e.getProps().isEmpty()) {
 				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) e.getProps().clone();
 				for(String k: props.keySet()){
-					newef =  new PropertyFilterForEdges(k, props.get(k).getValue0(), props.get(k).getValue1());
+					newef = new PropertyFilterForEdges(k, props.get(k).getValue0(), props.get(k).getValue1());
 					ef = new AND<EdgeExtended<Long, Long, String, HashMap<String, String>>>(ef, newef);
 				}
 			} 
@@ -107,27 +107,27 @@ public class CostBasedOptimzer {
 				UnaryOperators u = new UnaryOperators(graph, e.getSourceVertex().getComponent().getData()) ;
 				int firstCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
 				
-				// paths = u.selectOutEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);
+				paths = u.selectOutEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);
 				
 				leftColumns = e.getSourceVertex().getComponent().getColumns();
-				
+
 				BinaryOperators b = new BinaryOperators(paths, e.getTargetVertex().getComponent().getData());
 				int secondCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
-				joinedPaths = b.joinOnAfterVertices(leftColumns.size() + 1, secondCol);
-				
+				// joinedPaths = b.joinOnAfterVertices(leftColumns.size() + 1, secondCol);
+
 				rightColumns = (ArrayList<Object>) e.getTargetVertex().getComponent().getColumns().clone();
 				rightColumns.remove(secondCol);
 				rightColumns.add(0, e.getTargetVertex());
 			} else {
 				UnaryOperators u = new UnaryOperators(graph, e.getTargetVertex().getComponent().getData()) ;
 				int firstCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
-				paths = u.selectInEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);
+				// paths = u.selectInEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);
 
 				leftColumns = e.getTargetVertex().getComponent().getColumns();
 				
-				BinaryOperators b = new BinaryOperators(paths, e.getSourceVertex().getComponent().getData());
+				// BinaryOperators b = new BinaryOperators(paths, e.getSourceVertex().getComponent().getData());
 				int secondCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
-				joinedPaths = b.joinOnAfterVertices(leftColumns.size() + 1, secondCol);
+				// joinedPaths = b.joinOnAfterVertices(leftColumns.size() + 1, secondCol);
 				
 				rightColumns = (ArrayList<Object>) e.getSourceVertex().getComponent().getColumns().clone();
 				rightColumns.remove(secondCol);
@@ -139,16 +139,17 @@ public class CostBasedOptimzer {
 			columns.addAll(rightColumns);
 
 			double est = minEst / verticesStats.get("vertices").getValue0();
-			QueryGraphComponent gc = new QueryGraphComponent(est, joinedPaths, columns);
+			// QueryGraphComponent gc = new QueryGraphComponent(est, joinedPaths, columns);
 			
 			for(Object o: columns) { 
 				if(o.getClass() == QueryVertex.class) {
 					QueryVertex qv = (QueryVertex) o;
-					qv.setComponent(gc);
+					// qv.setComponent(gc);
 				}
 			}
 			
 		}
+
 		//Where to collect outputs
 		for(QueryVertex qv: query.getQueryVertices()) {
 			if(qv.isOutput()) {

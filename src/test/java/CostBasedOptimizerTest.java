@@ -70,7 +70,7 @@ public class CostBasedOptimizerTest {
 				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), false);
 
 				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
-				QueryEdge bc = new QueryEdge(c, b, "Performed", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
 
 				QueryVertex[] vs = {a, b, c};
 				QueryEdge[] es = {ab, bc};

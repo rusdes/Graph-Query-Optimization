@@ -8,13 +8,13 @@ public class QueryGraphComponent {
 	double est;
 
 	//indicate the positions of all retrieved results in returned paths
-	List<Long> data;
+	List<List<Long>> data;
 
 	//store vertices and edges are contained in this graph component
 	ArrayList<Object> columns;
 	
 	
-	public QueryGraphComponent(double e, List<Long> d, ArrayList<Object> cols) {
+	public QueryGraphComponent(double e, List<List<Long>> d, ArrayList<Object> cols) {
 		est = e;
 		data = d;
 		columns = cols;
@@ -24,7 +24,7 @@ public class QueryGraphComponent {
 		return est;
 	} 
 	
-	public List<Long> getData() {
+	public List<List<Long>> getData() {
 		return data;
 	}
 	

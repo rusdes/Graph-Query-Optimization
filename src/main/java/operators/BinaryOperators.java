@@ -16,27 +16,25 @@ import org.apache.flink.util.Collector;
 * 3. Intersection operator.
 *
 * */
-@SuppressWarnings("serial")
 public class BinaryOperators {
-	
-	//Each list contains the vertex IDs and edge IDs of a selected path so far 
+
+	// Each list contains the vertex IDs and edge IDs of a selected path so far
 	private List<ArrayList<Long>> pathsLeft;
 	private List<ArrayList<Long>> pathsRight;
-	
-	
-	//Get the input graph, current columnNumber and the vertex and edges IDs
+
+	// Get the input graph, current columnNumber and the vertex and edges IDs
 	public BinaryOperators(
 			List<ArrayList<Long>> pathsLeft,
 			List<ArrayList<Long>> pathsRight) {
 		this.pathsLeft = pathsLeft;
 		this.pathsRight = pathsRight;
 	}
-	
-	//Join on after vertices
+
+	// Join on after vertices
 	public List<ArrayList<Long>> joinOnAfterVertices(int firstCol, int secondCol) {
 		KeySelectorForColumns SelectorFisrt = new KeySelectorForColumns(firstCol);
 		KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
-		
+
 		List<ArrayList<Long>> joinedResults = this.pathsLeft
 				.join(this.pathsRight)
 				.where(SelectorFisrt)
@@ -44,28 +42,30 @@ public class BinaryOperators {
 				.with(new JoinOnAfterVertices(secondCol));
 		return joinedResults;
 	}
-	
-	private static class JoinOnAfterVertices implements JoinFunction<ArrayList<Long>,
-	ArrayList<Long>, ArrayList<Long>>{
+
+	private static class JoinOnAfterVertices
+			implements JoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
 
 		private int col;
-		
-		public JoinOnAfterVertices(int secondCol) {this.col = secondCol;}
+
+		public JoinOnAfterVertices(int secondCol) {
+			this.col = secondCol;
+		}
+
 		@Override
 		public ArrayList<Long> join(ArrayList<Long> leftVertices,
 				ArrayList<Long> rightVertices) throws Exception {
 			rightVertices.remove(this.col);
 			leftVertices.addAll(rightVertices);
 			return leftVertices;
-		}	
+		}
 	}
 
-	
-	//Join on left vertices
+	// Join on left vertices
 	public List<ArrayList<Long>> joinOnBeforeVertices(int firstCol, int secondCol) {
 		KeySelectorForColumns SelectorFisrt = new KeySelectorForColumns(firstCol);
 		KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
-		
+
 		List<ArrayList<Long>> joinedResults = this.pathsLeft
 				.join(this.pathsRight)
 				.where(SelectorFisrt)
@@ -73,13 +73,16 @@ public class BinaryOperators {
 				.with(new JoinOnBeforeVertices(firstCol));
 		return joinedResults;
 	}
-	
-	private static class JoinOnBeforeVertices implements JoinFunction<ArrayList<Long>,
-	ArrayList<Long>, ArrayList<Long>>{
-		
+
+	private static class JoinOnBeforeVertices
+			implements JoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
+
 		private int col;
-		
-		public JoinOnBeforeVertices(int firstCol) {this.col = firstCol;}
+
+		public JoinOnBeforeVertices(int firstCol) {
+			this.col = firstCol;
+		}
+
 		@Override
 		public ArrayList<Long> join(ArrayList<Long> leftPaths,
 				ArrayList<Long> rightPaths) throws Exception {
@@ -88,16 +91,16 @@ public class BinaryOperators {
 			return rightPaths;
 		}
 	}
-	
-	//Union
-	public List<ArrayList<Long>> union(){
+
+	// Union
+	public List<ArrayList<Long>> union() {
 		List<ArrayList<Long>> unitedResults = this.pathsLeft
 				.union(this.pathsRight)
 				.distinct();
 		return unitedResults;
 	}
-	
-	//Intersection
+
+	// Intersection
 	public List<ArrayList<Long>> intersection() {
 		List<ArrayList<Long>> intersectedResults = this.pathsLeft
 				.join(this.pathsRight)
@@ -106,13 +109,15 @@ public class BinaryOperators {
 				.with(new IntersectionResultsMerge());
 		return intersectedResults;
 	}
-	
-	private static class IntersectionResultsMerge implements FlatJoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
+
+	private static class IntersectionResultsMerge
+			implements FlatJoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
 		@Override
-		public void join(ArrayList<Long> leftPath, ArrayList<Long> rightPath, Collector<ArrayList<Long>> intersectedPath) throws Exception {
-			if(leftPath.equals(rightPath)) intersectedPath.collect(leftPath);
+		public void join(ArrayList<Long> leftPath, ArrayList<Long> rightPath,
+				Collector<ArrayList<Long>> intersectedPath) throws Exception {
+			if (leftPath.equals(rightPath))
+				intersectedPath.collect(leftPath);
 		}
 	}
-	
-	
+
 }

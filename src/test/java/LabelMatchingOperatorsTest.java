@@ -10,13 +10,11 @@ import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import operators.*;
 
-import org.apache.flink.api.java.ExecutionEnvironment;
+// import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
 
 public class LabelMatchingOperatorsTest {
 	public static void main(String[] arg) throws Exception {
-	  final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-//	  env.setParallelism(8);
 	  //properties for vertices and edges
 	  HashMap<String, String> vp1 = new HashMap<>();
 	  vp1.put("name", "John");
@@ -69,7 +67,7 @@ public class LabelMatchingOperatorsTest {
 	  vertexList.add(v4);
 	  
      GraphExtended<Long, HashSet<String>, HashMap<String, String>, 
-     Long, String, HashMap<String, String>> graph = GraphExtended.fromCollection(vertexList, edgeList, env);
+     Long, String, HashMap<String, String>> graph = GraphExtended.fromCollection(vertexList, edgeList);
 	 
      //single input test
     // ArrayList<Pair<String, Long>> init = new ArrayList<>();
@@ -85,7 +83,7 @@ public class LabelMatchingOperatorsTest {
     //s.getInitialVertices().print();
     LabelMatchingOperators l = new LabelMatchingOperators(graph, s.getInitialVertices());
  //  l.matchWithoutBounds(0, "Likes").print();
-    l.matchWithUpperBound(0, 1, "Likes", JoinHint.BROADCAST_HASH_FIRST).print();
-	//graph.getEdges().print();
+    System.out.println(l.matchWithUpperBound(0, 1, "Likes", JoinHint.BROADCAST_HASH_FIRST));
+	// graph.getEdges().print();
 	}
 }

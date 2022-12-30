@@ -1,5 +1,6 @@
 package operators;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -112,7 +113,7 @@ public class ScanOperators {
 					try {
 						return filterVertices.filter(v);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 						return true;
 					}

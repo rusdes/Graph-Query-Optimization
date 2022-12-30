@@ -64,13 +64,13 @@ public class CostBasedOptimzer {
 			FilterFunction newvf;
 			vf = new LabelComparisonForVertices(qv.getLabel());
 			if(!qv.getProps().isEmpty()) {
-				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) qv.getProps().clone();
+				HashMap<String, Pair<String, String>> props = qv.getProps();
 				for(String k: props.keySet()){
 					newvf =  new PropertyFilterForVertices(k, props.get(k).getValue0(), props.get(k).getValue1());
 					vf = new AND<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>(vf, newvf);
 				}
-			} 
-			
+			}
+
 			List<Long> paths = s.getInitialVerticesByBooleanExpressions(vf);
 			
 			ArrayList<Object> cols = new ArrayList<>();

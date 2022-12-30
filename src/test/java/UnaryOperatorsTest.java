@@ -9,13 +9,11 @@ import operators.*;
 import operators.datastructures.*;
 
 import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
-import org.apache.flink.api.java.List;
-import org.apache.flink.api.java.ExecutionEnvironment;
+// import org.apache.flink.api.java.List;
+// import org.apache.flink.api.java.ExecutionEnvironment;
 
 public class UnaryOperatorsTest {
-	public static void main(String[] args) throws Exception {
-		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-		 
+	public static void main(String[] args) throws Exception {		 
 		  //properties for vertices and edges
 		  HashMap<String, String> vp1 = new HashMap<>();
 		  vp1.put("name", "John");
@@ -61,7 +59,7 @@ public class UnaryOperatorsTest {
 		  vertexList.add(v3);
 		  
 	      GraphExtended<Long, HashSet<String>, HashMap<String, String>, 
-	      Long, String, HashMap<String, String>> graph = GraphExtended.fromCollection(vertexList, edgeList, env);
+	      Long, String, HashMap<String, String>> graph = GraphExtended.fromList(vertexList, edgeList);
 		  
 
 	      ScanOperators s = new ScanOperators(graph);
@@ -69,7 +67,7 @@ public class UnaryOperatorsTest {
 	      
 	      HashSet<String> q1 = new HashSet<>();
 		  q1.add("User");
-		  List<ArrayList<Long>> paths = s.getInitialVerticesByLabels(q1);
+		  List<Long> paths = s.getInitialVerticesByLabels(q1);
 		    
 		  UnaryOperators unaryOps = new UnaryOperators(graph, paths);
 		
@@ -83,7 +81,7 @@ public class UnaryOperatorsTest {
 		  HashSet<String> q3 = new HashSet<>();
 		  q3.add("Use");
 		  unaryOps.selectVerticesByLabels(4, q3);
-		  unaryOps.projectDistinctVertices(4).print();
+		  System.out.println(unaryOps.projectDistinctVertices(4));
 		  
 
 	      

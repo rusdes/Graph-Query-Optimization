@@ -57,7 +57,7 @@ public class ScanOperatorsTest {
 	  vertexList.add(v2);
 
       GraphExtended<Long, HashSet<String>, HashMap<String, String>,
-      Long, String, HashMap<String, String>> graph = GraphExtended.fromCollection(vertexList, edgeList);
+      Long, String, HashMap<String, String>> graph = GraphExtended.fromList(vertexList, edgeList);
 
       //Use a scan operator
       ScanOperators s = new ScanOperators(graph);
@@ -67,7 +67,7 @@ public class ScanOperatorsTest {
       vf = new LabelComparisonForVertices("User");
       PropertyFilterForVertices newvf =  new PropertyFilterForVertices("age", "<", "48.5");
       vf = new AND<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>(vf, newvf);
-      s.getInitialVerticesByBooleanExpressions(vf).print();
+      System.out.println(s.getInitialVerticesByBooleanExpressions(vf));
 	}
 }
 

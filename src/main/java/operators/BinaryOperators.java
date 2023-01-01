@@ -2,11 +2,13 @@ package operators;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import operators.helper.FlatJoinFunction;
 import operators.helper.JoinFunction;
 import operators.helper.Collector;
 import operators.helper.MapFunction;
+
 /*
 *
 * All binary operators are implemented here.
@@ -18,31 +20,36 @@ import operators.helper.MapFunction;
 public class BinaryOperators {
 
 	// Each list contains the vertex IDs and edge IDs of a selected path so far
-	private List<Long> pathsLeft;
-	private List<Long> pathsRight;
+	private List<List<Long>> pathsLeft;
+	private List<List<Long>> pathsRight;
 
 	// Get the input graph, current columnNumber and the vertex and edges IDs
 	public BinaryOperators(
-			List<Long> pathsLeft,
-			List<Long> pathsRight) {
+			List<List<Long>> pathsLeft,
+			List<List<Long>> pathsRight) {
 		this.pathsLeft = pathsLeft;
 		this.pathsRight = pathsRight;
 	}
 
 	// Join on after vertices
-	public List<Long> joinOnAfterVertices(int firstCol, int secondCol) {
-		KeySelectorForColumns SelectorFirst = new KeySelectorForColumns(firstCol);
-		KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
+	public List<List<Long>> joinOnAfterVertices(int firstCol, int secondCol) {
+		List<List<Long>> joinedResults = this.pathsLeft.parallelStream().map(list -> {
+			List<List<Long>> intermediateList = this.pathsRight.stream().map(listRight -> {
+				if(list.get(firstCol) == listRight.get(secondCol)){
+					list.addAll(listRight.subList(secondCol+1, listRight.size()));
+				}
+				return list;
+			}).collect(Collectors.toList());
 
-		List<Long> joinedResults = this.pathsLeft
-				.join(this.pathsRight)
-				.where(SelectorFirst)
-				.equalTo(SelectorSecond)
-				.with(new JoinOnAfterVertices(secondCol));
+			
+			return intermediateList;
+		}).flatMap(s -> s.stream()).collect(Collectors.toList());
+
 		return joinedResults;
 	}
 
-	private static class JoinOnAfterVertices implements JoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
+	private static class JoinOnAfterVertices
+			implements JoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
 		private int col;
 
 		public JoinOnAfterVertices(int secondCol) {
@@ -59,11 +66,11 @@ public class BinaryOperators {
 	}
 
 	// Join on left vertices
-	public List<Long> joinOnBeforeVertices(int firstCol, int secondCol) {
+	public List<List<Long>> joinOnBeforeVertices(int firstCol, int secondCol) {
 		KeySelectorForColumns SelectorFirst = new KeySelectorForColumns(firstCol);
 		KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
 
-		List<Long> joinedResults = this.pathsLeft
+		List<List<Long>> joinedResults = this.pathsLeft
 				.join(this.pathsRight)
 				.where(SelectorFirst)
 				.equalTo(SelectorSecond)
@@ -90,16 +97,16 @@ public class BinaryOperators {
 	}
 
 	// Union
-	public List<Long> union() {
-		List<Long> unitedResults = this.pathsLeft
+	public List<List<Long>> union() {
+		List<List<Long>> unitedResults = this.pathsLeft
 				.union(this.pathsRight)
 				.distinct();
 		return unitedResults;
 	}
 
 	// Intersection
-	public List<Long> intersection() {
-		List<Long> intersectedResults = this.pathsLeft
+	public List<List<Long>> intersection() {
+		List<List<Long>> intersectedResults = this.pathsLeft
 				.join(this.pathsRight)
 				.where(0)
 				.equalTo(0)

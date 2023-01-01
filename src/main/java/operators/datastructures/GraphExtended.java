@@ -1,6 +1,7 @@
 package operators.datastructures;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +29,14 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 		this.edges = edges;
 	}
 
+	public VertexExtended<K, VL, VP> getVertexByID(Long id) throws NoSuchElementException{
+		for (VertexExtended<K, VL, VP> vertex : vertices) {
+			if(vertex.getVertexId() == id){
+				return vertex;
+			}
+		}
+		throw new NoSuchElementException();
+	}
 	/* get all edges in a graph */
 	public List<EdgeExtended<E, K, EL, EP>> getEdges() {
 		return this.edges;

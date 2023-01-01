@@ -12,7 +12,7 @@ public class KeySelectorForColumns {
 	
 	KeySelectorForColumns(int column) {this.col = column;}
 
-	public Long getKey(List<Long> row) throws Exception {
+	public Long getKey(List<Long> row) {
 		return row.get(col);
 	}
 }

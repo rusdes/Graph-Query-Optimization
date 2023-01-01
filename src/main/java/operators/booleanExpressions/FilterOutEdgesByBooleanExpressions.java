@@ -2,35 +2,42 @@ package operators.booleanExpressions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import operators.datastructures.EdgeExtended;
+import operators.datastructures.VertexExtended;
 import operators.helper.FilterFunction;
 
 // import org.apache.flink.api.common.functions.FlatJoinFunction;
-import operators.helper.FlatJoinFunction;
+// import operators.helper.FlatJoinFunction;
 // import org.apache.flink.util.Collector;
-import operators.helper.Collector;;
+// import operators.helper.Collector;;
 
 // @SuppressWarnings("serial")
-public class FilterOutEdgesByBooleanExpressions implements FlatJoinFunction<ArrayList<Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, ArrayList<Long>>{
+public class FilterOutEdgesByBooleanExpressions{
 
 	private FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges;
+	private FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices;
 	
-	
-	public FilterOutEdgesByBooleanExpressions(FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges) {
+	public FilterOutEdgesByBooleanExpressions(FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges,
+										FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices) {
 		this.filterEdges = filterEdges;
+		this.filterVertices = filterVertices;
 	}
 
-	@Override
-	public void join(
-			ArrayList<Long> edgeId,
+	// @Override
+	public boolean join(
+			// ArrayList<Long> edgeId,
 			EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
-			Collector<ArrayList<Long>> selectedVertexId) throws Exception {
-		if(this.filterEdges.filter(edge) == true) {
-			edgeId.add(edge.getEdgeId());
-			edgeId.add(edge.getTargetId());
-			selectedVertexId.collect(edgeId);
+			VertexExtended<Long, HashSet<String>, HashMap<String, String>> nextVertex
+			) throws Exception {
+		if(this.filterEdges.filter(edge) == true && this.filterVertices.filter(nextVertex) == true){
+			// edgeId.add(edge.getEdgeId());   // uncomment if want to add edge ID
+			// edgeId.add(edge.getTargetId());
+			// selectedVertexId.collect(edgeId);
+			return true;
 		}
+		return false;
 	}
 	
 }

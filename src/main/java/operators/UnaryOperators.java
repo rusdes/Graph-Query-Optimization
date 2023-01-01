@@ -1,10 +1,12 @@
 package operators;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import operators.booleanExpressions.FilterInEdgesByBooleanExpressions;
 import operators.booleanExpressions.FilterOutEdgesByBooleanExpressions;
@@ -22,6 +24,7 @@ import operators.helper.JoinFunction;
 // import org.apache.flink.api.common.functions.MapFunction;
 import operators.helper.MapFunction;
 // import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
+import queryplan.querygraph.QueryEdge;
 
 import org.javatuples.Unit;
 
@@ -297,15 +300,14 @@ public class UnaryOperators {
 	}
 
 	// No specific requirements on selected edges on right side
-	public List<List<Long>> selectOutEdges(int col, JoinHint strategy) {
-		KeySelectorForColumns verticesSelector = new KeySelectorForColumns(col);
-		List<List<Long>> selectedResults = paths
-				.join(graph.getEdges(), strategy)
-				.where(verticesSelector)
-				.equalTo(1)
-				.with(new JoinOutEdges());
-		this.paths = selectedResults;
-		return selectedResults;
+	public List<EdgeExtended<Long, Long, String, HashMap<String, String>>> selectOutEdges(Long sourceVertexID) {
+
+		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edgeIDs = graph
+				.getEdges()
+				.stream()
+				.filter(e -> e.getSourceId() == sourceVertexID)
+				.collect(Collectors.toList());
+		return edgeIDs;
 	}
 
 	// No specific requirements on edges
@@ -316,22 +318,21 @@ public class UnaryOperators {
 		public ArrayList<Long> join(
 				ArrayList<Long> vertexAndEdgeIds,
 				EdgeExtended<Long, Long, String, HashMap<String, String>> edge) throws Exception {
-			vertexAndEdgeIds.add(edge.f0);
-			vertexAndEdgeIds.add(edge.f2);
+			vertexAndEdgeIds.add(edge.getEdgeId());
+			vertexAndEdgeIds.add(edge.getTargetId());
 			return vertexAndEdgeIds;
 		}
 	}
 
 	// No specific requirements on selected edges on left side
-	public List<List<Long>> selectInEdges(int col, JoinHint strategy) {
-		KeySelectorForColumns verticesSelector = new KeySelectorForColumns(col);
-		List<List<Long>> selectedResults = paths
-				.join(graph.getEdges(), strategy)
-				.where(verticesSelector)
-				.equalTo(2)
-				.with(new JoinInEdges());
-		this.paths = selectedResults;
-		return selectedResults;
+	public List<EdgeExtended<Long, Long, String, HashMap<String, String>>> selectInEdges(Long targetVertexID) {
+
+		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edgeIDs = graph
+				.getEdges()
+				.stream()
+				.filter(e -> e.getTargetId() == targetVertexID)
+				.collect(Collectors.toList());
+		return edgeIDs;
 	}
 
 	// No specific requirements on edges
@@ -573,15 +574,37 @@ public class UnaryOperators {
 
 	// Select outgoing edges by boolean expressions
 	public List<List<Long>> selectOutEdgesByBooleanExpressions(int col,
-			FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges) {
-		KeySelectorForColumns edgesSelector = new KeySelectorForColumns(col);
-		List<List<Long>> selectedResults = paths
-				// Join with the vertices in the input graph then filter these vertices based on
-				// properties
-				.join(graph.getEdges())
-				.where(edgesSelector)
-				.equalTo(1)
-				.with(new FilterOutEdgesByBooleanExpressions(filterEdges));
+			FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges,
+			FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices) {
+
+		FilterOutEdgesByBooleanExpressions filterEdg = new FilterOutEdgesByBooleanExpressions(filterEdges,
+				filterVertices);
+
+		List<List<Long>> selectedResults = this.paths.parallelStream().map(list -> {
+			List<EdgeExtended<Long, Long, String, HashMap<String, String>>> outEdges = this
+					.selectOutEdges(list.get(col))
+					.stream()
+					.filter(e -> {
+						try {
+							VertexExtended<Long, HashSet<String>, HashMap<String, String>> v = graph.getVertexByID(e.getTargetId());
+							return filterEdg.join(e, v);
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							return true;
+						}
+					})
+					.collect(Collectors.toList());
+
+			List<List<Long>> intermediateList = new ArrayList<>();
+			for (EdgeExtended<Long, Long, String, HashMap<String, String>> outE : outEdges) {
+				List<Long> cloned_list = new ArrayList<Long>(list);
+				cloned_list.add(outE.getEdgeId());
+				cloned_list.add(outE.getTargetId());
+				intermediateList.add(cloned_list);
+			}
+			return intermediateList;
+		}).flatMap(s -> s.stream())
+				.collect(Collectors.toList());
 
 		this.paths = selectedResults;
 		return selectedResults;
@@ -589,23 +612,46 @@ public class UnaryOperators {
 
 	// Select ingoing edges by boolean expressions
 	public List<List<Long>> selectInEdgesByBooleanExpressions(int col,
-			FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges, JoinHint strategy) {
-		KeySelectorForColumns edgesSelector = new KeySelectorForColumns(col);
-		List<List<Long>> selectedResults = paths
-				// Join with the vertices in the input graph then filter these vertices based on
-				// properties
-				.join(graph.getEdges(), strategy)
-				.where(edgesSelector)
-				.equalTo(2)
-				.with(new FilterInEdgesByBooleanExpressions(filterEdges));
+			FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges,
+			FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices) {
+
+		FilterOutEdgesByBooleanExpressions filterEdg = new FilterOutEdgesByBooleanExpressions(filterEdges,
+				filterVertices);
+
+		List<List<Long>> selectedResults = this.paths.parallelStream().map(list -> {
+			List<EdgeExtended<Long, Long, String, HashMap<String, String>>> inEdges = this
+					.selectInEdges(list.get(col))
+					.stream()
+					.filter(e -> {
+						try {
+							VertexExtended<Long, HashSet<String>, HashMap<String, String>> v = graph.getVertexByID(e.getSourceId());
+							return filterEdg.join(e, v);
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							return true;
+						}
+					})
+					.collect(Collectors.toList());
+
+			List<List<Long>> intermediateList = new ArrayList<>();
+			for (EdgeExtended<Long, Long, String, HashMap<String, String>> inE : inEdges) {
+				List<Long> cloned_list = new ArrayList<Long>(list);
+				cloned_list.add(inE.getEdgeId());
+				cloned_list.add(inE.getSourceId());
+				intermediateList.add(cloned_list);
+			}
+			return intermediateList;
+		})
+				.flatMap(s -> s.stream())
+				.collect(Collectors.toList());
 
 		this.paths = selectedResults;
 		return selectedResults;
 	}
 
 	// Return all vertices specified by their IDs in a column
-	public List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> projectDistinctVertices(int col) {
-		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> returnedVertices = paths
+	public List<List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>> projectDistinctVertices(int col) {
+		List<List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>> returnedVertices = paths
 				.map(new ExtractVertexIds(col))
 				.distinct()
 				.join(graph.getVertices())

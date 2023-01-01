@@ -50,7 +50,7 @@ public class CostBasedOptimzer {
 	}
 	
 	
-	public List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> generateQueryPlan() throws Exception {
+	public List<HashSet<Long>> generateQueryPlan() throws Exception {
 		//Traverse each query vertex and generate a initial component
 		for(QueryVertex qv: query.getQueryVertices()){
 			double est = verticesStats.get(qv.getLabel()).getValue1();
@@ -68,7 +68,7 @@ public class CostBasedOptimzer {
 			}
 
 			List<List<Long>> paths = s.getInitialVerticesByBooleanExpressions(vf);
-			
+
 			ArrayList<Object> cols = new ArrayList<>();
 			cols.add(qv);
 			qv.setComponent(new QueryGraphComponent(est, paths, cols));
@@ -89,8 +89,8 @@ public class CostBasedOptimzer {
 				}
 			}
 			edges.remove(e);
-			
-			List<Long> paths, joinedPaths;
+
+			List<List<Long>> paths, joinedPaths;
 			ArrayList<Object> leftColumns, rightColumns;
 			FilterFunction ef;
 			FilterFunction newef;
@@ -101,19 +101,32 @@ public class CostBasedOptimzer {
 					newef = new PropertyFilterForEdges(k, props.get(k).getValue0(), props.get(k).getValue1());
 					ef = new AND<EdgeExtended<Long, Long, String, HashMap<String, String>>>(ef, newef);
 				}
-			} 
-			
-			if(e.getSourceVertex().getComponent().getEst() >= e.getTargetVertex().getComponent().getEst()) {
-				UnaryOperators u = new UnaryOperators(graph, e.getSourceVertex().getComponent().getData()) ;
+			}
+
+			if(e.getSourceVertex().getComponent().getEst() <= e.getTargetVertex().getComponent().getEst()) {
+				UnaryOperators u = new UnaryOperators(graph, e.getSourceVertex().getComponent().getData());
 				int firstCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
+				int secondCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
 				
-				paths = u.selectOutEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);
+				FilterFunction vf;
+				FilterFunction newvf;
+				QueryVertex qv_out = e.getTargetVertex();
+				vf = new LabelComparisonForVertices(qv_out.getLabel());
+				if(!qv_out.getProps().isEmpty()) {
+					HashMap<String, Pair<String, String>> props = qv_out.getProps();
+					for(String k: props.keySet()){
+						newvf =  new PropertyFilterForVertices(k, props.get(k).getValue0(), props.get(k).getValue1());
+						vf = new AND<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>(vf, newvf);
+					}
+				}
+
+				paths = u.selectOutEdgesByBooleanExpressions(firstCol, ef, vf);
 				
 				leftColumns = e.getSourceVertex().getComponent().getColumns();
 
 				BinaryOperators b = new BinaryOperators(paths, e.getTargetVertex().getComponent().getData());
-				int secondCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
-				// joinedPaths = b.joinOnAfterVertices(leftColumns.size() + 1, secondCol);
+				
+				joinedPaths = b.joinOnAfterVertices(leftColumns.size() + 1, secondCol);
 
 				rightColumns = (ArrayList<Object>) e.getTargetVertex().getComponent().getColumns().clone();
 				rightColumns.remove(secondCol);
@@ -121,13 +134,26 @@ public class CostBasedOptimzer {
 			} else {
 				UnaryOperators u = new UnaryOperators(graph, e.getTargetVertex().getComponent().getData()) ;
 				int firstCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
-				// paths = u.selectInEdgesByBooleanExpressions(firstCol, ef, JoinHint.BROADCAST_HASH_FIRST);
+				int secondCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
+
+				FilterFunction vf;
+				FilterFunction newvf;
+				QueryVertex qv_out = e.getSourceVertex();
+				vf = new LabelComparisonForVertices(qv_out.getLabel());
+				if(!qv_out.getProps().isEmpty()) {
+					HashMap<String, Pair<String, String>> props = qv_out.getProps();
+					for(String k: props.keySet()){
+						newvf =  new PropertyFilterForVertices(k, props.get(k).getValue0(), props.get(k).getValue1());
+						vf = new AND<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>(vf, newvf);
+					}
+				}
+
+				paths = u.selectInEdgesByBooleanExpressions(firstCol, ef, vf);
 
 				leftColumns = e.getTargetVertex().getComponent().getColumns();
 				
-				// BinaryOperators b = new BinaryOperators(paths, e.getSourceVertex().getComponent().getData());
-				int secondCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
-				// joinedPaths = b.joinOnAfterVertices(leftColumns.size() + 1, secondCol);
+				BinaryOperators b = new BinaryOperators(paths, e.getSourceVertex().getComponent().getData());
+				joinedPaths = b.joinOnAfterVertices(leftColumns.size() + 1, secondCol);
 				
 				rightColumns = (ArrayList<Object>) e.getSourceVertex().getComponent().getColumns().clone();
 				rightColumns.remove(secondCol);
@@ -139,24 +165,31 @@ public class CostBasedOptimzer {
 			columns.addAll(rightColumns);
 
 			double est = minEst / verticesStats.get("vertices").getValue0();
-			// QueryGraphComponent gc = new QueryGraphComponent(est, joinedPaths, columns);
+			QueryGraphComponent gc = new QueryGraphComponent(est, joinedPaths, columns);
 			
 			for(Object o: columns) { 
 				if(o.getClass() == QueryVertex.class) {
 					QueryVertex qv = (QueryVertex) o;
-					// qv.setComponent(gc);
+					qv.setComponent(gc);
 				}
 			}
 			
 		}
 
 		//Where to collect outputs
+		List<HashSet<Long>> res = new ArrayList<>();
 		for(QueryVertex qv: query.getQueryVertices()) {
 			if(qv.isOutput()) {
-				UnaryOperators u = new UnaryOperators(graph, qv.getComponent().getData());
-				return u.projectDistinctVertices(qv.getComponent().getVertexIndex(qv));					
+				int pos = qv.getComponent().getVertexIndex(qv);
+				HashSet<Long> store = new HashSet<>();
+				for (List<Long> indices : qv.getComponent().getData()) {
+					store.add(indices.get(pos));
+				}
+				res.add(store);
+			// 	UnaryOperators u = new UnaryOperators(graph, qv.getComponent().getData());
+			// 	return u.projectDistinctVertices(qv.getComponent().getVertexIndex(qv));					
 			}
 		}
-		return null;
+		return res;
 	}
 }

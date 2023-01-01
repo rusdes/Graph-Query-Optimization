@@ -65,9 +65,9 @@ public class CostBasedOptimizerTest {
 				//RETURN n
 				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
 				canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
-				QueryVertex a = new QueryVertex("Artist",  canelaCoxProps, false);
+				QueryVertex a = new QueryVertex("Artist",  canelaCoxProps, true);
 				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), false);
+				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
 
 				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
 				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
@@ -76,7 +76,7 @@ public class CostBasedOptimizerTest {
 				QueryEdge[] es = {ab, bc};
 				QueryGraph g = new QueryGraph(vs, es);
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				break;
 			} 
@@ -104,7 +104,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -135,7 +135,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -167,7 +167,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -203,7 +203,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -238,7 +238,7 @@ public class CostBasedOptimizerTest {
 				
 				QueryGraph g = new QueryGraph(vs, es);
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -277,7 +277,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -316,7 +316,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -355,7 +355,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -380,7 +380,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -404,7 +404,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -428,7 +428,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -457,7 +457,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -489,7 +489,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -521,7 +521,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();
@@ -556,7 +556,7 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-				List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> res = pg.generateQueryPlan();
+				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
 				// res.writeAsText(args[2], WriteMode.OVERWRITE);
 				// env.execute();

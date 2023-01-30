@@ -13,7 +13,7 @@ import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import operators.helper.FilterFunction;
 
-import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
+// import org.apache.flink.api.common.operators.base.JoinOperatorBase.JoinHint;
 // import org.apache.flink.api.java.List;
 // import org.apache.flink.api.java.tuple.Pair;
 import org.javatuples.*;
@@ -30,8 +30,9 @@ import java.util.HashSet;
 * A rule based optimizer which utilizes some heuristic rules to optimize graph queries
 * For filtering conditions, so far the optimizer can only process conjunctive filtering conditions
 * */
+import java.util.List;
 
-@SuppressWarnings("unchecked")
+// @SuppressWarnings("unchecked")
 public class RuleBasedOptimizer {
 	
 	QueryGraph query;
@@ -57,12 +58,12 @@ public class RuleBasedOptimizer {
 			if (!qv.getProps().isEmpty()) {
 				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) qv.getProps().clone();
 				for (String k : props.keySet()) {
-					newvf = new PropertyFilterForVertices(k, props.get(k).f0, props.get(k).f1);
+					newvf = new PropertyFilterForVertices(k, props.get(k).getValue0(), props.get(k).getValue1());
 					vf = new AND<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>
 							(vf, newvf);
 				}
 			}
-			ArrayList<Long> paths = s.getInitialVerticesByBooleanExpressions(vf);
+			List<List<Long>> paths = s.getInitialVerticesByBooleanExpressions(vf);
 			ArrayList<Object> cols = new ArrayList<>();
 			cols.add(qv);
 			qv.setComponent(new QueryGraphComponent(est, paths, cols));
@@ -74,7 +75,7 @@ public class RuleBasedOptimizer {
 		while (!edges.isEmpty()) {
 			//heuristic rule 1, selectivity
 			double maxEst = Double.MIN_VALUE;
-			JoinHint strategy;
+			// JoinHint strategy;
 			QueryEdge e = edges.get(0);
 			double compEst = 0;
 
@@ -109,7 +110,7 @@ public class RuleBasedOptimizer {
 			if (!e.getProps().isEmpty()) {
 				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) e.getProps().clone();
 				for (String k : props.keySet()) {
-					newef = new PropertyFilterForEdges(k, props.get(k).f0, props.get(k).f1);
+					newef = new PropertyFilterForEdges(k, props.get(k).getValue0(), props.get(k).getValue1());
 					ef = new AND<EdgeExtended<Long, Long, String, HashMap<String, String>>>(ef, newef);
 				}
 			}

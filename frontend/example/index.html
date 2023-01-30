@@ -1,0 +1,170 @@
+<head>
+  <meta charset="UTF-8" />
+  <title>Graph Query Visualizer</title>
+  <link href="../dist/yasgui.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      /* display: flex; */
+      align-items: center;
+      justify-content: center;
+      /* overflow: hidden; */
+      /* min-height: 100vh; */
+      /* background: linear-gradient(135deg, #c2c2c26e 0%, hwb(0 36% 64%) 100%); */
+      background: #f2f2f2;
+    }
+    .yasgui .controlbar,
+    .tabslist,
+    .yasqe_buttons,
+    .yasr {
+      display: none !important;
+    }
+    #sparqlEditorDiv .CodeMirror {
+      font-size: 15px !important;
+      height: 232px !important;
+    }
+    #languageInterpreterDiv .CodeMirror {
+      font-family: "Ubuntu Mono", serif;
+      font-size: 18px !important;
+      height: 180px;
+    }
+    .cm-namedNodeShort {
+      color: #e9591e;
+    }
+    .cm-variable {
+      color: #1d158b;
+    }
+    .cm-literal {
+      color: #912419;
+    }
+    #outputWrapperDiv {
+      display: none;
+    }
+    #queryResultsDiv {
+      padding-right: 14px;
+    }
+    #queryResultsTable {
+      font-family: "Ubuntu Mono", serif;
+      border-collapse: collapse;
+      width: 300px;
+      table-layout: fixed;
+    }
+    #queryResultsTable th,
+    #queryResultsTable td {
+      border: 1px solid silver;
+      padding: 10px;
+    }
+    #queryResultsTable th {
+      color: #1d158b;
+      text-align: left;
+      background-color: lightcyan;
+    }
+    #queryResultsTable tr:hover {
+      background-color: lightgoldenrodyellow;
+    }
+    .selectedRow {
+      background-color: yellow;
+    }
+    .Literal {
+      color: #912419;
+    }
+    .NamedNode {
+      color: #e9591e;
+    }
+    #queryResultsSentenceDiv {
+      font-family: "Ubuntu Mono", serif;
+    }
+    #context-menu {
+      visibility: hidden;
+      position: fixed;
+      z-index: 100;
+      width: 150px;
+      border-radius: 5px;
+      background: #1b1a1a;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+    }
+    #context-menu .item {
+      padding: 8px 10px;
+      font-size: 15px;
+      color: #eee;
+      cursor: pointer;
+      border-radius: inherit;
+      z-index: 1000;
+    }
+    #context-menu .item:hover {
+      background: #343434;
+    }
+  </style>
+</head>
+<body>
+  <div id="context-menu">
+    <div class="item" id="addattr">Add Attributes</div>
+    <div class="item" id="delete">Delete</div>
+  </div>
+  <!--<div style="text-align: center; color: silver">
+        <b>New node:</b> click on the canvas, <b>New edge:</b> drag one node close enough to another one,
+        <b>Rename</b> node or edge by clicking on it, <b>Remove</b> node or edge by right-clicking on it
+    </div>-->
+  <table>
+    <tr>
+      <td style="vertical-align: top; width: 600px; padding-right: 10px">
+        <div id="sparqlEditorDiv"></div>
+        <div id="languageInterpreterDiv"></div>
+      </td>
+      <td style="padding-bottom: 10px">
+        <div id="graphBuilderDiv"></div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div style="display: flex; justify-content: center; padding: 20px">
+          <button id="submitBtn" type="submit">Submit Query</button>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div id="queryResultsSentenceDiv" style="padding: 20px"></div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div id="outputWrapperDiv">
+          <div id="queryResultsDiv"></div>
+          <div id="graphOutputDiv"></div>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <script src="../dist/bundle.js"></script>
+  <script>
+    init({
+      graphBuilder: {
+        div: document.getElementById("graphBuilderDiv"),
+        width: 700,
+        height: 424,
+      },
+      sparqlEditor: {
+        div: document.getElementById("sparqlEditorDiv"),
+      },
+      languageInterpreter: {
+        div: document.getElementById("languageInterpreterDiv"),
+      },
+      graphOutput: {
+        div: document.getElementById("graphOutputDiv"),
+        width: 999,
+        height: 600,
+      },
+      resultsTable: {
+        queryResultsDiv: document.getElementById("queryResultsDiv"),
+      },
+      outputElements: {
+        submitButtonId: "submitBtn",
+        queryResultsSentenceDiv: document.getElementById(
+          "queryResultsSentenceDiv"
+        ),
+        outputWrapperDiv: document.getElementById("outputWrapperDiv"),
+      },
+    });
+  </script>
+</body>

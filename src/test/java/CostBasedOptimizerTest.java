@@ -3,19 +3,12 @@
 import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
-// import org.apache.flink.api.common.functions.MapFunction;
-// import org.apache.flink.api.java.List;
-// import org.apache.flink.api.java.ExecutionEnvironment;
-// import org.apache.flink.api.java.tuple.Pair;
-// import org.apache.flink.api.java.tuple.Triplet;
-// import org.apache.flink.api.java.tuple.Quintet;
 import org.javatuples.*;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
-// import org.apache.flink.core.fs.FileSystem.WriteMode;
 import queryplan.querygraph.QueryEdge;
 import queryplan.querygraph.QueryGraph;
 import queryplan.querygraph.QueryVertex;
@@ -60,9 +53,6 @@ public class CostBasedOptimizerTest {
 				
 		switch(testQuery) {
 			case "0" : {
-				//MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment) - [:hasTag] -> (k:Tag)
-				//WHERE l.length >= 150
-				//RETURN n
 				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
 				canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
 				QueryVertex a = new QueryVertex("Artist",  canelaCoxProps, false);

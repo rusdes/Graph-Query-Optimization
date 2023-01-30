@@ -48,8 +48,8 @@ public class CostBasedOptimzer {
 		verticesStats = vs;
 		edgesStats = es;
 	}
-	
-	
+
+
 	public List<HashSet<Long>> generateQueryPlan() throws Exception {
 		//Traverse each query vertex and generate a initial component
 		for(QueryVertex qv: query.getQueryVertices()){

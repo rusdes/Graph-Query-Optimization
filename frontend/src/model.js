@@ -23,7 +23,7 @@ const initModel = _outputElements => {
     outputElements = _outputElements;
     document.getElementById(outputElements.submitButtonId).addEventListener('click', () => submitSparqlQuery());
 
-    let emptyQuery = "PREFIX : <http://onto.de/default#>\n" +
+    let emptyQuery = "PREFIX vcard: <http://onto.de/default#>\n" +
         "SELECT * WHERE {\n" +
         "  ?s ?p ?o ;\n" +
         "}";

@@ -25,22 +25,11 @@ const EntityType = {
   NAMED_NODE: 3,
   LITERAL: 4,
 };
+let curNode = NaN;
 const contextMenu = document.getElementById("context-menu");
+const addAttrOpt = document.getElementById("addattr");
 const deleteOpt = document.getElementById("delete");
 console.log(deleteOpt);
-
-// document.addEventListener(
-//   "click",
-//   () => (contextMenu.style.visibility = "hidden")
-// );
-document.addEventListener("click", (e) => {
-console.log(e.target.offsetParent);
-  if (e.target.offsetParent != contextMenu) {
-    contextMenu.style.visibility = "hidden";
-  } else if (e.target.offsetParent == deleteOpt) {
-    console.log("Delete");
-  }
-});
 
 const setGraphBuilderData = (graphData) => {
   nodes = Object.values(graphData.nodes);
@@ -231,6 +220,17 @@ const removeNode = (node) => {
   graphChanged();
 };
 
+document.addEventListener("click", (e) => {
+//   e.stopPropagation();
+  contextMenu.style.visibility = "hidden";
+  if (e.target == addAttrOpt) {
+    console.log("Add Attribute");
+  } else if (e.target == deleteOpt) {
+    removeNode(curNode);
+  }
+  curNode = NaN;
+});
+
 const MenuOnRightClick = (e) => {
   console.log("Clcik");
   e.preventDefault();
@@ -294,7 +294,10 @@ const initGraphBuilder = (config) => {
       //   document.addEventListener("click", () => (contextMenu.style.visibility = "hidden"));
       getInput(node, true);
     })
-    .onNodeRightClick((node, event) => MenuOnRightClick(event))
+    .onNodeRightClick((node, event) => {
+        curNode = node;
+      MenuOnRightClick(event);
+    })
     .onLinkClick((edge, event) => getInput(edge, false))
     .onLinkRightClick((edge, event) => {
       removeEdge(edge);

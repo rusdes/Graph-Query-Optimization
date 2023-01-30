@@ -1,5 +1,3 @@
-*I decided to copy the content of this repo back into the OntoEngine repo and keep working on it there.*
-
 # graph-query-visualizer
 Build a SPARQL query by constructing a visual graph and vice versa. I moved this out of my [OntoEngine](https://github.com/benjaminaaron/OntoEngine) coding project to make it also useful independent of it.
 

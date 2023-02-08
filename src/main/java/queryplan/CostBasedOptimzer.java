@@ -47,8 +47,19 @@ public class CostBasedOptimzer {
 		//statistics collected
 		verticesStats = vs;
 		edgesStats = es;
+
+		// Initialize KD Tree in GraphExtended.java
+		// Different KD-Trees for each label. Since same number of dimensions for each label.
 	}
 
+	public void naiveMethodInitialComponent(){
+		System.out.println("null");
+	}
+
+	public void KDTreeMethodInitialComponent(){
+		// Query KD Tree from here to get inital vertex component
+		System.out.println("null");
+	}
 
 	public List<HashSet<Long>> generateQueryPlan() throws Exception {
 		//Traverse each query vertex and generate a initial component
@@ -67,6 +78,7 @@ public class CostBasedOptimzer {
 				}
 			}
 
+			// List of singleton lists of initial vertices that satisfy the current filter condition. 
 			List<List<Long>> paths = s.getInitialVerticesByBooleanExpressions(vf);
 
 			ArrayList<Object> cols = new ArrayList<>();

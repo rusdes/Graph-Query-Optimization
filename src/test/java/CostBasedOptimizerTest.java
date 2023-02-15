@@ -24,16 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// @SuppressWarnings("serial")
 public class CostBasedOptimizerTest {
 	
 	public static void main(String[] args) throws Exception {
-		
-		// ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-		
+				
 		String dir = "src/test/java/Dataset";
 		String testQuery = "0";
-		// Path path = Paths.get(dir);
+
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(Paths.get(dir, "edges.csv"));
 
@@ -159,8 +156,6 @@ public class CostBasedOptimizerTest {
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
 				List<HashSet<Long>> res = pg.generateQueryPlan();
 				System.out.print(res);
-				// res.writeAsText(args[2], WriteMode.OVERWRITE);
-				// env.execute();
 				break;
 				
 			}

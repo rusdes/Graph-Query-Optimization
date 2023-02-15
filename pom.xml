@@ -54,6 +54,7 @@
 				<configuration>
 					<source>17</source> <!-- If you want to use Java 8, change this to "1.8" -->
 					<target>17</target> <!-- If you want to use Java 8, change this to "1.8" -->
+					<!-- <argLine>-Xmx3072m</argLine> Change heap size -->
 				</configuration>
 			</plugin>
 			<plugin>

@@ -30,3 +30,8 @@ hs_err_pid*
 backup/
 frontend/dist/
 frontend/node_modules/
+raw_datasets/
+
+# Datasets
+src/test/java/Dataset/yago_edges.csv
+src/test/java/Dataset/yago_vertices.csv

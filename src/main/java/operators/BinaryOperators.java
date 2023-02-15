@@ -66,17 +66,17 @@ public class BinaryOperators {
 	}
 
 	// Join on left vertices
-	public List<List<Long>> joinOnBeforeVertices(int firstCol, int secondCol) {
-		KeySelectorForColumns SelectorFirst = new KeySelectorForColumns(firstCol);
-		KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
+	// public List<List<Long>> joinOnBeforeVertices(int firstCol, int secondCol) {
+	// 	KeySelectorForColumns SelectorFirst = new KeySelectorForColumns(firstCol);
+	// 	KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
 
-		List<List<Long>> joinedResults = this.pathsLeft
-				.join(this.pathsRight)
-				.where(SelectorFirst)
-				.equalTo(SelectorSecond)
-				.with(new JoinOnBeforeVertices(firstCol));
-		return joinedResults;
-	}
+	// 	List<List<Long>> joinedResults = this.pathsLeft
+	// 			.join(this.pathsRight)
+	// 			.where(SelectorFirst)
+	// 			.equalTo(SelectorSecond)
+	// 			.with(new JoinOnBeforeVertices(firstCol));
+	// 	return joinedResults;
+	// }
 
 	private static class JoinOnBeforeVertices
 			implements JoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
@@ -97,22 +97,22 @@ public class BinaryOperators {
 	}
 
 	// Union
-	public List<List<Long>> union() {
-		List<List<Long>> unitedResults = this.pathsLeft
-				.union(this.pathsRight)
-				.distinct();
-		return unitedResults;
-	}
+	// public List<List<Long>> union() {
+	// 	List<List<Long>> unitedResults = this.pathsLeft
+	// 			.union(this.pathsRight)
+	// 			.distinct();
+	// 	return unitedResults;
+	// }
 
 	// Intersection
-	public List<List<Long>> intersection() {
-		List<List<Long>> intersectedResults = this.pathsLeft
-				.join(this.pathsRight)
-				.where(0)
-				.equalTo(0)
-				.with(new IntersectionResultsMerge());
-		return intersectedResults;
-	}
+	// public List<List<Long>> intersection() {
+	// 	List<List<Long>> intersectedResults = this.pathsLeft
+	// 			.join(this.pathsRight)
+	// 			.where(0)
+	// 			.equalTo(0)
+	// 			.with(new IntersectionResultsMerge());
+	// 	return intersectedResults;
+	// }
 
 	private static class IntersectionResultsMerge
 			implements FlatJoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {

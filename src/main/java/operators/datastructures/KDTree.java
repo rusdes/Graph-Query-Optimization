@@ -1,14 +1,14 @@
+package operators.datastructures;
+
 import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
+import operators.datastructures.KDNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-// package operators.datastructures;
-
-import org.springframework.asm.Label;
 
 // /*
 //  ** KDTree.java by Julian Kent
@@ -625,66 +625,27 @@ import org.springframework.asm.Label;
 
 // }
 
-class Node {
-    VertexExtended<Long, HashSet<String>, HashMap<String, String>> current;
-    VertexExtended<Long, HashSet<String>, HashMap<String, String>> left;
-    VertexExtended<Long, HashSet<String>, HashMap<String, String>> right;
-    VertexExtended<Long, HashSet<String>, HashMap<String, String>> parent;
-    int nodeLevel;
-
-    public int getNodeLevel() {
-        return nodeLevel;
-    }
-
-    public void setNodeLevel(int nodeLevel) {
-        this.nodeLevel = nodeLevel;
-    }
-
-    public VertexExtended<Long, HashSet<String>, HashMap<String, String>> getCurrent() {
-        return current;
-    }
-
-    public void setCurrent(VertexExtended<Long, HashSet<String>, HashMap<String, String>> current) {
-        this.current = current;
-    }
-
-    public VertexExtended<Long, HashSet<String>, HashMap<String, String>> getLeft() {
-        return left;
-    }
-
-    public void setLeft(VertexExtended<Long, HashSet<String>, HashMap<String, String>> left) {
-        this.left = left;
-    }
-
-    public VertexExtended<Long, HashSet<String>, HashMap<String, String>> getRight() {
-        return right;
-    }
-
-    public void setRight(VertexExtended<Long, HashSet<String>, HashMap<String, String>> right) {
-        this.right = right;
-    }
-
-    public VertexExtended<Long, HashSet<String>, HashMap<String, String>> getParent() {
-        return parent;
-    }
-
-    public void setParent(VertexExtended<Long, HashSet<String>, HashMap<String, String>> parent) {
-        this.parent = parent;
-    }
-}
-
 public class KDTree {
 
     HashSet<String> treeLabel;
     List<String> dimensions;
-    Node root;
-    List<Node> nodes = new ArrayList<>();
+    KDNode root;
+    List<KDNode> nodes = new ArrayList<>();
 
-    public KDTree(List<String> dimensions, HashSet<String> treeLabel, Node root) {
+    public KDTree(List<String> dimensions, HashSet<String> treeLabel, KDNode root) {
         this.dimensions = dimensions;
         this.treeLabel = treeLabel;
         this.root = root;
         nodes.add(root);
+    }
+
+    public void addNode(VertexExtended<Long, HashSet<String>, HashMap<String, String>> nodeToBeAdded) {
+
+    }
+
+    @Override
+    public String toString() {
+        return "KDTree " + treeLabel;
     }
 
 }

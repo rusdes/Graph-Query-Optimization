@@ -38,16 +38,14 @@ public class CustomOptimizer {
                 classes.put(vertexExtended.getLabels(), v);
             }
         }
-        System.out.println(classes.size());
         for (HashSet<String> label : classes.keySet()) {
-            VertexExtended<Long, HashSet<String>, HashMap<String, String>> firstVertexInBucket = classes.get(label)
-                    .get(0);
             List<String> dimensions = new ArrayList<>(classes.get(label).get(0).getProps().keySet());
             HashSet<String> treeLabel = label;
-            KDNode root = new KDNode();
-            root.setNodeLevel(0);
-            root.setCurrent(firstVertexInBucket);
-            KDTree x = new KDTree(dimensions, treeLabel, root);
+            KDTree x = new KDTree(dimensions, treeLabel);
+            for (VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex : classes.get(label)) {
+                x.addNode(vertex);
+            }
+
             trees.add(x);
         }
         System.out.println(trees);

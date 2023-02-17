@@ -46,4 +46,10 @@ public class KDNode {
     public void setRight(VertexExtended<Long, HashSet<String>, HashMap<String, String>> right) {
         this.right = right;
     }
+
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return "Node " + nodeLevel + " " + current;
+    }
 }

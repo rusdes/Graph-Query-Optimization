@@ -632,15 +632,37 @@ public class KDTree {
     KDNode root;
     List<KDNode> nodes = new ArrayList<>();
 
-    public KDTree(List<String> dimensions, HashSet<String> treeLabel, KDNode root) {
+    public HashSet<String> getTreeLabel() {
+        return treeLabel;
+    }
+
+    public List<String> getDimensions() {
+        return dimensions;
+    }
+
+    public KDNode getRoot() {
+        return root;
+    }
+
+    public List<KDNode> getNodes() {
+        return nodes;
+    }
+
+    public KDTree(List<String> dimensions, HashSet<String> treeLabel) {
         this.dimensions = dimensions;
         this.treeLabel = treeLabel;
-        this.root = root;
-        nodes.add(root);
     }
 
     public void addNode(VertexExtended<Long, HashSet<String>, HashMap<String, String>> nodeToBeAdded) {
-
+        if (nodes.size() == 0) {
+            KDNode root = new KDNode();
+            root.setNodeLevel(0);
+            root.setCurrent(nodeToBeAdded);
+            this.root = root;
+            nodes.add(root);
+        } else {
+            // this case to be programmed
+        }
     }
 
     @Override

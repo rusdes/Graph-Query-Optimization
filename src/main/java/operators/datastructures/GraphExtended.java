@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import operators.datastructures.kdtree_javaml.KDTree;
 
+
 /**
  * Extended graph for Cypher Implementation
  * 
@@ -68,6 +69,12 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 
 	public KDTree getKDTreeByLabel(String label) {
 		return this.KDTreeSet.get(label);
+	}
+
+	public ArrayList<String> getPropKeySorted(String label){
+		HashMap <String,String> props = (HashMap <String,String>)((VertexExtended)this.KDTreeSet.get(label).getRoot()).getProps();
+		Set<String> keySet = props.keySet();
+		return new ArrayList(new TreeSet(keySet));
 	}
 
 	public VertexExtended<K, VL, VP> getVertexByID(Long id) throws NoSuchElementException{

@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /*
 * Cost-based graph query optimizer
@@ -47,21 +48,9 @@ public class CostBasedOptimzer {
 		//statistics collected
 		verticesStats = vs;
 		edgesStats = es;
-
-		// Initialize KD Tree in GraphExtended.java
-		// Different KD-Trees for each label. Since same number of dimensions for each label.
 	}
 
 	public void naiveMethodInitialComponent(){
-		System.out.println("null");
-	}
-
-	public void KDTreeMethodInitialComponent(){
-		// Query KD Tree from here to get inital vertex component
-		System.out.println("null");
-	}
-
-	public List<HashSet<Long>> generateQueryPlan() throws Exception {
 		//Traverse each query vertex and generate a initial component
 		for(QueryVertex qv: query.getQueryVertices()){
 			double est = verticesStats.get(qv.getLabel()).getValue1();
@@ -85,6 +74,46 @@ public class CostBasedOptimzer {
 			ArrayList<Object> cols = new ArrayList<>();
 			cols.add(qv);
 			qv.setComponent(new QueryGraphComponent(est, paths, cols));
+		}
+	}
+
+	public void KDTreeMethodInitialComponent(){
+		// Query KD Tree from here to get inital vertex component
+		//Traverse each query vertex and generate a initial component
+		for(QueryVertex qv: query.getQueryVertices()){
+			double est = verticesStats.get(qv.getLabel()).getValue1();
+
+			// Query KD Tree
+			ArrayList<String> possibleKeys = graph.getPropKeySorted(qv.getLabel());
+
+			double KDKeyMin[] = new double[possibleKeys.size()];
+			double KDKeyMax[] = new double[possibleKeys.size()];
+
+			Set<String> givenPropKeys = qv.getProps().keySet();
+			for(int i = 0; i < possibleKeys.size(); i += 1){
+				if(givenPropKeys.contains(possibleKeys.get(i))){
+					// Complete based on operator
+				}else{
+					KDKeyMin[i] = Double.NEGATIVE_INFINITY;
+					KDKeyMax[i] = Double.POSITIVE_INFINITY;
+				}
+			}
+
+			List<List<Long>> paths = ;
+
+			ArrayList<Object> cols = new ArrayList<>();
+			cols.add(qv);
+			qv.setComponent(new QueryGraphComponent(est, paths, cols));
+		}
+	}
+
+	public List<HashSet<Long>> generateQueryPlan() throws Exception {
+		// Naive or KD Tree method
+		String method = "naive";
+		if(method.equals("naive")){
+			naiveMethodInitialComponent();
+		}else if(method.equals("kdtree")){
+			KDTreeMethodInitialComponent();
 		}
 
 		ArrayList<QueryEdge> edges= new ArrayList<> (Arrays.asList(query.getQueryEdges()));

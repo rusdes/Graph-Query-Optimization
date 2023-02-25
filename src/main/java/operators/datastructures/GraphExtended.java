@@ -1,8 +1,13 @@
 package operators.datastructures;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import operators.datastructures.kdtree_javaml.KDTree;
 
 /**
  * Extended graph for Cypher Implementation
@@ -21,12 +26,48 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 	/* adjacent lists might be added later */
 	private final List<VertexExtended<K, VL, VP>> vertices;
 	private final List<EdgeExtended<E, K, EL, EP>> edges;
+	private HashMap<String, KDTree> KDTreeSet = new HashMap<>();
 
 	/* initialization */
 	private GraphExtended(List<VertexExtended<K, VL, VP>> vertices,
 			List<EdgeExtended<E, K, EL, EP>> edges) {
 		this.vertices = vertices;
 		this.edges = edges;
+		InitializeKDTreeSet(vertices);
+	}
+
+	private void InitializeKDTreeSet(List<VertexExtended<K, VL, VP>> vertices){
+		for(VertexExtended<K, VL, VP> vertex : vertices){
+			String label = (String)vertex.getLabel();
+			if(this.KDTreeSet.containsKey(label)){
+				this.KDTreeSet.get(label).insert(getKeys((HashMap<String, String>)vertex.getProps()), vertex);
+			}
+			else{
+				int dims = ((HashMap<String, String>) vertex.getProps()).size();
+				KDTree kd = new KDTree(dims);
+				kd.insert(getKeys((HashMap<String, String>)vertex.getProps()), vertex);
+				this.KDTreeSet.put(label, kd);
+			}
+		}
+	}
+
+	private double[] getKeys(HashMap<String, String> props){
+		Set<String> keySet = props.keySet();
+		ArrayList<String> sortedKeys =  new ArrayList(new TreeSet(keySet));
+		double KDKey[] = new double[sortedKeys.size()];
+
+		for(int i = 0; i < sortedKeys.size(); i += 1){
+			KDKey[i] = props.get(sortedKeys.get(i)).hashCode();
+		}
+		return KDKey;
+	}
+
+	public HashMap<String,KDTree> getAllKDTrees() {
+		return this.KDTreeSet;
+	}
+
+	public KDTree getKDTreeByLabel(String label) {
+		return this.KDTreeSet.get(label);
 	}
 
 	public VertexExtended<K, VL, VP> getVertexByID(Long id) throws NoSuchElementException{
@@ -63,14 +104,6 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 
 		return edgeIds;
 	}
-
-	// public static <K, VL, VP, E, EL, EP> GraphExtended<K, VL, VP, E, EL, EP>
-	// fromCollection(Collection<VertexExtended<K, VL, VP>> vertices,
-	// Collection<EdgeExtended<E, K, EL, EP>> edges) {
-
-	// return fromList(context.fromCollection(vertices),
-	// context.fromCollection(edges));
-	// }
 
 	public static <K, VL, VP, E, EL, EP> GraphExtended<K, VL, VP, E, EL, EP> fromList(
 			List<VertexExtended<K, VL, VP>> vertices,

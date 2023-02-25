@@ -68,11 +68,11 @@ public class ScanOperators {
 	// }
 
 	// Get vertex ids with label constraints
-	public List<Long> getInitialVerticesByLabels(HashSet<String> labels) {
+	public List<Long> getInitialVerticesByLabels(String labels) {
 		List<Long> vertexIds = graph
 				.getVertices()
 				.stream()
-				.filter(v -> v.getLabels().containsAll(labels))
+				.filter(v -> v.getLabel().equals(labels))
 				.map(v -> v.getVertexId())
 				.collect(Collectors.toList());
 		return vertexIds;

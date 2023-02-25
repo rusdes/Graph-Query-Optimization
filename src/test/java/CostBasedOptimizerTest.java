@@ -47,6 +47,8 @@ public class CostBasedOptimizerTest {
 		HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
 		GraphExtended<Long, HashSet<String>, HashMap<String, String>, 
 	      Long, String, HashMap<String, String>> graph = GraphExtended.fromList(vertices, edges);
+
+		System.out.println(graph.getKDTreeByLabel("Artist").toString()); //check the data
 				
 		switch(testQuery) {
 			case "0" : {
@@ -588,12 +590,8 @@ public class CostBasedOptimizerTest {
 		VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex = new VertexExtended<Long, HashSet<String>, HashMap<String, String>>();
 		vertex.setVertexId(vertexFromFile.getValue0());
 
-		HashSet<String> labels = new HashSet<>();
-		String[] labs = vertexFromFile.getValue1().split(",");
-		for (String label : labs) {
-			labels.add(label);
-		}
-		vertex.setLabels(labels);
+		String label = vertexFromFile.getValue1().split(",")[0];
+		vertex.setLabel(label);
 
 		HashMap<String, String> properties = new HashMap<>();
 		String[] props = vertexFromFile.getValue2().split(",");

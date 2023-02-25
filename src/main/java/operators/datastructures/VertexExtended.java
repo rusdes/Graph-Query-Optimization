@@ -12,14 +12,14 @@ public class VertexExtended<K, L, P>{
 	
 	// private static final long serialVersionUID = 1L;
 	private K f0;
-	private L f1;
+	private String f1;
 	private P f2;
 
 	public VertexExtended(){};
 	
-	public VertexExtended(K vertexId, L labels, P props) {
+	public VertexExtended(K vertexId, String label, P props) {
 		this.f0 = vertexId;
-		this.f1 = labels;
+		this.f1 = label;
 		this.f2 = props;
 	}
 	
@@ -31,11 +31,11 @@ public class VertexExtended<K, L, P>{
 		return this.f0;
 	}
 
-	public void setLabels(L label) {
+	public void setLabel(String label) {
 		this.f1 = label;
 	}
 
-	public L getLabels() {
+	public String getLabel() {
 		return f1;
 	}
 	

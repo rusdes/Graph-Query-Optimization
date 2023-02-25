@@ -19,7 +19,7 @@ public class LabelComparisonForVertices
 	@Override
 	public boolean filter(
 			VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex){
-		if (vertex.getLabels().contains(label) || label.equals(""))
+		if (vertex.getLabel().equals(label) || label.equals(""))
 			return true;
 		else
 			return false;

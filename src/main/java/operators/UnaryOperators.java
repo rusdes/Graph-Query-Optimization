@@ -78,10 +78,10 @@ public class UnaryOperators {
 	private static class JoinAndFilterVerticesByLabels implements
 			FlatJoinFunction<ArrayList<Long>, VertexExtended<Long, HashSet<String>, HashMap<String, String>>, ArrayList<Long>> {
 
-		private HashSet<String> labels;
+		private String label;
 
-		JoinAndFilterVerticesByLabels(HashSet<String> labelSet) {
-			this.labels = labelSet;
+		JoinAndFilterVerticesByLabels(String labelSet) {
+			this.label = labelSet;
 		}
 
 		@Override
@@ -92,7 +92,7 @@ public class UnaryOperators {
 				throws Exception {
 			// Check if the labels mentioned in the query are contained in the vertex label
 			// list
-			if (vertex.getLabels().containsAll(labels))
+			if (vertex.getLabel().equals(label))
 				outEdgesAndVertices.collect(edgesAndVertices);
 		}
 	}
@@ -115,10 +115,10 @@ public class UnaryOperators {
 	private static class JoinAndFilterReverseVerticesByLabels implements
 			FlatJoinFunction<ArrayList<Long>, VertexExtended<Long, HashSet<String>, HashMap<String, String>>, ArrayList<Long>> {
 
-		private HashSet<String> labels;
+		private String label;
 
-		JoinAndFilterReverseVerticesByLabels(HashSet<String> labelSet) {
-			this.labels = labelSet;
+		JoinAndFilterReverseVerticesByLabels(String labelSet) {
+			this.label = labelSet;
 		}
 
 		@Override
@@ -129,7 +129,7 @@ public class UnaryOperators {
 				throws Exception {
 			// Check if the labels mentioned in the query are contained in the vertex label
 			// list
-			if (!vertex.getLabels().containsAll(labels))
+			if (!vertex.getLabel().equals(label))
 				outEdgesAndVertices.collect(edgesAndVertices);
 		}
 	}
@@ -270,11 +270,11 @@ public class UnaryOperators {
 
 	private static class JoinAndFilterVertices implements
 			FlatJoinFunction<ArrayList<Long>, VertexExtended<Long, HashSet<String>, HashMap<String, String>>, ArrayList<Long>> {
-		private HashSet<String> labs;
+		private String lab;
 		private HashMap<String, String> props;
 
-		JoinAndFilterVertices(HashSet<String> labels, HashMap<String, String> properties) {
-			this.labs = labels;
+		JoinAndFilterVertices(String label, HashMap<String, String> properties) {
+			this.lab = label;
 			this.props = properties;
 		}
 
@@ -294,7 +294,7 @@ public class UnaryOperators {
 			}
 			// Check if the labels mentioned in the query are contained in the vertex label
 			// list
-			if (vertex.getLabels().containsAll(labs))
+			if (vertex.getLabel().equals(lab))
 				outEdgesAndVertices.collect(edgesAndVertices);
 		}
 	}

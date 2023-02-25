@@ -70,6 +70,7 @@ public class CostBasedOptimzer {
 			FilterFunction vf;
 			FilterFunction newvf;
 			vf = new LabelComparisonForVertices(qv.getLabel());
+			
 			if(!qv.getProps().isEmpty()) {
 				HashMap<String, Pair<String, String>> props = qv.getProps();
 				for(String k: props.keySet()){

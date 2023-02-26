@@ -42,7 +42,15 @@ public class PropertyFilterForVertices
 				return vp < propertyValueDouble;
 			}
 			case "=": {
-				return vp == propertyValueDouble;
+				Boolean a;
+				try{
+					// try as double
+					a = (vp == propertyValueDouble);
+				}catch (Exception e){
+					// try as string
+					a = vertex.getProps().get(this.propertyKey).equals(propertyValue);
+				}
+				return a;
 			}
 			case ">=": {
 				return vp >= propertyValueDouble;
@@ -51,10 +59,16 @@ public class PropertyFilterForVertices
 				return vp <= propertyValueDouble;
 			}
 			case "<>": {
-				return vp != propertyValueDouble;
-			}
-			case "eq": {
-				return vertex.getProps().get(this.propertyKey).equals(propertyValue);
+				Boolean a;
+				try{
+					// try as double
+					a = (vp != propertyValueDouble);
+				}catch (Exception e){
+					// try as string
+					a = !vertex.getProps().get(this.propertyKey).equals(propertyValue);
+				}
+				return a;
+
 			}
 			default:
 				throw new Exception("Bad operator " + op + " !");

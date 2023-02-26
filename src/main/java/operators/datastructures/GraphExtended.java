@@ -118,5 +118,4 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 
 		return new GraphExtended<K, VL, VP, E, EL, EP>(vertices, edges);
 	}
-	/* NOT FINISHED YET */
 }

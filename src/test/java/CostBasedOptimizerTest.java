@@ -48,12 +48,12 @@ public class CostBasedOptimizerTest {
 		GraphExtended<Long, HashSet<String>, HashMap<String, String>, 
 	      Long, String, HashMap<String, String>> graph = GraphExtended.fromList(vertices, edges);
 
-		System.out.println(graph.getKDTreeByLabel("Artist").toString()); //check the data
+		// System.out.println(graph.getKDTreeByLabel("Artist").toString()); //check the kd tree data
 				
 		switch(testQuery) {
 			case "0" : {
 				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
-				canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
+				canelaCoxProps.put("Name", new Pair<String, String>("=", "Canela Cox"));
 				QueryVertex a = new QueryVertex("Artist",  canelaCoxProps, false);
 				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
 				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);

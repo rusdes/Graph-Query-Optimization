@@ -1,6 +1,7 @@
 package operators.datastructures;
-import operators.datastructures.kdtree_javaml.KDTree;
 import java.util.Arrays;
+
+import operators.datastructures.kdtree.KDTree;
 
 public class kd_exp {
     public static void main(String[] args) {

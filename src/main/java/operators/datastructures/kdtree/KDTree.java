@@ -1,4 +1,4 @@
-package operators.datastructures.kdtree_javaml;
+package operators.datastructures.kdtree;
 
 /**
  * %SVN.HEADER%

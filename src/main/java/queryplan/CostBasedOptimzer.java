@@ -11,7 +11,7 @@ import operators.booleanExpressions.comparisons.PropertyFilterForVertices;
 import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
-import operators.datastructures.kdtree_javaml.KDTree;
+import operators.datastructures.kdtree.KDTree;
 import operators.helper.FilterFunction;
 
 import org.javatuples.Pair;

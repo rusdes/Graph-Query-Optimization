@@ -53,13 +53,13 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 		}
 	}
 
-	private double[] getKeys(HashMap<String, String> props){
+	private String[] getKeys(HashMap<String, String> props){
 		Set<String> keySet = props.keySet();
 		ArrayList<String> sortedKeys =  new ArrayList(new TreeSet(keySet));
-		double KDKey[] = new double[sortedKeys.size()];
+		String KDKey[] = new String[sortedKeys.size()];
 
 		for(int i = 0; i < sortedKeys.size(); i += 1){
-			KDKey[i] = props.get(sortedKeys.get(i)).hashCode();
+			KDKey[i] = props.get(sortedKeys.get(i));
 		}
 		return KDKey;
 	}

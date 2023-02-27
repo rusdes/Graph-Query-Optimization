@@ -10,6 +10,7 @@ package operators.datastructures.kdtree;
 import java.io.Serializable;
 import java.util.Vector;
 
+
 /**
  * KDTree is a class supporting KD-tree insertion, deletion, equality search,
  * range search, and nearest neighbor(s) using double-precision floating-point
@@ -79,7 +80,7 @@ public class KDTree implements Serializable{
 	 * @throws KeyDuplicateException
 	 *             if key already in tree
 	 */
-	public void insert(double[] key, Object value) {
+	public void insert(String[] key, Object value) {
 
 		if (key.length != m_K) {
 			throw new RuntimeException("KDTree: wrong key size!");
@@ -103,7 +104,7 @@ public class KDTree implements Serializable{
 	 * @throws KeySizeException
 	 *             if key.length mismatches K
 	 */
-	public Object search(double[] key) {
+	public Object search(String[] key) {
 
 		if (key.length != m_K) {
 			throw new RuntimeException("KDTree: wrong key size!");
@@ -127,7 +128,7 @@ public class KDTree implements Serializable{
 	 * @throws KeyMissingException
 	 *             if no node in tree has key
 	 */
-	public void delete(double[] key) {
+	public void delete(String[] key) {
 
 		if (key.length != m_K) {
 			throw new RuntimeException("KDTree: wrong key size!");
@@ -146,35 +147,35 @@ public class KDTree implements Serializable{
 		}
 	}
 
-	/**
-	 * Find KD-tree node whose key is nearest neighbor to key. Implements the
-	 * Nearest Neighbor algorithm (Table 6.4) of
-	 * 
-	 * <PRE>
-	 * &#064;techreport{AndrewMooreNearestNeighbor,
-	 *   author  = {Andrew Moore},
-	 *   title   = {An introductory tutorial on kd-trees},
-	 *   institution = {Robotics Institute, Carnegie Mellon University},
-	 *   year    = {1991},
-	 *   number  = {Technical Report No. 209, Computer Laboratory, 
-	 *              University of Cambridge},
-	 *   address = {Pittsburgh, PA}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param key
-	 *            key for KD-tree node
-	 * 
-	 * @return object at node nearest to key, or null on failure
-	 * 
-	 * @throws KeySizeException
-	 *             if key.length mismatches K
-	 */
-	public Object nearest(double[] key) {
+	// /**
+	//  * Find KD-tree node whose key is nearest neighbor to key. Implements the
+	//  * Nearest Neighbor algorithm (Table 6.4) of
+	//  * 
+	//  * <PRE>
+	//  * &#064;techreport{AndrewMooreNearestNeighbor,
+	//  *   author  = {Andrew Moore},
+	//  *   title   = {An introductory tutorial on kd-trees},
+	//  *   institution = {Robotics Institute, Carnegie Mellon University},
+	//  *   year    = {1991},
+	//  *   number  = {Technical Report No. 209, Computer Laboratory, 
+	//  *              University of Cambridge},
+	//  *   address = {Pittsburgh, PA}
+	//  * }
+	//  * </PRE>
+	//  * 
+	//  * @param key
+	//  *            key for KD-tree node
+	//  * 
+	//  * @return object at node nearest to key, or null on failure
+	//  * 
+	//  * @throws KeySizeException
+	//  *             if key.length mismatches K
+	//  */
+	// public Object nearest(String[] key) {
 
-		Object[] nbrs = nearest(key, 1);
-		return nbrs[0];
-	}
+	// 	Object[] nbrs = nearest(key, 1);
+	// 	return nbrs[0];
+	// }
 
 	/**
 	 * Find KD-tree nodes whose keys are <I>n</I> nearest neighbors to key. Uses
@@ -193,34 +194,34 @@ public class KDTree implements Serializable{
 	 * @throws IllegalArgumentException
 	 *             if <I>n</I> is negative or exceeds tree size
 	 */
-	public Object[] nearest(double[] key, int n) {
+	// public Object[] nearest(String[] key, int n) {
 
-		if (n < 0 || n > m_count) {
-			throw new IllegalArgumentException("Number of neighbors ("+n+") cannot"
-					+ " be negative or greater than number of nodes ("+m_count+").");
-		}
+	// 	if (n < 0 || n > m_count) {
+	// 		throw new IllegalArgumentException("Number of neighbors ("+n+") cannot"
+	// 				+ " be negative or greater than number of nodes ("+m_count+").");
+	// 	}
 
-		if (key.length != m_K) {
-			throw new RuntimeException("KDTree: wrong key size!");
-		}
+	// 	if (key.length != m_K) {
+	// 		throw new RuntimeException("KDTree: wrong key size!");
+	// 	}
 
-		Object[] nbrs = new Object[n];
-		NearestNeighborList nnl = new NearestNeighborList(n);
+	// 	Object[] nbrs = new Object[n];
+	// 	NearestNeighborList nnl = new NearestNeighborList(n);
 
-		// initial call is with infinite hyper-rectangle and max distance
-		HRect hr = HRect.infiniteHRect(key.length);
-		double max_dist_sqd = Double.MAX_VALUE;
-		HPoint keyp = new HPoint(key);
+	// 	// initial call is with infinite hyper-rectangle and max distance
+	// 	HRect hr = HRect.infiniteHRect(key.length);
+	// 	double max_dist_sqd = Double.MAX_VALUE;
+	// 	HPoint keyp = new HPoint(key);
 
-		KDNode.nnbr(m_root, keyp, hr, max_dist_sqd, 0, m_K, nnl);
+	// 	KDNode.nnbr(m_root, keyp, hr, max_dist_sqd, 0, m_K, nnl);
 
-		for (int i = 0; i < n; ++i) {
-			KDNode kd = (KDNode) nnl.removeHighest();
-			nbrs[n - i - 1] = kd.v;
-		}
+	// 	for (int i = 0; i < n; ++i) {
+	// 		KDNode kd = (KDNode) nnl.removeHighest();
+	// 		nbrs[n - i - 1] = kd.v;
+	// 	}
 
-		return nbrs;
-	}
+	// 	return nbrs;
+	// }
 
 	/**
 	 * Range search in a KD-tree. Uses algorithm translated from 352.range.c of
@@ -236,7 +237,7 @@ public class KDTree implements Serializable{
 	 * @throws KeySizeException
 	 *             on mismatch among lowk.length, uppk.length, or K
 	 */
-	public Object[] range(double[] lowk, double[] uppk) {
+	public Object[] range(String[] lowk, String[] uppk) {
 
 		if (lowk.length != uppk.length) {
 			throw new RuntimeException("KDTree: wrong key size!");

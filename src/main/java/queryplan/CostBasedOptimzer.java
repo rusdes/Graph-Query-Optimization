@@ -28,6 +28,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static operators.datastructures.kdtree.Constants.STRING_MIN_VALUE;
+import static operators.datastructures.kdtree.Constants.STRING_MAX_VALUE;
+
 /*
 * Cost-based graph query optimizer
 * For filtering conditions, so far the optimizer can only process conjunctive filtering conditions
@@ -83,15 +86,15 @@ public class CostBasedOptimzer {
 	public void KDTreeMethodInitialComponent(){
 		// Query KD Tree from here to get inital vertex component
 		//Traverse each query vertex and generate a initial component
-		System.out.println("Using KD Tree");
+		// System.out.println("Using KD Tree");
 		for(QueryVertex qv: query.getQueryVertices()){
 			double est = verticesStats.get(qv.getLabel()).getValue1();
 
 			// Query KD Tree
 			ArrayList<String> possibleKeys = graph.getPropKeySorted(qv.getLabel());
 
-			double KDKeyMin[] = new double[possibleKeys.size()];
-			double KDKeyMax[] = new double[possibleKeys.size()];
+			String KDKeyMin[] = new String[possibleKeys.size()];
+			String KDKeyMax[] = new String[possibleKeys.size()];
 
 			Set<String> givenPropKeys = qv.getProps().keySet();
 			for(int i = 0; i < possibleKeys.size(); i += 1){
@@ -100,28 +103,32 @@ public class CostBasedOptimzer {
 					Pair<String, String> pair = qv.getProps().get(possibleKeys.get(i));
 					switch (pair.getValue0()) {
 						case ">": {
-							// need to change key from hashcode to something else which keeps the order for comparision
+							KDKeyMin[i] = pair.getValue1() + STRING_MIN_VALUE;
+							KDKeyMax[i] = STRING_MAX_VALUE;
 						}
 						case "<": {
-							
+							KDKeyMin[i] = STRING_MIN_VALUE;
+							KDKeyMax[i] = pair.getValue1().substring(0, pair.getValue1().length() - 1) + STRING_MIN_VALUE;
 						}
 						case ">=": {
-							
+							KDKeyMin[i] = pair.getValue1();
+							KDKeyMax[i] = STRING_MAX_VALUE;
 						}
 						case "<=": {
-							
+							KDKeyMin[i] = STRING_MIN_VALUE;
+							KDKeyMax[i] = pair.getValue1();
 						}
 						case "=": {
-							KDKeyMin[i] = pair.getValue1().hashCode();
-							KDKeyMax[i] = pair.getValue1().hashCode();
+							KDKeyMin[i] = pair.getValue1();
+							KDKeyMax[i] = pair.getValue1();
 						}
 						case "<>": {
-
+							// Not implemented
 						}
 					}
 				}else{
-					KDKeyMin[i] = Double.NEGATIVE_INFINITY;
-					KDKeyMax[i] = Double.POSITIVE_INFINITY;
+					KDKeyMin[i] = STRING_MIN_VALUE;
+					KDKeyMax[i] = STRING_MAX_VALUE;
 				}
 			}
 
@@ -141,9 +148,8 @@ public class CostBasedOptimzer {
 		}
 	}
 
-	public List<HashSet<Long>> generateQueryPlan() throws Exception {
+	public List<HashSet<Long>> generateQueryPlan(String method) throws Exception {
 		// Naive or KD Tree method
-		String method = "kdtree";
 		if (method.equals("naive")) {
 			naiveMethodInitialComponent();
 		} else if (method.equals("kdtree")) {

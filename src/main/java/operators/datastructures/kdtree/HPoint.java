@@ -13,15 +13,15 @@ import java.io.Serializable;
 
 class HPoint implements Serializable{
 
-    protected double[] coord;
+    protected String[] coord;
 
     protected HPoint(int n) {
-        coord = new double[n];
+        coord = new String[n];
     }
 
-    protected HPoint(double[] x) {
+    protected HPoint(String[] x) {
 
-        coord = new double[x.length];
+        coord = new String[x.length];
         for (int i = 0; i < x.length; ++i)
             coord[i] = x[i];
     }
@@ -42,23 +42,23 @@ class HPoint implements Serializable{
         return true;
     }
 
-    protected static double sqrdist(HPoint x, HPoint y) {
+    // protected static double sqrdist(HPoint x, HPoint y) {
 
-        double dist = 0;
+    //     double dist = 0;
 
-        for (int i = 0; i < x.coord.length; ++i) {
-            double diff = (x.coord[i] - y.coord[i]);
-            dist += (diff * diff);
-        }
+    //     for (int i = 0; i < x.coord.length; ++i) {
+    //         double diff = (x.coord[i] - y.coord[i]);
+    //         dist += (diff * diff);
+    //     }
 
-        return dist;
+    //     return dist;
 
-    }
+    // }
 
-    protected static double eucdist(HPoint x, HPoint y) {
+    // protected static double eucdist(HPoint x, HPoint y) {
 
-        return Math.sqrt(sqrdist(x, y));
-    }
+    //     return Math.sqrt(sqrdist(x, y));
+    // }
 
     public String toString() {
         String s = "";

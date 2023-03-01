@@ -28,7 +28,7 @@ public class CostBasedOptimizerTest {
 				
 		String dir = "src/test/java/Dataset";
 		String testQuery = "0";
-		String method = "kdtree";
+		String method = "time";
 
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(Paths.get(dir, "edges.csv"));

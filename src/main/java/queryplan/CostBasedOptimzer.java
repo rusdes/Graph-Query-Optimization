@@ -83,11 +83,13 @@ public class CostBasedOptimzer {
 		}
 	}
 
-	public void KDTreeMethodInitialComponent(){
+	public void KDTreeMethodInitialComponent() {
 		// Query KD Tree from here to get inital vertex component
-		//Traverse each query vertex and generate a initial component
+		// Traverse each query vertex and generate a initial component
 		// System.out.println("Using KD Tree");
-		for(QueryVertex qv: query.getQueryVertices()){
+
+		// TODO: Make parallel
+		for (QueryVertex qv : query.getQueryVertices()) {
 			double est = verticesStats.get(qv.getLabel()).getValue1();
 
 			// Query KD Tree
@@ -97,8 +99,8 @@ public class CostBasedOptimzer {
 			String KDKeyMax[] = new String[possibleKeys.size()];
 
 			Set<String> givenPropKeys = qv.getProps().keySet();
-			for(int i = 0; i < possibleKeys.size(); i += 1){
-				if(givenPropKeys.contains(possibleKeys.get(i))){
+			for (int i = 0; i < possibleKeys.size(); i += 1) {
+				if (givenPropKeys.contains(possibleKeys.get(i))) {
 					// Complete based on operator
 					Pair<String, String> pair = qv.getProps().get(possibleKeys.get(i));
 					switch (pair.getValue0()) {
@@ -108,7 +110,8 @@ public class CostBasedOptimzer {
 						}
 						case "<": {
 							KDKeyMin[i] = STRING_MIN_VALUE;
-							KDKeyMax[i] = pair.getValue1().substring(0, pair.getValue1().length() - 1) + STRING_MIN_VALUE;
+							KDKeyMax[i] = pair.getValue1().substring(0, pair.getValue1().length() - 1)
+									+ STRING_MIN_VALUE;
 						}
 						case ">=": {
 							KDKeyMin[i] = pair.getValue1();
@@ -126,7 +129,7 @@ public class CostBasedOptimzer {
 							// Not implemented
 						}
 					}
-				}else{
+				} else {
 					KDKeyMin[i] = STRING_MIN_VALUE;
 					KDKeyMax[i] = STRING_MAX_VALUE;
 				}
@@ -136,8 +139,8 @@ public class CostBasedOptimzer {
 
 			KDTree kdtree = graph.getKDTreeByLabel(qv.getLabel());
 			Object[] nodes = kdtree.range(KDKeyMin, KDKeyMax);
-			for(Object node: nodes){
-				Long v_ind = ((VertexExtended<Long, HashSet<String>, HashMap<String, String>>)node).getVertexId();
+			for (Object node : nodes) {
+				Long v_ind = ((VertexExtended<Long, HashSet<String>, HashMap<String, String>>) node).getVertexId();
 				List<Long> list = Arrays.asList(v_ind);
 				paths.add(list);
 			}
@@ -160,6 +163,9 @@ public class CostBasedOptimzer {
 		while (!edges.isEmpty()) {
 			// Traverse statistics, selects the edge with lowest cost
 			double minEst = Double.MAX_VALUE;
+
+			// Implement heap to make this efficient...but value of component keeps getting updated
+			// TODO: Dynamic Priority Queue
 			QueryEdge e = edges.get(0);
 			for (QueryEdge cand : edges) {
 				double estSrc = cand.getSourceVertex().getComponent().getEst();
@@ -176,10 +182,12 @@ public class CostBasedOptimzer {
 			ArrayList<Object> leftColumns, rightColumns;
 			FilterFunction ef;
 			FilterFunction newef;
+
+			// KDTree for labels as well???
+
 			ef = new LabelComparisonForEdges(e.getLabel());
 			if (!e.getProps().isEmpty()) {
-				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) e.getProps()
-						.clone();
+				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) e.getProps().clone();
 				for (String k : props.keySet()) {
 					newef = new PropertyFilterForEdges(k, props.get(k).getValue0(), props.get(k).getValue1());
 					ef = new AND<EdgeExtended<Long, Long, String, HashMap<String, String>>>(ef, newef);
@@ -246,7 +254,8 @@ public class CostBasedOptimzer {
 			columns.addAll(leftColumns);
 			columns.add(e);
 			columns.addAll(rightColumns);
-
+			
+			// TODO: Double Check and fix
 			double est = minEst / verticesStats.get("vertices").getValue0();
 			QueryGraphComponent gc = new QueryGraphComponent(est, joinedPaths, columns);
 

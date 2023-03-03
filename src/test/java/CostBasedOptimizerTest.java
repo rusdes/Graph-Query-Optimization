@@ -27,12 +27,7 @@ public class CostBasedOptimizerTest {
 	public static void main(String[] args) throws Exception {
 				
 		String dir = "src/test/java/Dataset";
-<<<<<<< Updated upstream
-		String testQuery = "0";
-		String method = "time";
-=======
 		String testQuery = "16";
->>>>>>> Stashed changes
 
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(Paths.get(dir, "edges.csv"));

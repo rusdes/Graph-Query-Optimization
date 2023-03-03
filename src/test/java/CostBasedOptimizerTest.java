@@ -27,8 +27,12 @@ public class CostBasedOptimizerTest {
 	public static void main(String[] args) throws Exception {
 				
 		String dir = "src/test/java/Dataset";
+<<<<<<< Updated upstream
 		String testQuery = "0";
 		String method = "time";
+=======
+		String testQuery = "16";
+>>>>>>> Stashed changes
 
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(Paths.get(dir, "edges.csv"));
@@ -87,6 +91,123 @@ public class CostBasedOptimizerTest {
 				System.out.println(res);
 				break;
 			} 
+
+
+
+			case "16" : {
+
+				// find artists (who isnt canela cox) part of bands that performed in a concert
+				// here result is not right
+
+				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
+				canelaCoxProps.put("Years Active", new Pair<String, String>("<>", "Canela Cox"));
+				QueryVertex a = new QueryVertex("Artist",  canelaCoxProps, true);
+				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, b, c};
+				QueryEdge[] es = {ab, bc};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = pg.generateQueryPlan();
+				System.out.print(res);
+				break;
+			} 
+
+
+
+			case "17" : {
+				// HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
+				// canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
+				QueryVertex a = new QueryVertex("Artist",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, b, c};
+				QueryEdge[] es = {ab, bc};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = pg.generateQueryPlan();
+				System.out.print(res);
+				break;
+			} 
+
+
+			case "18" : {
+				// show all the artists that have performed in concerts
+				QueryVertex a = new QueryVertex("Artist",  new HashMap<String, Pair<String, String>>(), true);
+				// QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge ac = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, c};
+				QueryEdge[] es = {ac};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = pg.generateQueryPlan();
+				System.out.print(res);
+				break;
+			} 
+
+
+
+			case "19" : {
+
+				// search for concerts that started before 2020
+
+				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
+				canelaCoxProps.put("Started", new Pair<String, String>("<", "2020"));
+				QueryVertex a = new QueryVertex("Concert",  canelaCoxProps, true);
+				// QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				// QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				// QueryEdge ac = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a};
+				QueryEdge[] es = {};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = pg.generateQueryPlan();
+				System.out.print(res);
+				break;
+			} 
+
+
+			case "20" : {
+
+				// search for artists and bands who performed in concerts after 2020 (OR case)
+
+				HashMap<String, Pair<String, String>> concertProps = new HashMap<>();
+				concertProps.put("Started", new Pair<String, String>(">", "2020"));
+				QueryVertex a = new QueryVertex("Artist",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex c = new QueryVertex("Concert",  concertProps, true);
+				// QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge ac = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, b, c};
+				QueryEdge[] es = {ac, bc};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = pg.generateQueryPlan();
+				System.out.print(res);
+				break;
+			} 
+
+
+
 			
 			case "1" : {
 				//MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment) - [:hasTag] -> (k:Tag)

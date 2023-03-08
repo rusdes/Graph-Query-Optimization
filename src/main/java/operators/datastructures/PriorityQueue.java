@@ -1,4 +1,4 @@
-package operators.datastructures.kdtree;
+package operators.datastructures;
 
 /**
  * %SVN.HEADER%

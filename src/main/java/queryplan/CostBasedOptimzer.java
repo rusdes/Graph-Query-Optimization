@@ -200,14 +200,14 @@ public class CostBasedOptimzer {
 			List<List<Long>> paths = new ArrayList<>();
 			List<List<Long>> joinedPaths;
 			ArrayList<Object> leftColumns, rightColumns;
-			FilterFunction ef;
-			FilterFunction newef;
 
 			// KDTree for labels as well
 
 			Object[] filteredEdges = queryKDTree(e.getProps(), e.getLabel(), "edge");
 			// System.out.println(filteredEdges);
 
+			FilterFunction ef;
+			FilterFunction newef;
 			ef = new LabelComparisonForEdges(e.getLabel());
 			if (!e.getProps().isEmpty()) {
 				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) e.getProps()
@@ -218,6 +218,7 @@ public class CostBasedOptimzer {
 				}
 			}
 
+			// TODO: Check < or >
 			if (e.getSourceVertex().getComponent().getEst() <= e.getTargetVertex().getComponent().getEst()) {
 				int firstCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
 				int secondCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
@@ -281,9 +282,10 @@ public class CostBasedOptimzer {
 				rightColumns.remove(secondCol);
 				rightColumns.add(0, e.getTargetVertex());
 			} else {
-				UnaryOperators u = new UnaryOperators(graph, e.getTargetVertex().getComponent().getData());
 				int firstCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
 				int secondCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
+
+				List<List<Long>> curr_paths = e.getTargetVertex().getComponent().getData();
 
 				FilterFunction vf;
 				FilterFunction newvf;
@@ -297,7 +299,40 @@ public class CostBasedOptimzer {
 					}
 				}
 
-				paths = u.selectInEdgesByBooleanExpressions(firstCol, ef, vf);
+				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
+				for (Object candEdge : filteredEdges) {
+					Long IDSourceVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
+							.getSourceId();
+					VertexExtended<Long, HashSet<String>, HashMap<String, String>> candSource = graph
+							.getVertexByID(IDSourceVertex);
+					if (vf.filter(candSource)) {
+						filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
+					}
+				}
+
+				// efficient try
+				// TODO: check with parallelStream()
+				if (options.contains("edges_kdtree")) {
+					paths = curr_paths.stream().map(list -> {
+						List<List<Long>> intermediateList = new ArrayList<>();
+
+						for (EdgeExtended<Long, Long, String, HashMap<String, String>> e1 : filteredEdgesIntermed) {
+							if (e1.getTargetId() == list.get(firstCol)) {
+								List<Long> cloned_list = new ArrayList<Long>(list);
+								cloned_list.add(e1.getEdgeId());
+								cloned_list.add(e1.getSourceId());
+								intermediateList.add(cloned_list);
+							}
+						}
+						return intermediateList;
+					}).flatMap(s -> s.stream())
+							.collect(Collectors.toList());
+
+				} else if (options.contains("edges_naive")) {
+					// Inefficient way
+					UnaryOperators u = new UnaryOperators(graph, e.getTargetVertex().getComponent().getData());
+					paths = u.selectInEdgesByBooleanExpressions(firstCol, ef, vf);
+				}
 
 				leftColumns = e.getTargetVertex().getComponent().getColumns();
 
@@ -336,8 +371,6 @@ public class CostBasedOptimzer {
 					store.add(indices.get(pos));
 				}
 				res.add(store);
-				// UnaryOperators u = new UnaryOperators(graph, qv.getComponent().getData());
-				// return u.projectDistinctVertices(qv.getComponent().getVertexIndex(qv));
 			}
 		}
 		return res;

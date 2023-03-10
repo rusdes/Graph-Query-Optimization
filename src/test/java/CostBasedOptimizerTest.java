@@ -13,7 +13,6 @@ import queryplan.querygraph.QueryVertex;
 import queryplan.*;
 
 import java.io.Reader;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,7 +31,7 @@ public class CostBasedOptimizerTest {
 		String dir = "src/test/java/Dataset";
 		String testQuery = "0";
 		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("naive", "edges_kdtree"));
+		options.addAll(Arrays.asList("kdtree", "edges_kdtree"));
 		Boolean compare = true;
 
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
@@ -76,7 +75,7 @@ public class CostBasedOptimizerTest {
 				if (compare) {
 					long startTimeNaive = System.nanoTime();
 					for (int i = 0; i < 10000; i++) {
-						res = pg.generateQueryPlan(new HashSet<>(Arrays.asList("naive", "edges_kdtree")));
+						res = pg.generateQueryPlan(new HashSet<>(Arrays.asList("naive", "edges_naive")));
 					}
 					long endTimeNaive = System.nanoTime();
 

@@ -80,13 +80,13 @@ public class CostBasedOptimizerTest {
 				if (compare) {
 					long startTimeNaive = System.nanoTime();
 					for (int i = 0; i < 10000; i++) {
-						res = pg.generateQueryPlan(new HashSet<>(Arrays.asList("naive", "edges_naive")));
+						res = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
 					}
 					long endTimeNaive = System.nanoTime();
 
 					long startTimeKD = System.nanoTime();
 					for (int i = 0; i < 10000; i++) {
-						res = pg.generateQueryPlan(new HashSet<>(Arrays.asList("kdtree", "edges_kdtree")));
+						res = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
 					}
 					long endTimeKD = System.nanoTime();
 					System.out.println("Naive time(ms):" + (endTimeNaive - startTimeNaive) / 1000000);

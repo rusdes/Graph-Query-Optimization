@@ -31,8 +31,13 @@ public class CostBasedOptimizerTest {
 		String dir = "src/test/java/Dataset";
 		String testQuery = "0";
 		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("kdtree", "edges_kdtree"));
+		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
 		Boolean compare = true;
+
+		// Description for all options
+		HashMap<String, ArrayList<String>> desc = new HashMap<>();
+		desc.put("Initial Vertex Mapping Method", new ArrayList<>(Arrays.asList("vertex_naive", "vertex_kdtree")));
+		desc.put("Edges Mapping Method", new ArrayList<>(Arrays.asList("edges_naive", "edges_kdtree")));
 
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(

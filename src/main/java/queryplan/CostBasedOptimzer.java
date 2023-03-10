@@ -174,9 +174,9 @@ public class CostBasedOptimzer {
 
 	public List<HashSet<Long>> generateQueryPlan(Set<String> options) throws Exception {
 		// Naive or KD Tree method
-		if (options.contains("naive")) {
+		if (options.contains("vertex_naive")) {
 			naiveMethodInitialComponent();
-		} else if (options.contains("kdtree")) {
+		} else if (options.contains("vertex_kdtree")) {
 			KDTreeMethodInitialComponent();
 		}
 

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import operators.datastructures.GraphExtended;
@@ -33,8 +34,8 @@ public class ScanOperators {
 	}
 
 	// Get vertex IDs of a graph
-	public List<Long> getInitialVertices() {
-		List<Long> vertexIds = graph.getAllVertexIds();
+	public Set<Long> getInitialVertices() {
+		Set<Long> vertexIds = graph.getAllVertexIds();
 		return vertexIds;
 	}
 

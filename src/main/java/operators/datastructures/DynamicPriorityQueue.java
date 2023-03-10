@@ -1,5 +1,8 @@
 package operators.datastructures;
 
+import org.javatuples.Pair;
+import queryplan.querygraph.QueryEdge;
+
 /**
  * %SVN.HEADER%
  * 
@@ -7,7 +10,7 @@ package operators.datastructures;
  * http://www.cs.wlu.edu/~levy/software/kd/
  */
 
-class PriorityQueue implements java.io.Serializable {
+class DynamicPriorityQueue implements java.io.Serializable {
 
     /**
      * This class implements a <code>PriorityQueue</code>. This class is
@@ -33,7 +36,7 @@ class PriorityQueue implements java.io.Serializable {
     /**
      * This contains the list of objects in the queue.
      */
-    private Object[] data;
+    private Pair<QueryEdge,Boolean>[] data;
 
     /**
      * This contains the list of prioritys in the queue.
@@ -46,6 +49,11 @@ class PriorityQueue implements java.io.Serializable {
     private int count;
 
     /**
+     * Holds the number of elements currently in the queue.
+     */
+    private int num_ignore;
+
+    /**
      * This holds the number elements this queue can have.
      */
     private int capacity;
@@ -56,7 +64,7 @@ class PriorityQueue implements java.io.Serializable {
      * queue and to leave in the order of priority i.e the highest priority
      * get's to leave first.
      */
-    public PriorityQueue() {
+    public DynamicPriorityQueue() {
         init(20);
     }
 
@@ -67,9 +75,9 @@ class PriorityQueue implements java.io.Serializable {
      * to leave first.
      * 
      * @param capacity
-     *            the initial capacity of the queue before a resize
+     *                 the initial capacity of the queue before a resize
      */
-    public PriorityQueue(int capacity) {
+    public DynamicPriorityQueue(int capacity) {
         init(capacity);
     }
 
@@ -80,11 +88,11 @@ class PriorityQueue implements java.io.Serializable {
      * to leave first.
      * 
      * @param capacity
-     *            the initial capacity of the queue before a resize
+     *                    the initial capacity of the queue before a resize
      * @param maxPriority
-     *            is the maximum possible priority for an object
+     *                    is the maximum possible priority for an object
      */
-    public PriorityQueue(int capacity, double maxPriority) {
+    public DynamicPriorityQueue(int capacity, double maxPriority) {
         this.maxPriority = maxPriority;
         init(capacity);
     }
@@ -97,12 +105,13 @@ class PriorityQueue implements java.io.Serializable {
      * the data.
      * 
      * @param size
-     *            the initial capacity of the queue, it can be resized
+     *             the initial capacity of the queue, it can be resized
      */
     private void init(int size) {
         capacity = size;
-        data = new Object[capacity + 1];
+        data = new Pair [capacity + 1];
         value = new double[capacity + 1];
+        num_ignore = 0; // check
         value[0] = maxPriority;
         data[0] = null;
     }
@@ -114,13 +123,13 @@ class PriorityQueue implements java.io.Serializable {
      * the elements array entrys parallel.
      * 
      * @param element
-     *            is the object that is to be entered into this
-     *            <code>PriorityQueue</code>
+     *                 is the object that is to be entered into this
+     *                 <code>PriorityQueue</code>
      * @param priority
-     *            this is the priority that the object holds in the
-     *            <code>PriorityQueue</code>
+     *                 this is the priority that the object holds in the
+     *                 <code>PriorityQueue</code>
      */
-    public void add(Object element, double priority) {
+    public void add(Pair<QueryEdge, Boolean> element, double priority) {
         if (count++ >= capacity) {
             expandCapacity();
         }
@@ -138,18 +147,28 @@ class PriorityQueue implements java.io.Serializable {
      * @return the object with the highest priority or if it's empty null
      */
     public Object remove() {
-        if (count == 0)
-            return null;
-        Object element = data[1];
-        /* swap the last element into the first */
-        data[1] = data[count];
-        value[1] = value[count];
-        /* let the GC clean up */
-        data[count] = null;
-        value[count] = 0L;
-        count--;
-        bubbleDown(1);
-        return element;
+        while (true) {
+            if (count == 0)
+                return null;
+            Pair<QueryEdge, Boolean> element = data[1]; // To Pair
+            Boolean cur_ignored = element.getValue1();
+            /* swap the last element into the first */
+            data[1] = data[count];
+            value[1] = value[count];
+            /* let the GC clean up */
+            data[count] = null;
+            value[count] = 0L;
+            count--;
+            bubbleDown(1);
+
+            // If the ignore bit in the element is true, go back to popping, otherwise
+            // return the item.
+            if (cur_ignored == true) {
+                num_ignore -= 1;
+            } else {
+                return element;
+            }
+        }
     }
 
     public Object front() {
@@ -172,7 +191,7 @@ class PriorityQueue implements java.io.Serializable {
      *            is the position within the arrays of the element and priority
      */
     private void bubbleDown(int pos) {
-        Object element = data[pos];
+        Pair<QueryEdge, Boolean> element = data[pos];
         double priority = value[pos];
         int child;
         /* hole is position '1' */
@@ -212,7 +231,7 @@ class PriorityQueue implements java.io.Serializable {
      *            the position in the arrays of the object to be bubbled up
      */
     private void bubbleUp(int pos) {
-        Object element = data[pos];
+        Pair<QueryEdge,Boolean> element = data[pos];
         double priority = value[pos];
         /* when the parent is not less than the child, end */
         while (value[pos / 2] < priority) {
@@ -234,7 +253,7 @@ class PriorityQueue implements java.io.Serializable {
      */
     private void expandCapacity() {
         capacity = count * 2;
-        Object[] elements = new Object[capacity + 1];
+        Pair<QueryEdge, Boolean>[] elements = new Pair[capacity + 1];
         double[] prioritys = new double[capacity + 1];
         System.arraycopy(data, 0, elements, 0, data.length);
         System.arraycopy(value, 0, prioritys, 0, data.length);

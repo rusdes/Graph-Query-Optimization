@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static operators.datastructures.kdtree.Constants.STRING_MIN_VALUE;
 import static operators.datastructures.kdtree.Constants.STRING_MAX_VALUE;
@@ -83,62 +84,82 @@ public class CostBasedOptimzer {
 		}
 	}
 
+	private Object[] queryKDTree(HashMap<String, Pair<String, String>> givenProp, String label, String type) {
+		ArrayList<String> possibleKeys = graph.getPropKeySorted(label);
+
+		String KDKeyMin[] = new String[possibleKeys.size()];
+		String KDKeyMax[] = new String[possibleKeys.size()];
+
+		if (type.equals("edge")) {
+			KDKeyMin = new String[possibleKeys.size() + 1];
+			KDKeyMax = new String[possibleKeys.size() + 1];
+
+			KDKeyMin[0] = STRING_MIN_VALUE;
+			KDKeyMax[0] = STRING_MAX_VALUE;
+		}
+
+		Set<String> givenPropKeys = givenProp.keySet();
+		for (int i = 0; i < possibleKeys.size(); i += 1) {
+			if (givenPropKeys.contains(possibleKeys.get(i))) {
+				// Complete based on operator
+				Pair<String, String> pair = givenProp.get(possibleKeys.get(i));
+
+				if (type.equals("edge"))
+					i += 1;
+
+				switch (pair.getValue0()) {
+					case ">": {
+						KDKeyMin[i] = pair.getValue1() + STRING_MIN_VALUE;
+						KDKeyMax[i] = STRING_MAX_VALUE;
+					}
+					case "<": {
+						KDKeyMin[i] = STRING_MIN_VALUE;
+						KDKeyMax[i] = pair.getValue1().substring(0, pair.getValue1().length() - 1)
+								+ STRING_MIN_VALUE;
+					}
+					case ">=": {
+						KDKeyMin[i] = pair.getValue1();
+						KDKeyMax[i] = STRING_MAX_VALUE;
+					}
+					case "<=": {
+						KDKeyMin[i] = STRING_MIN_VALUE;
+						KDKeyMax[i] = pair.getValue1();
+					}
+					case "=": {
+						KDKeyMin[i] = pair.getValue1();
+						KDKeyMax[i] = pair.getValue1();
+					}
+					case "<>": {
+						// Not implemented
+					}
+				}
+			} else {
+				KDKeyMin[i] = STRING_MIN_VALUE;
+				KDKeyMax[i] = STRING_MAX_VALUE;
+			}
+		}
+
+		KDTree kdtree;
+		if (type.equals("edge")) {
+			kdtree = graph.getKDTreeEdgeByLabel(label);
+		} else {
+			kdtree = graph.getKDTreeVertexByLabel(label);
+		}
+		return kdtree.range(KDKeyMin, KDKeyMax);
+	}
+
 	public void KDTreeMethodInitialComponent() {
 		// Query KD Tree from here to get inital vertex component
 		// Traverse each query vertex and generate a initial component
-		// System.out.println("Using KD Tree");
 
 		// TODO: Make parallel
 		for (QueryVertex qv : query.getQueryVertices()) {
 			double est = verticesStats.get(qv.getLabel()).getValue1();
 
 			// Query KD Tree
-			ArrayList<String> possibleKeys = graph.getPropKeySorted(qv.getLabel());
-
-			String KDKeyMin[] = new String[possibleKeys.size()];
-			String KDKeyMax[] = new String[possibleKeys.size()];
-
-			Set<String> givenPropKeys = qv.getProps().keySet();
-			for (int i = 0; i < possibleKeys.size(); i += 1) {
-				if (givenPropKeys.contains(possibleKeys.get(i))) {
-					// Complete based on operator
-					Pair<String, String> pair = qv.getProps().get(possibleKeys.get(i));
-					switch (pair.getValue0()) {
-						case ">": {
-							KDKeyMin[i] = pair.getValue1() + STRING_MIN_VALUE;
-							KDKeyMax[i] = STRING_MAX_VALUE;
-						}
-						case "<": {
-							KDKeyMin[i] = STRING_MIN_VALUE;
-							KDKeyMax[i] = pair.getValue1().substring(0, pair.getValue1().length() - 1)
-									+ STRING_MIN_VALUE;
-						}
-						case ">=": {
-							KDKeyMin[i] = pair.getValue1();
-							KDKeyMax[i] = STRING_MAX_VALUE;
-						}
-						case "<=": {
-							KDKeyMin[i] = STRING_MIN_VALUE;
-							KDKeyMax[i] = pair.getValue1();
-						}
-						case "=": {
-							KDKeyMin[i] = pair.getValue1();
-							KDKeyMax[i] = pair.getValue1();
-						}
-						case "<>": {
-							// Not implemented
-						}
-					}
-				} else {
-					KDKeyMin[i] = STRING_MIN_VALUE;
-					KDKeyMax[i] = STRING_MAX_VALUE;
-				}
-			}
+			Object[] nodes = queryKDTree(qv.getProps(), qv.getLabel(), "vertex");
 
 			List<List<Long>> paths = new ArrayList<>();
-
-			KDTree kdtree = graph.getKDTreeByLabel(qv.getLabel());
-			Object[] nodes = kdtree.range(KDKeyMin, KDKeyMax);
 			for (Object node : nodes) {
 				Long v_ind = ((VertexExtended<Long, HashSet<String>, HashMap<String, String>>) node).getVertexId();
 				List<Long> list = Arrays.asList(v_ind);
@@ -151,11 +172,11 @@ public class CostBasedOptimzer {
 		}
 	}
 
-	public List<HashSet<Long>> generateQueryPlan(String method) throws Exception {
+	public List<HashSet<Long>> generateQueryPlan(Set<String> options) throws Exception {
 		// Naive or KD Tree method
-		if (method.equals("naive")) {
+		if (options.contains("naive")) {
 			naiveMethodInitialComponent();
-		} else if (method.equals("kdtree")) {
+		} else if (options.contains("kdtree")) {
 			KDTreeMethodInitialComponent();
 		}
 
@@ -164,8 +185,6 @@ public class CostBasedOptimzer {
 			// Traverse statistics, selects the edge with lowest cost
 			double minEst = Double.MAX_VALUE;
 
-			// Implement heap to make this efficient...but value of component keeps getting updated
-			// TODO: Dynamic Priority Queue
 			QueryEdge e = edges.get(0);
 			for (QueryEdge cand : edges) {
 				double estSrc = cand.getSourceVertex().getComponent().getEst();
@@ -178,16 +197,21 @@ public class CostBasedOptimzer {
 			}
 			edges.remove(e);
 
-			List<List<Long>> paths, joinedPaths;
+			List<List<Long>> paths = new ArrayList<>();
+			List<List<Long>> joinedPaths;
 			ArrayList<Object> leftColumns, rightColumns;
 			FilterFunction ef;
 			FilterFunction newef;
 
-			// KDTree for labels as well???
+			// KDTree for labels as well
+
+			Object[] filteredEdges = queryKDTree(e.getProps(), e.getLabel(), "edge");
+			// System.out.println(filteredEdges);
 
 			ef = new LabelComparisonForEdges(e.getLabel());
 			if (!e.getProps().isEmpty()) {
-				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) e.getProps().clone();
+				HashMap<String, Pair<String, String>> props = (HashMap<String, Pair<String, String>>) e.getProps()
+						.clone();
 				for (String k : props.keySet()) {
 					newef = new PropertyFilterForEdges(k, props.get(k).getValue0(), props.get(k).getValue1());
 					ef = new AND<EdgeExtended<Long, Long, String, HashMap<String, String>>>(ef, newef);
@@ -195,9 +219,10 @@ public class CostBasedOptimzer {
 			}
 
 			if (e.getSourceVertex().getComponent().getEst() <= e.getTargetVertex().getComponent().getEst()) {
-				UnaryOperators u = new UnaryOperators(graph, e.getSourceVertex().getComponent().getData());
 				int firstCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
 				int secondCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
+
+				List<List<Long>> curr_paths = e.getSourceVertex().getComponent().getData();
 
 				FilterFunction vf;
 				FilterFunction newvf;
@@ -211,7 +236,40 @@ public class CostBasedOptimzer {
 					}
 				}
 
-				paths = u.selectOutEdgesByBooleanExpressions(firstCol, ef, vf);
+				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
+				for (Object candEdge : filteredEdges) {
+					Long IDTargetVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
+							.getTargetId();
+					VertexExtended<Long, HashSet<String>, HashMap<String, String>> candTarget = graph
+							.getVertexByID(IDTargetVertex);
+					if (vf.filter(candTarget)) {
+						filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
+					}
+				}
+
+				// efficient try
+				// TODO: check with parallelStream()
+				if (options.contains("edges_kdtree")) {
+					paths = curr_paths.stream().map(list -> {
+						List<List<Long>> intermediateList = new ArrayList<>();
+
+						for (EdgeExtended<Long, Long, String, HashMap<String, String>> e1 : filteredEdgesIntermed) {
+							if (e1.getSourceId() == list.get(firstCol)) {
+								List<Long> cloned_list = new ArrayList<Long>(list);
+								cloned_list.add(e1.getEdgeId());
+								cloned_list.add(e1.getTargetId());
+								intermediateList.add(cloned_list);
+							}
+						}
+						return intermediateList;
+					}).flatMap(s -> s.stream())
+							.collect(Collectors.toList());
+
+				} else if (options.contains("edges_naive")) {
+					// Inefficient way
+					UnaryOperators u = new UnaryOperators(graph, e.getSourceVertex().getComponent().getData());
+					paths = u.selectOutEdgesByBooleanExpressions(firstCol, ef, vf);
+				}
 
 				leftColumns = e.getSourceVertex().getComponent().getColumns();
 
@@ -254,7 +312,7 @@ public class CostBasedOptimzer {
 			columns.addAll(leftColumns);
 			columns.add(e);
 			columns.addAll(rightColumns);
-			
+
 			// TODO: Double Check and fix
 			double est = minEst / verticesStats.get("vertices").getValue0();
 			QueryGraphComponent gc = new QueryGraphComponent(est, joinedPaths, columns);

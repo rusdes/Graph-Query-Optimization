@@ -27,14 +27,10 @@ public class FilterOutEdgesByBooleanExpressions{
 
 	// @Override
 	public boolean join(
-			// ArrayList<Long> edgeId,
 			EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
 			VertexExtended<Long, HashSet<String>, HashMap<String, String>> nextVertex
 			) throws Exception {
 		if(this.filterEdges.filter(edge) == true && this.filterVertices.filter(nextVertex) == true){
-			// edgeId.add(edge.getEdgeId());   // uncomment if want to add edge ID
-			// edgeId.add(edge.getTargetId());
-			// selectedVertexId.collect(edgeId);
 			return true;
 		}
 		return false;

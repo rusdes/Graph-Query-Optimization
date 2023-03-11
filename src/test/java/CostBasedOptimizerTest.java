@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.print.event.PrintEvent;
-
 public class CostBasedOptimizerTest {
 	public static void dataCompressor(
 			GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph) {

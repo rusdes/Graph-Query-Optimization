@@ -38,3 +38,6 @@ src/test/java/Dataset/yago_vertices.csv
 src/test/java/Dataset/imdb_nishant/vertices.csv
 .gitignore
 src/test/java/Dataset/imdb_nishant/edges.csv
+src/test/java/imdb_CostBasedOptimizerTest.java
+src/test/java/Dataset/compressed_imdb/edges.csv
+src/test/java/Dataset/compressed_imdb/vertices.csv

@@ -29,7 +29,7 @@ public class CostBasedOptimizerTest {
 	public static void main(String[] args) throws Exception {
 
 		String dir = "src/test/java/Dataset";
-		String testQuery = "20";
+		String testQuery = "0";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
 		Boolean compare = true;

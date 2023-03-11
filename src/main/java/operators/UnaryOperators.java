@@ -545,32 +545,32 @@ public class UnaryOperators {
 	// 	return selectedResults;
 	// }
 
-	private static class JoinAndFilterReverseEdgesByProperties implements
-			FlatJoinFunction<ArrayList<Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, ArrayList<Long>> {
+	// private static class JoinAndFilterReverseEdgesByProperties implements
+	// 		FlatJoinFunction<ArrayList<Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, ArrayList<Long>> {
 
-		private HashMap<String, String> props;
+	// 	private HashMap<String, String> props;
 
-		public JoinAndFilterReverseEdgesByProperties(HashMap<String, String> properties) {
-			this.props = properties;
-		}
+	// 	public JoinAndFilterReverseEdgesByProperties(HashMap<String, String> properties) {
+	// 		this.props = properties;
+	// 	}
 
-		@Override
-		public void join(
-				ArrayList<Long> vertexAndEdgeIds,
-				EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
-				Collector<ArrayList<Long>> outEdgesAndVertices)
-				throws Exception {
-			for (Map.Entry<String, String> propInQuery : props.entrySet()) {
-				// If the vertex does not contain the specific key
-				if (edge.getProps().get(propInQuery.getKey()) == null ||
-				// If the key is contained, check if the value is consistent or not
-						!edge.getProps().get(propInQuery.getKey()).equals(propInQuery.getValue())) {
-					outEdgesAndVertices.collect(vertexAndEdgeIds);
-					return;
-				}
-			}
-		}
-	}
+	// 	@Override
+	// 	public void join(
+	// 			ArrayList<Long> vertexAndEdgeIds,
+	// 			EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
+	// 			Collector<ArrayList<Long>> outEdgesAndVertices)
+	// 			throws Exception {
+	// 		for (Map.Entry<String, String> propInQuery : props.entrySet()) {
+	// 			// If the vertex does not contain the specific key
+	// 			if (edge.getProps().get(propInQuery.getKey()) == null ||
+	// 			// If the key is contained, check if the value is consistent or not
+	// 					!edge.getProps().get(propInQuery.getKey()).equals(propInQuery.getValue())) {
+	// 				outEdgesAndVertices.collect(vertexAndEdgeIds);
+	// 				return;
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	// Select outgoing edges by boolean expressions
 	public List<List<Long>> selectOutEdgesByBooleanExpressions(int col,
@@ -582,7 +582,7 @@ public class UnaryOperators {
 
 		List<List<Long>> selectedResults = this.paths.parallelStream().map(list -> {
 			List<EdgeExtended<Long, Long, String, HashMap<String, String>>> outEdges = this
-					.selectOutEdges(list.get(col))
+					.selectOutEdges(list.get(col)) // outgoing edges from vertex at col
 					.stream()
 					.filter(e -> {
 						try {

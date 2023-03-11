@@ -1,6 +1,7 @@
 package operators.datastructures;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
@@ -25,66 +26,108 @@ import operators.datastructures.kdtree.KDTree;
 
 public class GraphExtended<K, VL, VP, E, EL, EP> {
 
-	/* adjacent lists might be added later */
-	private final List<VertexExtended<K, VL, VP>> vertices;
+	// private final List<VertexExtended<K, VL, VP>> vertices;
+	private HashMap<Long, VertexExtended<K, VL, VP>> vertices = new HashMap<>();;
 	private final List<EdgeExtended<E, K, EL, EP>> edges;
-	private HashMap<String, KDTree> KDTreeSet = new HashMap<>();
+	private HashMap<String, KDTree> KDTreeSetVertex = new HashMap<>();
+	private HashMap<String, KDTree> KDTreeSetEdge = new HashMap<>();
 
 	/* initialization */
 	private GraphExtended(List<VertexExtended<K, VL, VP>> vertices,
 			List<EdgeExtended<E, K, EL, EP>> edges) {
-		this.vertices = vertices;
 		this.edges = edges;
-		InitializeKDTreeSet(vertices);
+		for(VertexExtended<K, VL, VP> v : vertices){
+			Long id = (Long)v.getVertexId();
+			this.vertices.put(id, v);
+		}
+		InitializeKDTreeSet(vertices, edges);
 	}
 
-	private void InitializeKDTreeSet(List<VertexExtended<K, VL, VP>> vertices){
+	private void InitializeKDTreeSet(List<VertexExtended<K, VL, VP>> vertices, List<EdgeExtended<E, K, EL, EP>> edges){
 		for(VertexExtended<K, VL, VP> vertex : vertices){
 			String label = (String)vertex.getLabel();
-			if(this.KDTreeSet.containsKey(label)){
-				this.KDTreeSet.get(label).insert(getKeys((HashMap<String, String>)vertex.getProps()), vertex);
+
+			String[] keys = getKeys((HashMap<String, String>)vertex.getProps(), "vertex");
+
+			if(this.KDTreeSetVertex.containsKey(label)){
+				this.KDTreeSetVertex.get(label).insert(keys, vertex);
 			}
 			else{
-				int dims = ((HashMap<String, String>) vertex.getProps()).size();
-				KDTree kd = new KDTree(dims);
-				kd.insert(getKeys((HashMap<String, String>)vertex.getProps()), vertex);
-				this.KDTreeSet.put(label, kd);
+				KDTree kd = new KDTree(keys.length);
+				kd.insert(keys, vertex);
+				this.KDTreeSetVertex.put(label, kd);
+			}
+		}
+
+		for(EdgeExtended<E, K, EL, EP> edge : edges){
+			String label = (String)edge.getLabel();
+			String id = edge.getEdgeId().toString();
+
+			String[] keys = getKeys((HashMap<String, String>)edge.getProps(), "edge");
+			keys[0] = id;
+			
+			if(this.KDTreeSetEdge.containsKey(label)){
+				this.KDTreeSetEdge.get(label).insert(keys, edge);
+			}
+			else{
+				KDTree kd = new KDTree(keys.length);
+				kd.insert(keys, edge);
+				this.KDTreeSetEdge.put(label, kd);
 			}
 		}
 	}
 
-	private String[] getKeys(HashMap<String, String> props){
+	private String[] getKeys(HashMap<String, String> props, String type){
 		Set<String> keySet = props.keySet();
-		ArrayList<String> sortedKeys =  new ArrayList(new TreeSet(keySet));
+
+		ArrayList<String> sortedKeys =  new ArrayList();
+		if(type.equals("edge")){
+			sortedKeys.add("_id");
+		}
+
+		sortedKeys.addAll(new TreeSet(keySet));
+		
 		String KDKey[] = new String[sortedKeys.size()];
 
-		for(int i = 0; i < sortedKeys.size(); i += 1){
+		for(int i = type.equals("edge") ? 1 : 0; i < sortedKeys.size(); i += 1){
 			KDKey[i] = props.get(sortedKeys.get(i));
 		}
 		return KDKey;
 	}
 
-	public HashMap<String,KDTree> getAllKDTrees() {
-		return this.KDTreeSet;
+	public HashMap<String,KDTree> getAllKDTrees(String type) {
+		if(type.equals("edge")){
+			return this.KDTreeSetEdge;
+		}
+		return this.KDTreeSetVertex;
 	}
 
-	public KDTree getKDTreeByLabel(String label) {
-		return this.KDTreeSet.get(label);
+	public KDTree getKDTreeVertexByLabel(String label) {
+		return this.KDTreeSetVertex.get(label);
+	}
+
+	public KDTree getKDTreeEdgeByLabel(String label) {
+		return this.KDTreeSetEdge.get(label);
 	}
 
 	public ArrayList<String> getPropKeySorted(String label){
-		HashMap <String,String> props = (HashMap <String,String>)((VertexExtended)this.KDTreeSet.get(label).getRoot()).getProps();
-		Set<String> keySet = props.keySet();
+		HashMap <String,String> props;
+		try {
+			props = (HashMap <String,String>)((VertexExtended)this.KDTreeSetVertex.get(label).getRoot()).getProps();
+		} catch (Exception e) {
+			props = (HashMap <String,String>)((EdgeExtended)this.KDTreeSetEdge.get(label).getRoot()).getProps();
+		}
+			Set<String> keySet = props.keySet();
 		return new ArrayList(new TreeSet(keySet));
 	}
 
 	public VertexExtended<K, VL, VP> getVertexByID(Long id) throws NoSuchElementException{
-		for (VertexExtended<K, VL, VP> vertex : vertices) {
-			if(vertex.getVertexId() == id){
-				return vertex;
-			}
+		try {
+			return this.vertices.get(id);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new NoSuchElementException();
 		}
-		throw new NoSuchElementException();
 	}
 	/* get all edges in a graph */
 	public List<EdgeExtended<E, K, EL, EP>> getEdges() {
@@ -92,15 +135,13 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 	}
 
 	/* get all vertices in a graph */
-	public List<VertexExtended<K, VL, VP>> getVertices() {
-		return this.vertices;
+	public Collection<VertexExtended<K, VL, VP>> getVertices() {
+		return this.vertices.values();
 	}
 
 	/* get all vertex IDs */
-	public List<K> getAllVertexIds() {
-		List<K> vertexIds = this.vertices.stream()
-				.map(elt -> elt.getVertexId())
-				.collect(Collectors.toList());
+	public Set<Long> getAllVertexIds() {
+		Set<Long> vertexIds = this.vertices.keySet();
 
 		return vertexIds;
 	}

@@ -14,7 +14,7 @@ public class QueryEdge {
 	//indicate the label specified for the edge in a query
 	private String label;
 
-	//indicate the label specified for the edge in a query
+	//indicate the props specified for the edge in a query
 	private HashMap<String, Pair<String, String>> props;
 
     //indicate the selectivity of an edge specified in a query

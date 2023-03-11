@@ -25,38 +25,71 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.print.event.PrintEvent;
+
 public class CostBasedOptimizerTest {
 	public static void dataCompressor(
 			GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph) {
 		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edgesToBeCompressed = new ArrayList<>();
 		Collection<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = graph.getVertices();
 		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = graph.getEdges();
-
+		boolean isCompressible = true;
+		System.out.println("Checking Dataset for Compressibility");
 		for (VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex : vertices) {
+			if (!vertex.getProps().isEmpty()) {
+				isCompressible = false;
+				break;
+			}
+		}
+		if (isCompressible) {
+			System.out.println("Initiating Compression");
+			Set<Long> sourceIds = new HashSet<>();
 			for (EdgeExtended<Long, Long, String, HashMap<String, String>> edge : edges) {
-				if (vertex.getVertexId() == edge.getSourceId()) {
-					edgesToBeCompressed.clear();
-					break;
-				}
-				if (vertex.getVertexId() == edge.getTargetId()) {
+				sourceIds.add(edge.getSourceId());
+			}
+
+			for (EdgeExtended<Long, Long, String, HashMap<String, String>> edge : edges) {
+				if (!sourceIds.contains(edge.getTargetId())) {
 					edgesToBeCompressed.add(edge);
 				}
 			}
-		}
 
-		for (EdgeExtended<Long, Long, String, HashMap<String, String>> toBeCompressed : edgesToBeCompressed) {
-			VertexExtended<Long, HashSet<String>, HashMap<String, String>> source = graph
-					.getVertexByID(toBeCompressed.getSourceId());
-			HashMap<String, String> newProps = source.getProps();
-			newProps.put(toBeCompressed.getLabel(), toBeCompressed.getTargetId().toString());
-			source.setProps(newProps);
-		}
+			for (int i = 0; i < edgesToBeCompressed.size(); i++) {
+				boolean incompatible = false;
+				for (int j = i + 1; j < edgesToBeCompressed.size(); j++) {
+					if (edgesToBeCompressed.get(i).getSourceId() == edgesToBeCompressed.get(j).getSourceId()
+							&& edgesToBeCompressed.get(i).getLabel().equals(edgesToBeCompressed.get(j).getLabel())) {
+						edgesToBeCompressed.remove(j);
+						incompatible = true;
+					}
+				}
+				if (incompatible) {
+					edgesToBeCompressed.remove(i);
+				}
 
+			}
+
+			for (EdgeExtended<Long, Long, String, HashMap<String, String>> toBeCompressed : edgesToBeCompressed) {
+				VertexExtended<Long, HashSet<String>, HashMap<String, String>> source = graph
+						.getVertexByID(toBeCompressed.getSourceId());
+				HashMap<String, String> newProps = source.getProps();
+				newProps.put(toBeCompressed.getLabel(), graph.getVertexByID(toBeCompressed.getTargetId()).getLabel());
+				source.setProps(newProps);
+			}
+			System.out.println("Compression Completed - Pruned " + edgesToBeCompressed.size() + " nodes \n");
+		} else {
+			System.out.println("Dataset Cannot be Compressed. Skipping Compression\n");
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
 
+		Boolean labeled = true;
 		String dir = "src/test/java/Dataset";
+		if (!labeled) {
+			dir = "src/test/java/Dataset/unlabeled";
+		}
+
 		String testQuery = "0";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
@@ -88,12 +121,12 @@ public class CostBasedOptimizerTest {
 
 		// System.out.println(graph.getKDTreeByLabel("Artist").toString()); //check the
 		// kd tree data
+		dataCompressor(graph);
 
 		switch (testQuery) {
 			case "0": {
 				// System.out.println(graph.getKDTreeByLabel("Artist").toString()); //check the
 				// kd tree data
-				dataCompressor(graph);
 				switch (testQuery) {
 					case "0": {
 						HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();

@@ -35,3 +35,6 @@ raw_datasets/
 # Datasets
 src/test/java/Dataset/yago_edges.csv
 src/test/java/Dataset/yago_vertices.csv
+src/test/java/Dataset/imdb_nishant/vertices.csv
+.gitignore
+src/test/java/Dataset/imdb_nishant/edges.csv

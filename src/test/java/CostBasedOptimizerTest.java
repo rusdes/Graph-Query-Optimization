@@ -39,7 +39,6 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 		}
-		isCompressible = true;
 		if (isCompressible) {
 			System.out.println("Initiating Compression");
 			Set<Long> sourceIds = new HashSet<>();
@@ -86,13 +85,13 @@ public class CostBasedOptimizerTest {
 			}
 			System.out.println("Compression Completed - Pruned " + pruneCount + " nodes \n");
 		} else {
-			System.out.println("Dataset Cannot be Compressed. Skipping Compression\n");
+			System.out.println("Compression is not required. Skipping Compression\n");
 		}
 	}
 
 	public static void main(String[] args) throws Exception {
 
-		Boolean labeled = false; // change this to false to run on unlabeled data
+		Boolean labeled = true; // change this to false to run on unlabeled data
 		String dir = "src/test/java/Dataset";
 		if (!labeled) {
 			dir = "src/test/java/Dataset/unlabeled";

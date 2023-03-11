@@ -28,8 +28,8 @@ public class CostBasedOptimizerTest {
 
 	public static void main(String[] args) throws Exception {
 
-		String dir = "src/test/java/Dataset";
-		String testQuery = "19";
+		String dir = "src/test/java/Dataset/compressed_imdb";
+		String testQuery = "21";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
 		Boolean compare = true;
@@ -449,6 +449,77 @@ public class CostBasedOptimizerTest {
 				List<HashSet<Long>> res4 = new ArrayList<>();
 				if (compare) {
 					System.out.println("for case 20:");
+					// Vertex Naive, Edge Naive
+					long startTimeNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res1 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
+					}
+					long endTimeNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge Naive: ");
+					System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
+					System.out.println("Results: "+ res1);
+		
+		
+					// Vertex Naive, Edge KDTree
+					long startTimeVNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res2 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree")));
+					}
+					long endTimeVNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge KDtree: ");
+					System.out.println("time(ms): " + (endTimeVNaive - startTimeVNaive) / 1000000);
+					System.out.println("Results: "+ res2);
+		
+		
+					// Vertex KDtree, Edge Naive
+					long startTimeENaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res3 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
+					}
+					long endTimeENaive = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge Naive: "); 
+					System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
+					System.out.println("Results: "+ res3);
+		
+					// Vertex KDtree, Edge KDtree
+					long startTimeKD = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res4 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
+					}
+					long endTimeKD = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge KDtree"); 
+					System.out.println("time(ms): " + (endTimeKD - startTimeKD) / 1000000);
+					System.out.println("Results: "+ res4);
+				} else {
+					res = pg.generateQueryPlan(options);
+					System.out.print(res);
+				}
+				break;
+			}
+			
+			case "21" : {
+				// IMDB query
+				HashMap<String, Pair<String, String>> person = new HashMap<>();
+				// person.put("primaryName", new Pair<String, String>("=", "Harikrishnan Rajan"));
+				QueryVertex a = new QueryVertex("Person",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex b = new QueryVertex("Movie",  new HashMap<String, Pair<String, String>>(), true);
+				// QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge ab = new QueryEdge(a, b, "director", new HashMap<String, Pair<String, String>>());
+				// QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, b};
+				QueryEdge[] es = {ab};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = new ArrayList<>();
+				List<HashSet<Long>> res1 = new ArrayList<>();
+				List<HashSet<Long>> res2 = new ArrayList<>();
+				List<HashSet<Long>> res3 = new ArrayList<>();
+				List<HashSet<Long>> res4 = new ArrayList<>();
+				if (compare) {
+					System.out.println("for case 21:");
 					// Vertex Naive, Edge Naive
 					long startTimeNaive = System.nanoTime();
 					for (int i = 0; i < 10000; i++) {
@@ -994,7 +1065,7 @@ public class CostBasedOptimizerTest {
 		List<Quintet<Long, Long, Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
 			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1)
-					.withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+					.withCSVParser(new CSVParserBuilder().withSeparator(',').build())
 					.build()) {
 				String[] line;
 				while ((line = csvReader.readNext()) != null) {

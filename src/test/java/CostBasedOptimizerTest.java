@@ -29,7 +29,7 @@ public class CostBasedOptimizerTest {
 	public static void main(String[] args) throws Exception {
 
 		String dir = "src/test/java/Dataset";
-		String testQuery = "0";
+		String testQuery = "20";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
 		Boolean compare = true;
@@ -76,28 +76,426 @@ public class CostBasedOptimizerTest {
 				QueryGraph g = new QueryGraph(vs, es);
 				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
 				List<HashSet<Long>> res = new ArrayList<>();
-
+				List<HashSet<Long>> res1 = new ArrayList<>();
+				List<HashSet<Long>> res2 = new ArrayList<>();
+				List<HashSet<Long>> res3 = new ArrayList<>();
+				List<HashSet<Long>> res4 = new ArrayList<>();
 				if (compare) {
+					System.out.println("for case 0: \n");
+					// Vertex Naive, Edge Naive
 					long startTimeNaive = System.nanoTime();
 					for (int i = 0; i < 10000; i++) {
-						res = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
+						res1 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
 					}
 					long endTimeNaive = System.nanoTime();
-
+					System.out.println();
+					System.out.println("Vertex Naive, Edge Naive: ");
+					System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
+					System.out.println("Results: "+ res1);
+		
+		
+					// Vertex Naive, Edge KDTree
+					long startTimeVNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res2 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree")));
+					}
+					long endTimeVNaive = System.nanoTime();
+					System.out.println();
+					System.out.println("Vertex Naive, Edge KDtree: ");
+					System.out.println("time(ms): " + (endTimeVNaive - startTimeVNaive) / 1000000);
+					System.out.println("Results: "+ res2);
+		
+		
+					// Vertex KDtree, Edge Naive
+					long startTimeENaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res3 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
+					}
+					long endTimeENaive = System.nanoTime();
+					System.out.println();
+					System.out.println("Vertex KDtree, Edge Naive: "); 
+					System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
+					System.out.println("Results: "+ res3);
+		
+					// Vertex KDtree, Edge KDtree
 					long startTimeKD = System.nanoTime();
 					for (int i = 0; i < 10000; i++) {
-						res = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
+						res4 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
 					}
 					long endTimeKD = System.nanoTime();
-					System.out.println("Naive time(ms):" + (endTimeNaive - startTimeNaive) / 1000000);
-					System.out.println("Kdtree time(ms):" + (endTimeKD - startTimeKD) / 1000000);
+					System.out.println();
+					System.out.println("Vertex KDtree, Edge KDtree"); 
+					System.out.println("time(ms): " + (endTimeKD - startTimeKD) / 1000000);
+					System.out.println("Results: "+ res4);
 				} else {
 					res = pg.generateQueryPlan(options);
+					System.out.print(res);
 				}
-
-				System.out.println(res);
 				break;
 			}
+
+
+			case "16" : {
+
+				// find artists (who isnt canela cox) part of bands that performed in a concert
+				// here result is not right, will throw error
+
+				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
+				canelaCoxProps.put("Years Active", new Pair<String, String>("<>", "Canela Cox"));
+				QueryVertex a = new QueryVertex("Artist",  canelaCoxProps, true);
+				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, b, c};
+				QueryEdge[] es = {ab, bc};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = new ArrayList<>();
+				List<HashSet<Long>> res1 = new ArrayList<>();
+				List<HashSet<Long>> res2 = new ArrayList<>();
+				List<HashSet<Long>> res3 = new ArrayList<>();
+				List<HashSet<Long>> res4 = new ArrayList<>();
+				if (compare) {
+					System.out.println("for case 16:");
+					// Vertex Naive, Edge Naive
+					long startTimeNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res1 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
+					}
+					long endTimeNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge Naive: ");
+					System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
+					System.out.println("Results: "+ res1);
+		
+		
+					// Vertex Naive, Edge KDTree
+					long startTimeVNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res2 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree")));
+					}
+					long endTimeVNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge KDtree: ");
+					System.out.println("time(ms): " + (endTimeVNaive - startTimeVNaive) / 1000000);
+					System.out.println("Results: "+ res2);
+		
+		
+					// Vertex KDtree, Edge Naive
+					long startTimeENaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res3 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
+					}
+					long endTimeENaive = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge Naive: "); 
+					System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
+					System.out.println("Results: "+ res3);
+		
+					// Vertex KDtree, Edge KDtree
+					long startTimeKD = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res4 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
+					}
+					long endTimeKD = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge KDtree"); 
+					System.out.println("time(ms): " + (endTimeKD - startTimeKD) / 1000000);
+					System.out.println("Results: "+ res4);
+				} else {
+					res = pg.generateQueryPlan(options);
+					System.out.print(res);
+				}
+				break;
+			} 
+
+
+
+			case "17" : {
+				// HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
+				// canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
+				QueryVertex a = new QueryVertex("Artist",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, b, c};
+				QueryEdge[] es = {ab, bc};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = new ArrayList<>();
+				List<HashSet<Long>> res1 = new ArrayList<>();
+				List<HashSet<Long>> res2 = new ArrayList<>();
+				List<HashSet<Long>> res3 = new ArrayList<>();
+				List<HashSet<Long>> res4 = new ArrayList<>();
+				if (compare) {
+					System.out.println("for case 17:");
+					// Vertex Naive, Edge Naive
+					long startTimeNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res1 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
+					}
+					long endTimeNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge Naive: ");
+					System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
+					System.out.println("Results: "+ res1);
+		
+		
+					// Vertex Naive, Edge KDTree
+					long startTimeVNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res2 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree")));
+					}
+					long endTimeVNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge KDtree: ");
+					System.out.println("time(ms): " + (endTimeVNaive - startTimeVNaive) / 1000000);
+					System.out.println("Results: "+ res2);
+		
+		
+					// Vertex KDtree, Edge Naive
+					long startTimeENaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res3 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
+					}
+					long endTimeENaive = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge Naive: "); 
+					System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
+					System.out.println("Results: "+ res3);
+		
+					// Vertex KDtree, Edge KDtree
+					long startTimeKD = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res4 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
+					}
+					long endTimeKD = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge KDtree"); 
+					System.out.println("time(ms): " + (endTimeKD - startTimeKD) / 1000000);
+					System.out.println("Results: "+ res4);
+				} else {
+					res = pg.generateQueryPlan(options);
+					System.out.print(res);
+				}
+				break;
+			} 
+
+
+			case "18" : {
+				// show all the artists that have performed in concerts
+				QueryVertex a = new QueryVertex("Artist",  new HashMap<String, Pair<String, String>>(), true);
+				// QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge ac = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, c};
+				QueryEdge[] es = {ac};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = new ArrayList<>();
+				List<HashSet<Long>> res1 = new ArrayList<>();
+				List<HashSet<Long>> res2 = new ArrayList<>();
+				List<HashSet<Long>> res3 = new ArrayList<>();
+				List<HashSet<Long>> res4 = new ArrayList<>();
+				if (compare) {
+					System.out.println("for case 18:");
+					// Vertex Naive, Edge Naive
+					long startTimeNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res1 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
+					}
+					long endTimeNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge Naive: ");
+					System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
+					System.out.println("Results: "+ res1);
+		
+		
+					// Vertex Naive, Edge KDTree
+					long startTimeVNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res2 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree")));
+					}
+					long endTimeVNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge KDtree: ");
+					System.out.println("time(ms): " + (endTimeVNaive - startTimeVNaive) / 1000000);
+					System.out.println("Results: "+ res2);
+		
+		
+					// Vertex KDtree, Edge Naive
+					long startTimeENaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res3 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
+					}
+					long endTimeENaive = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge Naive: "); 
+					System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
+					System.out.println("Results: "+ res3);
+		
+					// Vertex KDtree, Edge KDtree
+					long startTimeKD = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res4 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
+					}
+					long endTimeKD = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge KDtree"); 
+					System.out.println("time(ms): " + (endTimeKD - startTimeKD) / 1000000);
+					System.out.println("Results: "+ res4);
+				} else {
+					res = pg.generateQueryPlan(options);
+					System.out.print(res);
+				}
+				break;
+			} 
+
+
+
+			case "19" : {
+
+				// search for concerts that started before 2020
+
+				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
+				canelaCoxProps.put("Started", new Pair<String, String>("<", "2020"));
+				QueryVertex a = new QueryVertex("Concert",  canelaCoxProps, true);
+				// QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				// QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				// QueryEdge ac = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a};
+				QueryEdge[] es = {};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = new ArrayList<>();
+				List<HashSet<Long>> res1 = new ArrayList<>();
+				List<HashSet<Long>> res2 = new ArrayList<>();
+				List<HashSet<Long>> res3 = new ArrayList<>();
+				List<HashSet<Long>> res4 = new ArrayList<>();
+				if (compare) {
+					System.out.println("for case 19:");
+					// Vertex Naive, Edge Naive
+					long startTimeNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res1 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
+					}
+					long endTimeNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge Naive: ");
+					System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
+					System.out.println("Results: "+ res1);
+		
+		
+					// Vertex Naive, Edge KDTree
+					long startTimeVNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res2 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree")));
+					}
+					long endTimeVNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge KDtree: ");
+					System.out.println("time(ms): " + (endTimeVNaive - startTimeVNaive) / 1000000);
+					System.out.println("Results: "+ res2);
+		
+		
+					// Vertex KDtree, Edge Naive
+					long startTimeENaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res3 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
+					}
+					long endTimeENaive = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge Naive: "); 
+					System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
+					System.out.println("Results: "+ res3);
+		
+					// Vertex KDtree, Edge KDtree
+					long startTimeKD = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res4 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
+					}
+					long endTimeKD = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge KDtree"); 
+					System.out.println("time(ms): " + (endTimeKD - startTimeKD) / 1000000);
+					System.out.println("Results: "+ res4);
+				} else {
+					res = pg.generateQueryPlan(options);
+					System.out.print(res);
+				}
+				break;
+			} 
+
+
+			case "20" : {
+
+				// search for artists and bands who performed in concerts after 2020 (OR case)
+
+				HashMap<String, Pair<String, String>> concertProps = new HashMap<>();
+				concertProps.put("Started", new Pair<String, String>(">", "2020"));
+				QueryVertex a = new QueryVertex("Artist",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex b = new QueryVertex("Band",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex c = new QueryVertex("Concert",  concertProps, true);
+				// QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge ac = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				QueryVertex[] vs = {a, b, c};
+				QueryEdge[] es = {ac, bc};
+				QueryGraph g = new QueryGraph(vs, es);
+				CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+				List<HashSet<Long>> res = new ArrayList<>();
+				List<HashSet<Long>> res1 = new ArrayList<>();
+				List<HashSet<Long>> res2 = new ArrayList<>();
+				List<HashSet<Long>> res3 = new ArrayList<>();
+				List<HashSet<Long>> res4 = new ArrayList<>();
+				if (compare) {
+					System.out.println("for case 20:");
+					// Vertex Naive, Edge Naive
+					long startTimeNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res1 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
+					}
+					long endTimeNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge Naive: ");
+					System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
+					System.out.println("Results: "+ res1);
+		
+		
+					// Vertex Naive, Edge KDTree
+					long startTimeVNaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res2 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree")));
+					}
+					long endTimeVNaive = System.nanoTime();
+					System.out.println("Vertex Naive, Edge KDtree: ");
+					System.out.println("time(ms): " + (endTimeVNaive - startTimeVNaive) / 1000000);
+					System.out.println("Results: "+ res2);
+		
+		
+					// Vertex KDtree, Edge Naive
+					long startTimeENaive = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res3 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
+					}
+					long endTimeENaive = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge Naive: "); 
+					System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
+					System.out.println("Results: "+ res3);
+		
+					// Vertex KDtree, Edge KDtree
+					long startTimeKD = System.nanoTime();
+					for (int i = 0; i < 10000; i++) {
+						res4 = pg.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
+					}
+					long endTimeKD = System.nanoTime();
+					System.out.println("Vertex KDtree, Edge KDtree"); 
+					System.out.println("time(ms): " + (endTimeKD - startTimeKD) / 1000000);
+					System.out.println("Results: "+ res4);
+				} else {
+					res = pg.generateQueryPlan(options);
+					System.out.print(res);
+				}
+				break;
+			} 
 
 			case "1": {
 				// MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment) -

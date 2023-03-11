@@ -39,6 +39,7 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 		}
+		isCompressible = true;
 		if (isCompressible) {
 			System.out.println("Initiating Compression");
 			Set<Long> sourceIds = new HashSet<>();
@@ -53,28 +54,37 @@ public class CostBasedOptimizerTest {
 			}
 
 			for (int i = 0; i < edgesToBeCompressed.size(); i++) {
-				boolean incompatible = false;
-				for (int j = i + 1; j < edgesToBeCompressed.size(); j++) {
-					if (edgesToBeCompressed.get(i).getSourceId() == edgesToBeCompressed.get(j).getSourceId()
-							&& edgesToBeCompressed.get(i).getLabel().equals(edgesToBeCompressed.get(j).getLabel())) {
-						edgesToBeCompressed.remove(j);
-						incompatible = true;
+				if (edgesToBeCompressed.get(i) != null) {
+					boolean incompatible = false;
+					for (int j = i + 1; j < edgesToBeCompressed.size(); j++) {
+						if (edgesToBeCompressed.get(j) != null) {
+							if (edgesToBeCompressed.get(i).getSourceId() == edgesToBeCompressed.get(j).getSourceId()
+									&& edgesToBeCompressed.get(i).getLabel()
+											.equals(edgesToBeCompressed.get(j).getLabel())) {
+								edgesToBeCompressed.set(j, null);
+								incompatible = true;
+							}
+						}
+					}
+					if (incompatible) {
+						edgesToBeCompressed.set(i, null);
 					}
 				}
-				if (incompatible) {
-					edgesToBeCompressed.remove(i);
-				}
-
 			}
 
+			int pruneCount = 0;
 			for (EdgeExtended<Long, Long, String, HashMap<String, String>> toBeCompressed : edgesToBeCompressed) {
-				VertexExtended<Long, HashSet<String>, HashMap<String, String>> source = graph
-						.getVertexByID(toBeCompressed.getSourceId());
-				HashMap<String, String> newProps = source.getProps();
-				newProps.put(toBeCompressed.getLabel(), graph.getVertexByID(toBeCompressed.getTargetId()).getLabel());
-				source.setProps(newProps);
+				if (toBeCompressed != null) {
+					VertexExtended<Long, HashSet<String>, HashMap<String, String>> source = graph
+							.getVertexByID(toBeCompressed.getSourceId());
+					HashMap<String, String> newProps = source.getProps();
+					newProps.put(toBeCompressed.getLabel(),
+							graph.getVertexByID(toBeCompressed.getTargetId()).getLabel());
+					source.setProps(newProps);
+					pruneCount++;
+				}
 			}
-			System.out.println("Compression Completed - Pruned " + edgesToBeCompressed.size() + " nodes \n");
+			System.out.println("Compression Completed - Pruned " + pruneCount + " nodes \n");
 		} else {
 			System.out.println("Dataset Cannot be Compressed. Skipping Compression\n");
 		}
@@ -82,7 +92,7 @@ public class CostBasedOptimizerTest {
 
 	public static void main(String[] args) throws Exception {
 
-		Boolean labeled = true; // change this to false to run on unlabeled data
+		Boolean labeled = false; // change this to false to run on unlabeled data
 		String dir = "src/test/java/Dataset";
 		if (!labeled) {
 			dir = "src/test/java/Dataset/unlabeled";

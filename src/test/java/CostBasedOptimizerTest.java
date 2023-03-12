@@ -1065,7 +1065,7 @@ public class CostBasedOptimizerTest {
 		List<Quintet<Long, Long, Long, String, String>> list = new ArrayList<>();
 		try (Reader reader = Files.newBufferedReader(filePath)) {
 			try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1)
-					.withCSVParser(new CSVParserBuilder().withSeparator(',').build())
+					.withCSVParser(new CSVParserBuilder().withSeparator('|').build())
 					.build()) {
 				String[] line;
 				while ((line = csvReader.readNext()) != null) {

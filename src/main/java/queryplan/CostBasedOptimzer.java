@@ -15,6 +15,9 @@ import operators.datastructures.kdtree.KDTree;
 import operators.helper.FilterFunction;
 
 import org.javatuples.Pair;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Mode;
 
 import queryplan.querygraph.QueryEdge;
 import queryplan.querygraph.QueryGraph;
@@ -113,26 +116,31 @@ public class CostBasedOptimzer {
 					case ">": {
 						KDKeyMin[i] = pair.getValue1() + STRING_MIN_VALUE;
 						KDKeyMax[i] = STRING_MAX_VALUE;
+						break;
 					}
 					case "<": {
 						KDKeyMin[i] = STRING_MIN_VALUE;
-						KDKeyMax[i] = pair.getValue1().substring(0, pair.getValue1().length() - 1)
-								+ STRING_MIN_VALUE;
+						KDKeyMax[i] = pair.getValue1().substring(0, pair.getValue1().length() - 1) + STRING_MIN_VALUE;
+						break;
 					}
 					case ">=": {
 						KDKeyMin[i] = pair.getValue1();
 						KDKeyMax[i] = STRING_MAX_VALUE;
+						break;
 					}
 					case "<=": {
 						KDKeyMin[i] = STRING_MIN_VALUE;
 						KDKeyMax[i] = pair.getValue1();
+						break;
 					}
 					case "=": {
 						KDKeyMin[i] = pair.getValue1();
 						KDKeyMax[i] = pair.getValue1();
+						break;
 					}
 					case "<>": {
 						// Not implemented
+						break;
 					}
 				}
 			} else {

@@ -20,7 +20,12 @@ import java.util.List;
 * */
 
 public class StatisticsTransformation {
-	String dir = "src/test/java/Dataset/compressed_imdb/Dataset_Statistics";
+	String dir;
+
+	public StatisticsTransformation(String tarDir){
+		System.out.println("running stats transformation");
+		dir= tarDir;
+	}
 	
 	public HashMap<String, Pair<Long, Double>> getVerticesStatistics() throws Exception {
 		List<Triplet<String, Long, Double>> vertices = readLineByLine(Paths.get(dir, "vertices.csv"));

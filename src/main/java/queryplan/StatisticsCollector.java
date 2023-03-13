@@ -25,12 +25,15 @@ import com.opencsv.CSVReaderBuilder;
  * */
 public class StatisticsCollector {
 	public static void main(String[] args) throws Exception {
-		String srcDir = "src/test/java/Dataset";
-		String tarDir = "src/test/java/Dataset_Statistics";
+		String srcDir = "src/test/java/Dataset/compressed_imdb";
+		String tarDir = "src/test/java/Dataset/compressed_imdb/Dataset_Statistics";
 		StatisticsCollector k = new StatisticsCollector(srcDir, tarDir);
 		k.getEdgesStats();
 		k.getVerticesStats();
 	}	
+
+
+// /home/rajviparekh/projects/BEproject/rushil/Graph-Query-Optimization/src/test/java/Dataset/compressed_imdb/Dataset_Statistics/edges.csv
 
 	String srcDir;
 	String tarDir;

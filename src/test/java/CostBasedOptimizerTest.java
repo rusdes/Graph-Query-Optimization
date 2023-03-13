@@ -31,8 +31,8 @@ public class CostBasedOptimizerTest {
 		String dir = "src/test/java/Dataset/compressed_imdb";
 		String testQuery = "21";
 		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
-		Boolean compare = true;
+		options.addAll(Arrays.asList("vertex_naive", "edges_naive"));
+		Boolean compare = false;
 
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();

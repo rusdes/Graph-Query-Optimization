@@ -59,8 +59,10 @@ public class CostBasedOptimzer {
 	public void naiveMethodInitialComponent() {
 		// Traverse each query vertex and generate a initial component
 		for (QueryVertex qv : query.getQueryVertices()) {
+			
 			double est = verticesStats.get(qv.getLabel()).getValue1();
 			ScanOperators s = new ScanOperators(graph);
+
 
 			FilterFunction vf;
 			FilterFunction newvf;

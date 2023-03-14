@@ -30,7 +30,7 @@ public class CostBasedOptimizerTest {
 	public static void main(String[] args) throws Exception {
 
 		Boolean labeled = true; // change this to false to run on unlabeled data
-		String dir = "src/test/java/Dataset/compressed_imdb";
+		String dir = "src/test/java/Dataset";
 		if (!labeled) {
 			dir = "src/test/java/Dataset/unlabeled";
 		}
@@ -39,7 +39,7 @@ public class CostBasedOptimizerTest {
 		String srcDir = dir;
 		String tarDir = dir + "/Dataset_Statistics";
 	
-		String testQuery = "21";
+		String testQuery = "0";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
 		Boolean compare = true;

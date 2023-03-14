@@ -30,7 +30,7 @@ public class CostBasedOptimizerTest {
 	public static void main(String[] args) throws Exception {
 
 		Boolean labeled = true; // change this to false to run on unlabeled data
-		String dir = "src/test/java/Dataset";
+		String dir = "src/test/java/Dataset/compressed_imdb";
 		if (!labeled) {
 			dir = "src/test/java/Dataset/unlabeled";
 		}
@@ -39,7 +39,7 @@ public class CostBasedOptimizerTest {
 		String srcDir = dir;
 		String tarDir = dir + "/Dataset_Statistics";
 	
-		String testQuery = "0";
+		String testQuery = "21";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
 		Boolean compare = true;
@@ -100,7 +100,7 @@ public class CostBasedOptimizerTest {
 				// here result is not right, will throw error
 
 				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
-				canelaCoxProps.put("Years Active", new Pair<String, String>("<>", "Canela Cox"));
+				canelaCoxProps.put("Years Active", new Pair<String, String>("<=", "10"));
 				QueryVertex a = new QueryVertex("Artist", canelaCoxProps, true);
 				QueryVertex b = new QueryVertex("Band", new HashMap<String, Pair<String, String>>(), true);
 				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
@@ -212,14 +212,14 @@ public class CostBasedOptimizerTest {
 			case "22" : {
 				// IMDB query
 				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("birthYear", new Pair<String, String>("<", "1899"));
+				personProps.put("birthYear", new Pair<String, String>("<", "1850"));
 
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
 				// movieProps.put("originalTitle", new Pair<String, String>("eq", "Carmencita"));
 
 
 				QueryVertex a = new QueryVertex("Person",  personProps, true);
-				QueryVertex b = new QueryVertex("Movie",  movieProps, true);
+				QueryVertex b = new QueryVertex("Movie",  movieProps, false);
 
 				QueryEdge ab = new QueryEdge(a, b, "actor", new HashMap<String, Pair<String, String>>());
 
@@ -237,9 +237,22 @@ public class CostBasedOptimizerTest {
 		List<HashSet<Long>> res3 = new ArrayList<>();
 		List<HashSet<Long>> res4 = new ArrayList<>();
 
+		// Garbage Collector
+		verticesFromFile = null;
+		edgesFromFile = null;
+		vertices = null;
+		edges = null;
+		vs = null;
+		es = null;
+		g = null;
+		graph = null;
+		vstat = null;
+		estat = null;
+
 		System.out.println("Initialization Finished. \nStarting Query Execution...");
 		if (compare) {
 			System.out.println("for case "+ testQuery + ": \n");
+
 			// Vertex Naive, Edge Naive
 			// System.out.println("Vertex Naive, Edge Naive: ");
 			// long startTimeNaive = System.nanoTime();
@@ -289,7 +302,6 @@ public class CostBasedOptimizerTest {
 			System.out.print(res);
 		}
 	}
-
 
 
 	public static List<Triplet<Long, String, String>> readVerticesLineByLine(Path filePath) throws Exception {

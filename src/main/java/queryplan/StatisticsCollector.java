@@ -24,21 +24,21 @@ import com.opencsv.CSVReaderBuilder;
  * vertex and edge labels and their corresponding proportion of the total number
  * */
 public class StatisticsCollector {
-	public static void main(String[] args) throws Exception {
-		String srcDir = "src/test/java/Dataset";
-		String tarDir = "src/test/java/Dataset_Statistics";
-		StatisticsCollector k = new StatisticsCollector(srcDir, tarDir);
-		k.getEdgesStats();
-		k.getVerticesStats();
-	}	
-
+	
 	String srcDir;
 	String tarDir;
 	
-	public StatisticsCollector(String s, String t) {
-		srcDir = s;
-		tarDir = t;
+	public StatisticsCollector(String src, String tar) {
+		srcDir = src;
+		tarDir = tar;
 	}
+	public void collect() throws Exception {
+		// String srcDir = "src/test/java/Dataset/compressed_imdb";
+		// String tarDir = "src/test/java/Dataset/compressed_imdb/Dataset_Statistics";
+		System.out.println("running stats collector");
+		getEdgesStats();
+		getVerticesStats();
+	}	
 
 	public static class TupleFormat {
 		private String label;

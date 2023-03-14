@@ -30,21 +30,34 @@ public class CostBasedOptimizerTest {
 	public static void main(String[] args) throws Exception {
 
 		Boolean labeled = true; // change this to false to run on unlabeled data
-		String dir = "src/test/java/Dataset";
+		String dir = "src/test/java/Dataset/compressed_imdb";
 		if (!labeled) {
 			dir = "src/test/java/Dataset/unlabeled";
 		}
 
-		String testQuery = "20";
+		// defining source and target path for statistics files of edge and vertices
+		String srcDir = "src/test/java/Dataset/compressed_imdb";
+		String tarDir = "src/test/java/Dataset/compressed_imdb/Dataset_Statistics";
+		
+		// define whether you want to run the StatisticsCollector function
+		Boolean collect_stats= false;
+	
+		String testQuery = "21";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
 		Boolean compare = false;
-
+		
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();
 		desc.put("Initial Vertex Mapping Method", new ArrayList<>(Arrays.asList("vertex_naive", "vertex_kdtree")));
 		desc.put("Edges Mapping Method", new ArrayList<>(Arrays.asList("edges_naive", "edges_kdtree")));
 
+
+		if(collect_stats){		
+			StatisticsCollector stats= new StatisticsCollector(srcDir, tarDir);
+			stats.collect();
+		}
+		
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(
 
@@ -58,7 +71,7 @@ public class CostBasedOptimizerTest {
 				.map(elt -> EdgeFromFileToDataSet(elt))
 				.collect(Collectors.toList());
 
-		StatisticsTransformation sts = new StatisticsTransformation();
+		StatisticsTransformation sts = new StatisticsTransformation(tarDir);
 		HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
 		HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
 		GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph = GraphExtended
@@ -177,6 +190,24 @@ public class CostBasedOptimizerTest {
 
 				vs = new QueryVertex[]{ a, b, c };
 				es = new QueryEdge[]{ ac, bc };
+				break;
+			} 
+
+
+			case "21" : {
+				// IMDB query
+				HashMap<String, Pair<String, String>> person = new HashMap<>();
+				// person.put("primaryName", new Pair<String, String>("=", "Harikrishnan Rajan"));
+				QueryVertex a = new QueryVertex("Person",  new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex b = new QueryVertex("Movie",  new HashMap<String, Pair<String, String>>(), true);
+				// QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
+				QueryEdge ab = new QueryEdge(a, b, "director", new HashMap<String, Pair<String, String>>());
+				// QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+
+				vs = new QueryVertex[]{a, b};
+				es = new QueryEdge[]{ab};
 				break;
 			}
 
@@ -547,7 +578,7 @@ public class CostBasedOptimizerTest {
 		List<HashSet<Long>> res3 = new ArrayList<>();
 		List<HashSet<Long>> res4 = new ArrayList<>();
 		if (compare) {
-			System.out.println("for case 0: \n");
+			System.out.println("for case "+ testQuery + ": \n");
 			// Vertex Naive, Edge Naive
 			long startTimeNaive = System.nanoTime();
 			for (int i = 0; i < 10000; i++) {

@@ -219,6 +219,8 @@ public class CostBasedOptimizerTest {
 		List<HashSet<Long>> res2 = new ArrayList<>();
 		List<HashSet<Long>> res3 = new ArrayList<>();
 		List<HashSet<Long>> res4 = new ArrayList<>();
+
+		System.out.println("Initialization Finished. \nStarting Query Execution...");
 		if (compare) {
 			System.out.println("for case "+ testQuery + ": \n");
 			// Vertex Naive, Edge Naive

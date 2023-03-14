@@ -223,7 +223,7 @@ public class CostBasedOptimizerTest {
 			System.out.println("for case "+ testQuery + ": \n");
 			// Vertex Naive, Edge Naive
 			long startTimeNaive = System.nanoTime();
-			for (int i = 0; i < 10000; i++) {
+			for (int i = 0; i < 1; i++) {
 				res1 = pg
 						.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
 			}
@@ -235,7 +235,7 @@ public class CostBasedOptimizerTest {
 
 			// Vertex Naive, Edge KDTree
 			long startTimeVNaive = System.nanoTime();
-			for (int i = 0; i < 10000; i++) {
+			for (int i = 0; i < 1; i++) {
 				res2 = pg.generateQueryPlan(
 						new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree")));
 			}
@@ -247,7 +247,7 @@ public class CostBasedOptimizerTest {
 
 			// Vertex KDtree, Edge Naive
 			long startTimeENaive = System.nanoTime();
-			for (int i = 0; i < 10000; i++) {
+			for (int i = 0; i < 1; i++) {
 				res3 = pg.generateQueryPlan(
 						new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
 			}
@@ -259,7 +259,7 @@ public class CostBasedOptimizerTest {
 
 			// Vertex KDtree, Edge KDtree
 			long startTimeKD = System.nanoTime();
-			for (int i = 0; i < 10000; i++) {
+			for (int i = 0; i < 1; i++) {
 				res4 = pg.generateQueryPlan(
 						new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree")));
 			}

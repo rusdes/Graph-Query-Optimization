@@ -36,11 +36,8 @@ public class CostBasedOptimizerTest {
 		}
 
 		// defining source and target path for statistics files of edge and vertices
-		String srcDir = "src/test/java/Dataset/compressed_imdb";
-		String tarDir = "src/test/java/Dataset/compressed_imdb/Dataset_Statistics";
-		
-		// define whether you want to run the StatisticsCollector function
-		Boolean collect_stats= false;
+		String srcDir = dir;
+		String tarDir = dir + "/Dataset_Statistics";
 	
 		String testQuery = "21";
 		Set<String> options = new HashSet<>();
@@ -52,15 +49,13 @@ public class CostBasedOptimizerTest {
 		desc.put("Initial Vertex Mapping Method", new ArrayList<>(Arrays.asList("vertex_naive", "vertex_kdtree")));
 		desc.put("Edges Mapping Method", new ArrayList<>(Arrays.asList("edges_naive", "edges_kdtree")));
 
-
-		if(collect_stats){		
-			StatisticsCollector stats= new StatisticsCollector(srcDir, tarDir);
-			stats.collect();
-		}
+		// Write statistics to file if file is not present in tarDir
+		StatisticsCollector stats= new StatisticsCollector(srcDir, tarDir);
+		stats.collect();
+		stats = null; // Free up memory
 		
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(
-
 				Paths.get(dir, "edges.csv"));
 
 		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = verticesFromFile.stream()
@@ -196,10 +191,15 @@ public class CostBasedOptimizerTest {
 
 			case "21" : {
 				// IMDB query
-				HashMap<String, Pair<String, String>> person = new HashMap<>();
-				// person.put("primaryName", new Pair<String, String>("=", "Harikrishnan Rajan"));
-				QueryVertex a = new QueryVertex("Person",  new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex b = new QueryVertex("Movie",  new HashMap<String, Pair<String, String>>(), true);
+				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
+				// personProps.put("primaryName", new Pair<String, String>("=", "Harikrishnan Rajan"));
+
+				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
+				movieProps.put("originalTitle", new Pair<String, String>("=", "Carmencita"));
+
+
+				QueryVertex a = new QueryVertex("Person",  personProps, true);
+				QueryVertex b = new QueryVertex("Movie",  movieProps, true);
 				// QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
 
 				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
@@ -208,364 +208,6 @@ public class CostBasedOptimizerTest {
 
 				vs = new QueryVertex[]{a, b};
 				es = new QueryEdge[]{ab};
-				break;
-			}
-
-			case "1": {
-				// MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment) -
-				// [:hasTag] -> (k:Tag)
-				// WHERE n.lastName = 'Yang'
-				// RETURN n
-
-				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("lastName", new Pair<String, String>("eq", "Yang"));
-
-				QueryVertex a = new QueryVertex("post", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex b = new QueryVertex("person", personProps, true);
-				QueryVertex c = new QueryVertex("comment", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("tag", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cb = new QueryEdge(c, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cd = new QueryEdge(c, d, "hasTag", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d };
-				es = new QueryEdge[]{ ab, cb, cd };
-				break;
-			}
-
-			case "2": {
-				// MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment) -
-				// [:hasTag] -> (k:Tag)
-				// WHERE n.lastName = 'Yang' AND n.browserUsed = 'Safari'
-				// RETURN n
-
-				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("lastName", new Pair<String, String>("eq", "Yang"));
-				personProps.put("browserUsed", new Pair<String, String>("eq", "Safari"));
-
-				QueryVertex a = new QueryVertex("post", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex b = new QueryVertex("person", personProps, true);
-				QueryVertex c = new QueryVertex("comment", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("tag", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cb = new QueryEdge(c, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cd = new QueryEdge(c, d, "hasTag", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d };
-				es = new QueryEdge[]{ ab, cb, cd };
-				break;
-			}
-
-			case "3": {
-				// MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment)
-				// WHERE (n) - [:studyAt] -> (o:organisation) AND
-				// (n) - [:isLocatedIn] -> (p:place) AND
-				// l.length >= 150
-				// RETURN n
-				HashMap<String, Pair<String, String>> commentProps = new HashMap<>();
-				commentProps.put("length", new Pair<String, String>(">=", "150"));
-				QueryVertex a = new QueryVertex("post", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex b = new QueryVertex("person", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex c = new QueryVertex("comment", commentProps, false);
-				QueryVertex d = new QueryVertex("organisation", new HashMap<String, Pair<String, String>>(),
-						false);
-				QueryVertex e = new QueryVertex("place", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cb = new QueryEdge(c, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge bd = new QueryEdge(b, d, "studyAt", new HashMap<String, Pair<String, String>>());
-				QueryEdge be = new QueryEdge(b, e, "isLocatedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e };
-				es = new QueryEdge[]{ ab, cb, bd, be };
-				break;
-
-			}
-			case "4": {
-				// MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment)
-				// WHERE (n) - [:studyAt] -> (o:organisation) AND
-				// (n) - [:isLocatedIn] -> (p:place) AND
-				// n.lastName = 'Yang'
-				// RETURN n
-
-				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("lastName", new Pair<String, String>("eq", "Yang"));
-
-				QueryVertex a = new QueryVertex("post", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex b = new QueryVertex("person", personProps, true);
-				QueryVertex c = new QueryVertex("comment", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("organisation", new HashMap<String, Pair<String, String>>(),
-						false);
-				QueryVertex e = new QueryVertex("place", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cb = new QueryEdge(c, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge bd = new QueryEdge(b, d, "studyAt", new HashMap<String, Pair<String, String>>());
-				QueryEdge be = new QueryEdge(b, e, "isLocatedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e };
-				es = new QueryEdge[]{ ab, cb, bd, be };
-				break;
-
-			}
-			case "5": {
-				// MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment)
-				// WHERE (n) - [:studyAt] -> (o:organisation) AND
-				// (n) - [:isLocatedIn] -> (p:place) AND
-				// o.type = 'company'
-				// RETURN n
-
-				HashMap<String, Pair<String, String>> orgProps = new HashMap<>();
-				orgProps.put("type", new Pair<String, String>("eq", "company"));
-
-				QueryVertex a = new QueryVertex("post", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex b = new QueryVertex("person", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex c = new QueryVertex("comment", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("organisation", orgProps, false);
-				QueryVertex e = new QueryVertex("place", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cb = new QueryEdge(c, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge bd = new QueryEdge(b, d, "studyAt", new HashMap<String, Pair<String, String>>());
-				QueryEdge be = new QueryEdge(b, e, "isLocatedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e };
-				es = new QueryEdge[]{ ab, cb, bd, be };
-				break;
-
-			}
-			case "6": {
-				// MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment)
-				// WHERE (n) - [:studyAt] -> (o:organisation) AND
-				// (l) - [:hasTag] -> (t:tag) AND
-				// (l) - [:isLocatedIn] -> (p:place) AND
-				// l.length >= 175
-				// RETURN n
-
-				HashMap<String, Pair<String, String>> commentProps = new HashMap<>();
-				commentProps.put("length", new Pair<String, String>(">=", "175"));
-
-				QueryVertex a = new QueryVertex("post", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex b = new QueryVertex("person", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex c = new QueryVertex("comment", commentProps, false);
-				QueryVertex d = new QueryVertex("organisation", new HashMap<String, Pair<String, String>>(),
-						false);
-				QueryVertex e = new QueryVertex("tag", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex f = new QueryVertex("place", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cb = new QueryEdge(c, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge bd = new QueryEdge(b, d, "studyAt", new HashMap<String, Pair<String, String>>());
-				QueryEdge ce = new QueryEdge(c, e, "hasTag", new HashMap<String, Pair<String, String>>());
-				QueryEdge cf = new QueryEdge(c, f, "isLocatedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e, f };
-				es = new QueryEdge[]{ ab, cb, bd, ce, cf };
-				break;
-
-			}
-
-			case "7": {
-				// MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment)
-				// WHERE (n) - [:studyAt] -> (o:organisation) AND
-				// (l) - [:hasTag] -> (t:tag) AND
-				// (l) - [:isLocatedIn] -> (p:place) AND
-				// n.lastName = 'Yang'
-				// RETURN n
-
-				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("lastName", new Pair<String, String>("eq", "Yang"));
-
-				QueryVertex a = new QueryVertex("post", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex b = new QueryVertex("person", personProps, true);
-				QueryVertex c = new QueryVertex("comment", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("organisation", new HashMap<String, Pair<String, String>>(),
-						false);
-				QueryVertex e = new QueryVertex("tag", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex f = new QueryVertex("place", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cb = new QueryEdge(c, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge bd = new QueryEdge(b, d, "studyAt", new HashMap<String, Pair<String, String>>());
-				QueryEdge ce = new QueryEdge(c, e, "hasTag", new HashMap<String, Pair<String, String>>());
-				QueryEdge cf = new QueryEdge(c, f, "isLocatedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e, f };
-				es = new QueryEdge[]{ ab, cb, bd, ce, cf };
-				break;
-			}
-
-			case "8": {
-				// MATCH (m:post) - [:hasCreator] -> (n:person) <- [:hasCreator] - (l:comment)
-				// WHERE (n) - [:studyAt] -> (o:organisation) AND
-				// (l) - [:hasTag] -> (t:tag) AND
-				// (l) - [:isLocatedIn] -> (p:place) AND
-				// o.type = 'company'
-				// RETURN n
-
-				HashMap<String, Pair<String, String>> orgProps = new HashMap<>();
-				orgProps.put("type", new Pair<String, String>("eq", "company"));
-
-				QueryVertex a = new QueryVertex("post", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex b = new QueryVertex("person", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex c = new QueryVertex("comment", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("organisation", orgProps, false);
-				QueryVertex e = new QueryVertex("tag", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex f = new QueryVertex("place", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge cb = new QueryEdge(c, b, "hasCreator", new HashMap<String, Pair<String, String>>());
-				QueryEdge bd = new QueryEdge(b, d, "studyAt", new HashMap<String, Pair<String, String>>());
-				QueryEdge ce = new QueryEdge(c, e, "hasTag", new HashMap<String, Pair<String, String>>());
-				QueryEdge cf = new QueryEdge(c, f, "isLocatedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e, f };
-				es = new QueryEdge[]{ ab, cb, bd, ce, cf };
-				break;
-			}
-
-			case "9": {
-				// MATCH (a:Protein) - [:Interacts] -> (b:Protein) - [:EncodedOn] -> (c:Gene)
-				// RETURN a
-				QueryVertex a = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex b = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex c = new QueryVertex("Gene", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "Interacts", new HashMap<String, Pair<String, String>>());
-				QueryEdge bc = new QueryEdge(b, c, "EncodedOn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c };
-				es = new QueryEdge[]{ ab, bc };
-				break;
-			}
-			case "10": {
-				// MATCH (a:Protein) - [:Interacts] -> (b:Protein) - [:Reference] -> (c:Article)
-				// - [:PublishedIn] -> (d:Journal)
-				// RETURN a
-				QueryVertex a = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex b = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex c = new QueryVertex("Article", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("Journal", new HashMap<String, Pair<String, String>>(), false);
-				QueryEdge ab = new QueryEdge(a, b, "Interacts", new HashMap<String, Pair<String, String>>());
-				QueryEdge bc = new QueryEdge(b, c, "Reference", new HashMap<String, Pair<String, String>>());
-				QueryEdge cd = new QueryEdge(c, d, "PublishedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d };
-				es = new QueryEdge[]{ ab, bc, cd };
-				break;
-			}
-			case "11": {
-				// MATCH (a:Protein) - [:Interacts] -> (b:Protein) - [:Reference] -> (c:Article)
-				// - [:PublishedIn] -> (d:Journal)
-				// RETURN a
-				QueryVertex a = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex b = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex c = new QueryVertex("Article", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("Journal", new HashMap<String, Pair<String, String>>(), false);
-				QueryEdge ab = new QueryEdge(a, b, "Interacts", new HashMap<String, Pair<String, String>>());
-				QueryEdge bc = new QueryEdge(b, c, "Reference", new HashMap<String, Pair<String, String>>());
-				QueryEdge cd = new QueryEdge(c, d, "PublishedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d };
-				es = new QueryEdge[]{ ab, bc, cd };
-				break;
-			}
-			case "12": {
-				// MATCH (a:Protein) - [:Interacts] -> (b:Protein)
-				// WHERE (a) - [:Reference] -> (c:Article) AND
-				// (a) - [:EncodedOn] -> (d:Gene) AND
-				// (a) - [:HasKeyword] -> (e:Keyword)
-				// RETURN a
-				QueryVertex a = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex b = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex c = new QueryVertex("Article", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("Gene", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex e = new QueryVertex("Keyword", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "Interacts", new HashMap<String, Pair<String, String>>());
-				QueryEdge ac = new QueryEdge(a, c, "Reference", new HashMap<String, Pair<String, String>>());
-				QueryEdge ad = new QueryEdge(a, d, "EncodedOn", new HashMap<String, Pair<String, String>>());
-				QueryEdge ae = new QueryEdge(a, e, "HasKeyword", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e };
-				es = new QueryEdge[]{ ab, ac, ad, ae };
-				break;
-			}
-			case "13": {
-				// MATCH (a:Protein) - [:Interacts] -> (b:Protein)
-				// WHERE (a) - [:Reference] -> (c:Article) AND
-				// (a) - [:EncodedOn] -> (d:Gene) AND
-				// (a) - [:HasKeyword] -> (e:Keyword) AND
-				// (a) - [:PublishedIn] -> (f:Journal)
-				// RETURN a
-				QueryVertex a = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex b = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex c = new QueryVertex("Article", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("Gene", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex e = new QueryVertex("Keyword", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex f = new QueryVertex("Journal", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "Interacts", new HashMap<String, Pair<String, String>>());
-				QueryEdge ac = new QueryEdge(a, c, "Reference", new HashMap<String, Pair<String, String>>());
-				QueryEdge ad = new QueryEdge(a, d, "EncodedOn", new HashMap<String, Pair<String, String>>());
-				QueryEdge ae = new QueryEdge(a, e, "HasKeyword", new HashMap<String, Pair<String, String>>());
-				QueryEdge af = new QueryEdge(a, f, "PublishedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e, f };
-				es = new QueryEdge[]{ ab, ac, ad, ae, af };
-				break;
-			}
-			case "14": {
-				// MATCH (a:Protein) - [:Interacts] -> (b:Protein)
-				// WHERE (a) - [:Reference] -> (c:Article) AND
-				// (a) - [:EncodedOn] -> (d:Gene) AND
-				// (b) - [:HasKeyword] -> (e:Keyword) AND
-				// (b) - [:PublishedIn] -> (f:Journal)
-				// RETURN a
-				QueryVertex a = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex b = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex c = new QueryVertex("Article", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("Gene", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex e = new QueryVertex("Keyword", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex f = new QueryVertex("Journal", new HashMap<String, Pair<String, String>>(), false);
-
-				QueryEdge ab = new QueryEdge(a, b, "Interacts", new HashMap<String, Pair<String, String>>());
-				QueryEdge ac = new QueryEdge(a, c, "Reference", new HashMap<String, Pair<String, String>>());
-				QueryEdge ad = new QueryEdge(a, d, "EncodedOn", new HashMap<String, Pair<String, String>>());
-				QueryEdge be = new QueryEdge(b, e, "HasKeyword", new HashMap<String, Pair<String, String>>());
-				QueryEdge bf = new QueryEdge(b, f, "PublishedIn", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e, f };
-				es = new QueryEdge[]{ ab, ac, ad, be, bf };
-				break;
-			}
-
-			case "15": {
-				// MATCH (a:Protein) - [:Interacts] -> (b:Protein)
-				// WHERE (a) - [:Reference] -> (c:Article) AND
-				// (a) - [:EncodedOn] -> (d:Gene) AND
-				// (b) - [:HasKeyword] -> (e:Keyword) AND
-				// (b) - [:PublishedIn] -> (f:Journal)AND
-				// (b) - [:Interacts] -> (h:Protein)
-				// RETURN a
-				QueryVertex a = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), true);
-				QueryVertex b = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex c = new QueryVertex("Article", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex d = new QueryVertex("Gene", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex e = new QueryVertex("Keyword", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex f = new QueryVertex("Journal", new HashMap<String, Pair<String, String>>(), false);
-				QueryVertex h = new QueryVertex("Protein", new HashMap<String, Pair<String, String>>(), false);
-				QueryEdge ab = new QueryEdge(a, b, "Interacts", new HashMap<String, Pair<String, String>>());
-				QueryEdge ac = new QueryEdge(a, c, "Reference", new HashMap<String, Pair<String, String>>());
-				QueryEdge ad = new QueryEdge(a, d, "EncodedOn", new HashMap<String, Pair<String, String>>());
-				QueryEdge be = new QueryEdge(b, e, "HasKeyword", new HashMap<String, Pair<String, String>>());
-				QueryEdge bf = new QueryEdge(b, f, "PublishedIn", new HashMap<String, Pair<String, String>>());
-				QueryEdge bh = new QueryEdge(b, h, "Interacts", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[]{ a, b, c, d, e, f, h };
-				es = new QueryEdge[]{ ab, ac, ad, be, bf, bh };
 				break;
 			}
 		}

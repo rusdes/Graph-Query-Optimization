@@ -36,8 +36,10 @@ public class StatisticsCollector {
 		// String srcDir = "src/test/java/Dataset/compressed_imdb";
 		// String tarDir = "src/test/java/Dataset/compressed_imdb/Dataset_Statistics";
 		System.out.println("running stats collector");
-		getEdgesStats();
-		getVerticesStats();
+		if(!Files.exists(Paths.get(this.tarDir + "/edges.csv"))){
+			getEdgesStats();
+			getVerticesStats();
+		}
 	}	
 
 	public static class TupleFormat {

@@ -105,37 +105,38 @@ public class CostBasedOptimzer {
 
 		Set<String> givenPropKeys = givenProp.keySet();
 		for (int i = 0; i < possibleKeys.size(); i += 1) {
+			int curInd = i;
+			if (type.equals("edge"))
+				curInd += 1;
+
 			if (givenPropKeys.contains(possibleKeys.get(i))) {
 				// Complete based on operator
 				Pair<String, String> pair = givenProp.get(possibleKeys.get(i));
 
-				if (type.equals("edge"))
-					i += 1;
-
 				switch (pair.getValue0()) {
 					case ">": {
-						KDKeyMin[i] = pair.getValue1() + STRING_MIN_VALUE;
-						KDKeyMax[i] = STRING_MAX_VALUE;
+						KDKeyMin[curInd] = pair.getValue1() + STRING_MIN_VALUE;
+						KDKeyMax[curInd] = STRING_MAX_VALUE;
 						break;
 					}
 					case "<": {
-						KDKeyMin[i] = STRING_MIN_VALUE;
-						KDKeyMax[i] = pair.getValue1().substring(0, pair.getValue1().length() - 1) + STRING_MIN_VALUE;
+						KDKeyMin[curInd] = STRING_MIN_VALUE;
+						KDKeyMax[curInd] = pair.getValue1().substring(0, pair.getValue1().length() - 1) + STRING_MIN_VALUE;
 						break;
 					}
 					case ">=": {
-						KDKeyMin[i] = pair.getValue1();
-						KDKeyMax[i] = STRING_MAX_VALUE;
+						KDKeyMin[curInd] = pair.getValue1();
+						KDKeyMax[curInd] = STRING_MAX_VALUE;
 						break;
 					}
 					case "<=": {
-						KDKeyMin[i] = STRING_MIN_VALUE;
-						KDKeyMax[i] = pair.getValue1();
+						KDKeyMin[curInd] = STRING_MIN_VALUE;
+						KDKeyMax[curInd] = pair.getValue1();
 						break;
 					}
 					case "=": {
-						KDKeyMin[i] = pair.getValue1();
-						KDKeyMax[i] = pair.getValue1();
+						KDKeyMin[curInd] = pair.getValue1();
+						KDKeyMax[curInd] = pair.getValue1();
 						break;
 					}
 					case "<>": {
@@ -144,8 +145,8 @@ public class CostBasedOptimzer {
 					}
 				}
 			} else {
-				KDKeyMin[i] = STRING_MIN_VALUE;
-				KDKeyMax[i] = STRING_MAX_VALUE;
+				KDKeyMin[curInd] = STRING_MIN_VALUE;
+				KDKeyMax[curInd] = STRING_MAX_VALUE;
 			}
 		}
 

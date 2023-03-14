@@ -39,10 +39,10 @@ public class CostBasedOptimizerTest {
 		String srcDir = dir;
 		String tarDir = dir + "/Dataset_Statistics";
 	
-		String testQuery = "22";
+		String testQuery = "21";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
-		Boolean compare = false;
+		Boolean compare = true;
 		
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();
@@ -81,7 +81,7 @@ public class CostBasedOptimizerTest {
 		switch (testQuery) {
 			case "0": {
 				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
-				canelaCoxProps.put("Name", new Pair<String, String>("=", "Canela Cox"));
+				canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
 				QueryVertex a = new QueryVertex("Artist", canelaCoxProps, false);
 				QueryVertex b = new QueryVertex("Band", new HashMap<String, Pair<String, String>>(), true);
 				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
@@ -195,16 +195,14 @@ public class CostBasedOptimizerTest {
 				// personProps.put("primaryName", new Pair<String, String>("=", "Harikrishnan Rajan"));
 
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
-				movieProps.put("originalTitle", new Pair<String, String>("=", "Carmencita"));
+				movieProps.put("originalTitle", new Pair<String, String>("eq", "Carmencita"));
 
 
 				QueryVertex a = new QueryVertex("Person",  personProps, true);
 				QueryVertex b = new QueryVertex("Movie",  movieProps, true);
-				// QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+				
 
-				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
 				QueryEdge ab = new QueryEdge(a, b, "director", new HashMap<String, Pair<String, String>>());
-				// QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
 
 				vs = new QueryVertex[]{a, b};
 				es = new QueryEdge[]{ab};
@@ -217,16 +215,13 @@ public class CostBasedOptimizerTest {
 				personProps.put("birthYear", new Pair<String, String>("<", "1899"));
 
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
-				// movieProps.put("originalTitle", new Pair<String, String>("=", "Carmencita"));
+				// movieProps.put("originalTitle", new Pair<String, String>("eq", "Carmencita"));
 
 
 				QueryVertex a = new QueryVertex("Person",  personProps, true);
 				QueryVertex b = new QueryVertex("Movie",  movieProps, true);
-				// QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
 
-				// QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
 				QueryEdge ab = new QueryEdge(a, b, "actor", new HashMap<String, Pair<String, String>>());
-				// QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
 
 				vs = new QueryVertex[]{a, b};
 				es = new QueryEdge[]{ab};
@@ -246,15 +241,15 @@ public class CostBasedOptimizerTest {
 		if (compare) {
 			System.out.println("for case "+ testQuery + ": \n");
 			// Vertex Naive, Edge Naive
-			System.out.println("Vertex Naive, Edge Naive: ");
-			long startTimeNaive = System.nanoTime();
-			for (int i = 0; i < 1; i++) {
-				res1 = pg
-						.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
-			}
-			long endTimeNaive = System.nanoTime();
-			System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
-			System.out.println("Results: " + res1);
+			// System.out.println("Vertex Naive, Edge Naive: ");
+			// long startTimeNaive = System.nanoTime();
+			// for (int i = 0; i < 1; i++) {
+			// 	res1 = pg
+			// 			.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive", "edges_naive")));
+			// }
+			// long endTimeNaive = System.nanoTime();
+			// System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
+			// System.out.println("Results: " + res1);
 
 			// Vertex Naive, Edge KDTree
 			System.out.println("Vertex Naive, Edge KDtree: ");

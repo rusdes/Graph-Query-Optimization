@@ -113,11 +113,12 @@ public class ScanOperators {
 				.stream()
 				.filter(v -> {
 					try {
+
 						return filterVertices.filter(v);
 					} catch (Exception e) {
 						// Auto-generated catch block
-						e.printStackTrace();
-						return true;
+						// e.printStackTrace();
+						return false;
 					}
 				})
 				.map(v -> new ArrayList<>(Arrays.asList(v.getVertexId())))

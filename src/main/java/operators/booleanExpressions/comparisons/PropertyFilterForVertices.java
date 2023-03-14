@@ -21,54 +21,55 @@ public class PropertyFilterForVertices
 		try {
 			this.propertyValueDouble = Double.parseDouble(propertyValue);
 		} catch (Exception e) {
+			this.propertyValueDouble = 0;
 		}
 	}
 
 	@Override
 	public boolean filter(VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex) throws Exception {
-		if (vertex.getProps().get(this.propertyKey) == null) {
-			return false;
+		String vp = vertex.getProps().get(this.propertyKey);
+
+		if (vp.equals("unknown")) { // == null originally. Changed to unknown
+			return false; 
 		}
-		double vp = 0;
+		
+		Double vp_num;
 		try {
-			vp = Double.parseDouble(vertex.getProps().get(this.propertyKey));
+			vp_num = Double.parseDouble(vp);
 		} catch (Exception e) {
+			// e.printStackTrace();
+			vp_num = 0.0;
 		}
+
 		switch (op) {
 			case ">": {
-				return vp > propertyValueDouble;
+				return vp_num > this.propertyValueDouble;
 			}
 			case "<": {
-				return vp < propertyValueDouble;
+				return vp_num < this.propertyValueDouble;
 			}
 			case "=": {
-				Boolean a;
-				try{
-					// try as double
-					a = (vp == propertyValueDouble);
-				}catch (Exception e){
-					// try as string
-					a = vertex.getProps().get(this.propertyKey).equals(propertyValue);
-				}
-				return a;
+				return vp_num == this.propertyValueDouble;
 			}
 			case ">=": {
-				return vp >= propertyValueDouble;
+				return vp_num >= this.propertyValueDouble;
 			}
 			case "<=": {
-				return vp <= propertyValueDouble;
+				return vp_num <= this.propertyValueDouble;
 			}
 			case "<>": {
 				Boolean a;
 				try{
 					// try as double
-					a = (vp != propertyValueDouble);
+					a = (vp_num != this.propertyValueDouble);
 				}catch (Exception e){
 					// try as string
-					a = !vertex.getProps().get(this.propertyKey).equals(propertyValue);
+					a = !vertex.getProps().get(this.propertyKey).equals(this.propertyValue);
 				}
 				return a;
-
+			}
+			case "eq":{
+				return vp.equals(this.propertyValue);
 			}
 			default:
 				throw new Exception("Bad operator " + op + " !");

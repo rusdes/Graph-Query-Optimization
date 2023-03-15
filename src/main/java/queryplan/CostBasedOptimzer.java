@@ -45,11 +45,13 @@ public class CostBasedOptimzer {
 	GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph;
 	HashMap<String, Pair<Long, Double>> verticesStats;
 	HashMap<String, Pair<Long, Double>> edgesStats;
+	String name_key;
 
 	public CostBasedOptimzer(QueryGraph q,
 			GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> g,
 			HashMap<String, Pair<Long, Double>> vs,
-			HashMap<String, Pair<Long, Double>> es) {
+			HashMap<String, Pair<Long, Double>> es,
+			String name) {
 		// Query should also be in the form of a graph
 		query = q;
 		graph = g;
@@ -57,6 +59,8 @@ public class CostBasedOptimzer {
 		// statistics collected
 		verticesStats = vs;
 		edgesStats = es;
+
+		name_key= name;
 	}
 
 	public void naiveMethodInitialComponent() {
@@ -193,7 +197,7 @@ public class CostBasedOptimzer {
 		}
 	}
 
-	public List<HashSet<Long>> generateQueryPlan(Set<String> options) throws Exception {
+	public List<HashSet<HashSet<String>>> generateQueryPlan(Set<String> options) throws Exception {
 		// Naive or KD Tree method
 		if (options.contains("vertex_naive")) {
 			naiveMethodInitialComponent();
@@ -383,13 +387,23 @@ public class CostBasedOptimzer {
 		}
 
 		// Where to collect outputs
-		List<HashSet<Long>> res = new ArrayList<>();
+		List<HashSet<HashSet<String>>> res = new ArrayList<>();
+		// System.out.println("query.getQueryVertices() "+query.getQueryVertices() );
 		for (QueryVertex qv : query.getQueryVertices()) {
 			if (qv.isOutput()) {
 				int pos = qv.getComponent().getVertexIndex(qv);
-				HashSet<Long> store = new HashSet<>();
+				// System.out.println("qv.getComponent() "+qv.getComponent());
+				// System.out.println("pos "+pos);
+				HashSet<HashSet<String>> store = new HashSet<>();
+				// System.out.println("qv.getComponent().getData()"+ qv.getComponent().getData());
 				for (List<Long> indices : qv.getComponent().getData()) {
-					store.add(indices.get(pos));
+					HashSet<String> vertex_value_set = new HashSet<>();
+					Long key= indices.get(pos);
+					String value= graph.getVertexByID(key).getProps().get(name_key);
+					vertex_value_set.add(key.toString());
+					vertex_value_set.add(value);
+					store.add(vertex_value_set);
+					// System.out.println("store "+store);
 				}
 				res.add(store);
 			}

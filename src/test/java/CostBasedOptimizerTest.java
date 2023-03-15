@@ -2,6 +2,7 @@ import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import operators.helper.GraphCompressor;
+import operators.helper.print_result;
 
 import org.javatuples.*;
 
@@ -38,11 +39,12 @@ public class CostBasedOptimizerTest {
 		// defining source and target path for statistics files of edge and vertices
 		String srcDir = dir;
 		String tarDir = dir + "/Dataset_Statistics";
+		String name_key= "Name";
 	
 		String testQuery = "0";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
-		Boolean compare = true;
+		Boolean compare = false;
 		
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();
@@ -61,15 +63,15 @@ public class CostBasedOptimizerTest {
 		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = verticesFromFile.stream()
 				.map(elt -> VertexFromFileToDataSet(elt))
 				.collect(Collectors.toList());
-
-		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = edgesFromFile.stream()
+				
+				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = edgesFromFile.stream()
 				.map(elt -> EdgeFromFileToDataSet(elt))
 				.collect(Collectors.toList());
-
-		StatisticsTransformation sts = new StatisticsTransformation(tarDir);
-		HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
-		HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
-		GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph = GraphExtended
+				
+				StatisticsTransformation sts = new StatisticsTransformation(tarDir);
+				HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
+				HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
+				GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph = GraphExtended
 				.fromList(vertices, edges);
 
 		// System.out.println(graph.getKDTreeByLabel("Artist").toString()); //check the
@@ -121,7 +123,7 @@ public class CostBasedOptimizerTest {
 				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
 
 				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
-				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
 
 				vs = new QueryVertex[]{ a, b, c };
 				es = new QueryEdge[]{ ab, bc };
@@ -230,12 +232,12 @@ public class CostBasedOptimizerTest {
 		}
 
 		QueryGraph g = new QueryGraph(vs, es);
-		CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-		List<HashSet<Long>> res = new ArrayList<>();
-		List<HashSet<Long>> res1 = new ArrayList<>();
-		List<HashSet<Long>> res2 = new ArrayList<>();
-		List<HashSet<Long>> res3 = new ArrayList<>();
-		List<HashSet<Long>> res4 = new ArrayList<>();
+		CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat, name_key);
+		List<HashSet<HashSet<String>>> res = new ArrayList<>();
+		List<HashSet<HashSet<String>>> res1 = new ArrayList<>();
+		List<HashSet<HashSet<String>>> res2 = new ArrayList<>();
+		List<HashSet<HashSet<String>>> res3 = new ArrayList<>();
+		List<HashSet<HashSet<String>>> res4 = new ArrayList<>();
 
 		System.out.println("Initialization Finished. \nStarting Query Execution...");
 		if (compare) {
@@ -287,6 +289,10 @@ public class CostBasedOptimizerTest {
 			System.out.println(options);
 			res = pg.generateQueryPlan(options);
 			System.out.print(res);
+			
+
+			print_result obj= new print_result(graph, res);
+			obj.printTable();
 		}
 	}
 

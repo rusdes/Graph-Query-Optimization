@@ -223,7 +223,6 @@ public class CostBasedOptimzer {
 			ArrayList<Object> leftColumns, rightColumns;
 
 			// KDTree for labels as well
-
 			Object[] filteredEdges = queryKDTree(e.getProps(), e.getLabel(), "edge");
 			// System.out.println(filteredEdges);
 
@@ -239,7 +238,7 @@ public class CostBasedOptimzer {
 				}
 			}
 			// TODO check < or >
-			if (e.getSourceVertex().getComponent().getEst() <= e.getTargetVertex().getComponent().getEst()) {
+			if (e.getSourceVertex().getComponent().getEst() >= e.getTargetVertex().getComponent().getEst()) {
 				int firstCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
 				int secondCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
 
@@ -257,20 +256,20 @@ public class CostBasedOptimzer {
 					}
 				}
 
-				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
-				for (Object candEdge : filteredEdges) {
-					Long IDTargetVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
-							.getTargetId();
-					VertexExtended<Long, HashSet<String>, HashMap<String, String>> candTarget = graph
-							.getVertexByID(IDTargetVertex);
-					if (vf.filter(candTarget)) {
-						filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
-					}
-				}
-
 				// efficient try
 				// TODO: check with parallelStream()
 				if (options.contains("edges_kdtree")) {
+					List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
+					for (Object candEdge : filteredEdges) {
+						Long IDTargetVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
+								.getTargetId();
+						VertexExtended<Long, HashSet<String>, HashMap<String, String>> candTarget = graph
+								.getVertexByID(IDTargetVertex);
+						if (vf.filter(candTarget)) {
+							filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
+						}
+					}
+
 					paths = curr_paths.stream().map(list -> {
 						List<List<Long>> intermediateList = new ArrayList<>();
 
@@ -319,20 +318,20 @@ public class CostBasedOptimzer {
 					}
 				}
 
-				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
-				for (Object candEdge : filteredEdges) {
-					Long IDSourceVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
-							.getSourceId();
-					VertexExtended<Long, HashSet<String>, HashMap<String, String>> candSource = graph
-							.getVertexByID(IDSourceVertex);
-					if (vf.filter(candSource)) {
-						filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
-					}
-				}
-
 				// efficient try
 				// TODO: check with parallelStream()
 				if (options.contains("edges_kdtree")) {
+					List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
+					for (Object candEdge : filteredEdges) {
+						Long IDSourceVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
+								.getSourceId();
+						VertexExtended<Long, HashSet<String>, HashMap<String, String>> candSource = graph
+								.getVertexByID(IDSourceVertex);
+						if (vf.filter(candSource)) {
+							filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
+						}
+					}
+
 					paths = curr_paths.stream().map(list -> {
 						List<List<Long>> intermediateList = new ArrayList<>();
 

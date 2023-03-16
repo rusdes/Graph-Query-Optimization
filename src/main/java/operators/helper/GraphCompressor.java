@@ -45,7 +45,7 @@ public class GraphCompressor {
                     boolean incompatible = false;
                     for (int j = i + 1; j < edgesToBeCompressed.size(); j++) {
                         if (edgesToBeCompressed.get(j) != null) {
-                            if (edgesToBeCompressed.get(i).getSourceId() == edgesToBeCompressed.get(j).getSourceId()
+                            if (edgesToBeCompressed.get(i).getSourceId().equals(edgesToBeCompressed.get(j).getSourceId())
                                     && edgesToBeCompressed.get(i).getLabel()
                                             .equals(edgesToBeCompressed.get(j).getLabel())) {
                                 edgesToBeCompressed.set(j, null);

@@ -32,7 +32,6 @@ class HRect {
 
     // from Moore's eqn. 6.6
     protected HPoint closest(HPoint t) {
-
         HPoint p = new HPoint(t.coord.length);
 
         for (int i = 0; i < t.coord.length; ++i) {

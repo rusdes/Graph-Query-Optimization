@@ -1,7 +1,6 @@
 package operators.datastructures.kdtree;
 
 /**
- * %SVN.HEADER%
  * 
  * based on work by Simon Levy
  * http://www.cs.wlu.edu/~levy/software/kd/
@@ -20,45 +19,24 @@ class HPoint implements Serializable{
     }
 
     protected HPoint(String[] x) {
-
         coord = new String[x.length];
         for (int i = 0; i < x.length; ++i)
             coord[i] = x[i];
     }
 
     protected Object clone() {
-
         return new HPoint(coord);
     }
 
     protected boolean equals(HPoint p) {
-
         // seems faster than java.util.Arrays.equals(), which is not
         // currently supported by Matlab anyway
         for (int i = 0; i < coord.length; ++i)
-            if (coord[i] != p.coord[i])
+            if (!coord[i].equals(p.coord[i]))
                 return false;
 
         return true;
     }
-
-    // protected static double sqrdist(HPoint x, HPoint y) {
-
-    //     double dist = 0;
-
-    //     for (int i = 0; i < x.coord.length; ++i) {
-    //         double diff = (x.coord[i] - y.coord[i]);
-    //         dist += (diff * diff);
-    //     }
-
-    //     return dist;
-
-    // }
-
-    // protected static double eucdist(HPoint x, HPoint y) {
-
-    //     return Math.sqrt(sqrdist(x, y));
-    // }
 
     public String toString() {
         String s = "";
@@ -67,5 +45,4 @@ class HPoint implements Serializable{
         }
         return s;
     }
-
 }

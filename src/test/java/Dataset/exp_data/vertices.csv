@@ -1,5 +1,14 @@
 ID|Labels|Properties
-596957|Person|primaryName,Anatoli Lunacharsky,birthYear,1875,deathYear,1933,primaryProfession,writer actor script_department
-9619|Movie|titleType,movie,primaryTitle,Congestion,originalTitle,Uplotnenie,isAdult,0,startYear,1918,endYear,unknown,runtimeMinutes,56,genres,unknown
-16881|Movie|titleType,movie,primaryTitle,The Bear's Wedding,originalTitle,Medvezhya svadba,isAdult,0,startYear,1925,endYear,unknown,runtimeMinutes,68,genres,Drama Horror
-20050|Movie|titleType,movie,primaryTitle,Salamander,originalTitle,Salamandra,isAdult,0,startYear,1928,endYear,unknown,runtimeMinutes,90,genres,Action Drama Thriller
+497488|Person|primaryName,Joseph Jefferson,birthYear,1829,deathYear,1905,primaryProfession,actor writer
+35|Movie|titleType,short,primaryTitle,Awakening of Rip,originalTitle,Awakening of Rip,isAdult,0,startYear,1896,endYear,unknown,runtimeMinutes,0,genres,Drama Short
+75|Movie|titleType,short,primaryTitle,Exit of Rip and the Dwarf,originalTitle,Exit of Rip and the Dwarf,isAdult,0,startYear,1896,endYear,unknown,runtimeMinutes,1,genres,Drama Short
+107|Movie|titleType,short,primaryTitle,Rip Leaving Sleepy Hollow,originalTitle,Rip Leaving Sleepy Hollow,isAdult,0,startYear,1896,endYear,unknown,runtimeMinutes,1,genres,Drama Short
+108|Movie|titleType,short,primaryTitle,Rip Meeting the Dwarf,originalTitle,Rip Meeting the Dwarf,isAdult,0,startYear,1896,endYear,unknown,runtimeMinutes,1,genres,Fantasy Short
+109|Movie|titleType,short,primaryTitle,Rip Passing Over the Mountain,originalTitle,Rip Passing Over the Mountain,isAdult,0,startYear,1896,endYear,unknown,runtimeMinutes,1,genres,Fantasy Short
+110|Movie|titleType,short,primaryTitle,Rip's Toast,originalTitle,Rip's Toast,isAdult,0,startYear,1896,endYear,unknown,runtimeMinutes,1,genres,Drama Short
+111|Movie|titleType,short,primaryTitle,Rip's Toast to Hudson,originalTitle,Rip's Toast to Hudson,isAdult,0,startYear,1896,endYear,unknown,runtimeMinutes,1,genres,Fantasy Short
+112|Movie|titleType,short,primaryTitle,Rip's Twenty Years' Sleep,originalTitle,Rip's Twenty Years' Sleep,isAdult,0,startYear,1896,endYear,unknown,runtimeMinutes,0,genres,Drama Short
+461|Movie|titleType,short,primaryTitle,Rip Van Winkle,originalTitle,Rip Van Winkle,isAdult,0,startYear,1903,endYear,unknown,runtimeMinutes,4,genres,Comedy Short
+4483|Movie|titleType,movie,primaryTitle,Rip Van Winkle,originalTitle,Rip Van Winkle,isAdult,0,startYear,1914,endYear,unknown,runtimeMinutes,unknown,genres,Drama Fantasy
+5958|Movie|titleType,movie,primaryTitle,The Shadows of a Great City,originalTitle,The Shadows of a Great City,isAdult,0,startYear,1915,endYear,unknown,runtimeMinutes,unknown,genres,Drama
+12447|Movie|titleType,movie,primaryTitle,Rip Van Winkle,originalTitle,Rip Van Winkle,isAdult,0,startYear,1921,endYear,unknown,runtimeMinutes,58,genres,Fantasy

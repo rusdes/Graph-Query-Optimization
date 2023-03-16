@@ -41,7 +41,7 @@ public class CostBasedOptimizerTest {
 	
 		String testQuery = "21";
 		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
+		options.addAll(Arrays.asList("vertex_kdtree", "edges_naive"));
 		Boolean compare = true;
 		
 		// Description for all options

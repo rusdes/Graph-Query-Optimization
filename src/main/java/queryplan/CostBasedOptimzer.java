@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.LinkedHashSet;
 
 import static operators.datastructures.kdtree.Constants.STRING_MIN_VALUE;
 import static operators.datastructures.kdtree.Constants.STRING_MAX_VALUE;
@@ -197,7 +198,7 @@ public class CostBasedOptimzer {
 		}
 	}
 
-	public List<HashSet<HashSet<String>>> generateQueryPlan(Set<String> options) throws Exception {
+	public List<HashSet<Set<String>>> generateQueryPlan(Set<String> options) throws Exception {
 		// Naive or KD Tree method
 		if (options.contains("vertex_naive")) {
 			naiveMethodInitialComponent();
@@ -389,17 +390,17 @@ public class CostBasedOptimzer {
 		}
 
 		// Where to collect outputs
-		List<HashSet<HashSet<String>>> res = new ArrayList<>();
+		List<HashSet<Set<String>>> res = new ArrayList<>();
 		// System.out.println("query.getQueryVertices() "+query.getQueryVertices() );
 		for (QueryVertex qv : query.getQueryVertices()) {
 			if (qv.isOutput()) {
 				int pos = qv.getComponent().getVertexIndex(qv);
 				// System.out.println("qv.getComponent() "+qv.getComponent());
 				// System.out.println("pos "+pos);
-				HashSet<HashSet<String>> store = new HashSet<>();
+				HashSet<Set<String>> store = new HashSet<>();
 				// System.out.println("qv.getComponent().getData()"+ qv.getComponent().getData());
 				for (List<Long> indices : qv.getComponent().getData()) {
-					HashSet<String> vertex_value_set = new HashSet<>();
+					Set<String> vertex_value_set = new LinkedHashSet<String>();
 					Long key= indices.get(pos);
 					String value= graph.getVertexByID(key).getProps().get(name_key);
 					vertex_value_set.add(key.toString());

@@ -39,9 +39,9 @@ public class CostBasedOptimizerTest {
 		// defining source and target path for statistics files of edge and vertices
 		String srcDir = dir;
 		String tarDir = dir + "/Dataset_Statistics";
-		String name_key= "Name";
+		String name_key= "primaryName";
 	
-		String testQuery = "21";
+		String testQuery = "22";
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
 		Boolean compare = false;
@@ -214,14 +214,14 @@ public class CostBasedOptimizerTest {
 			case "22" : {
 				// IMDB query
 				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("birthYear", new Pair<String, String>("<", "1850"));
+				personProps.put("birthYear", new Pair<String, String>("<", "1830"));
 
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
 				// movieProps.put("originalTitle", new Pair<String, String>("eq", "Carmencita"));
 
 
 				QueryVertex a = new QueryVertex("Person",  personProps, true);
-				QueryVertex b = new QueryVertex("Movie",  movieProps, false);
+				QueryVertex b = new QueryVertex("Movie",  movieProps, true);
 
 				QueryEdge ab = new QueryEdge(a, b, "actor", new HashMap<String, Pair<String, String>>());
 
@@ -233,11 +233,11 @@ public class CostBasedOptimizerTest {
 
 		QueryGraph g = new QueryGraph(vs, es);
 		CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat, name_key);
-		List<HashSet<HashSet<String>>> res = new ArrayList<>();
-		List<HashSet<HashSet<String>>> res1 = new ArrayList<>();
-		List<HashSet<HashSet<String>>> res2 = new ArrayList<>();
-		List<HashSet<HashSet<String>>> res3 = new ArrayList<>();
-		List<HashSet<HashSet<String>>> res4 = new ArrayList<>();
+		List<HashSet<Set<String>>> res = new ArrayList<>();
+		List<HashSet<Set<String>>> res1 = new ArrayList<>();
+		List<HashSet<Set<String>>> res2 = new ArrayList<>();
+		List<HashSet<Set<String>>> res3 = new ArrayList<>();
+		List<HashSet<Set<String>>> res4 = new ArrayList<>();
 
 		// Garbage Collector
 		verticesFromFile = null;

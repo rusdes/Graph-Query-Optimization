@@ -13,7 +13,7 @@ import operators.datastructures.GraphExtended;
 
 public class print_result {
     GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph;
-    List<HashSet<HashSet<String>>> res1 = new ArrayList<>();
+    List<HashSet<Set<String>>> res1 = new ArrayList<>();
     List<List<List<String>>> res;
     int number_of_labels;
     int max_height;
@@ -25,7 +25,7 @@ public class print_result {
     String[] row;
 
     public print_result(GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> g,
-    List<HashSet<HashSet<String>>> r){
+    List<HashSet<Set<String>>> r){
         graph= g;
         res= convert_to_list(r);
         number_of_labels= res.size();
@@ -69,19 +69,19 @@ public class print_result {
 
     public void fillZeros(List<List<List<String>>> res, int i, int max_length) {
         List<String> zero= new ArrayList();
-        zero.add("null");
-        zero.add("null");
+        zero.add("");
+        zero.add("");
         for(int j = res.get(i).size(); j < max_length; j++) {
             res.get(i).add(zero);
         }
     }
 
 
-    public List<List<List<String>>> convert_to_list(List<HashSet<HashSet<String>>> res1){
+    public List<List<List<String>>> convert_to_list(List<HashSet<Set<String>>> res1){
         List<List<List<String>>> res= new ArrayList<>();
         for (int i = 0; i < res1.size(); i++){
             List<List<String>> group= new ArrayList<>();
-            for (HashSet<String> ele : res1.get(i)) {
+            for (Set<String> ele : res1.get(i)) {
                 // Print HashSet data
                 List<String> node= new ArrayList<>();
                 for(String values: ele){

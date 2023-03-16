@@ -247,7 +247,6 @@ public class CostBasedOptimizerTest {
 		vs = null;
 		es = null;
 		g = null;
-		graph = null;
 		vstat = null;
 		estat = null;
 
@@ -307,6 +306,8 @@ public class CostBasedOptimizerTest {
 			print_result obj= new print_result(graph, res);
 			obj.printTable();
 		}
+
+		graph = null;
 	}
 
 

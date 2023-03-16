@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import operators.helper.FlatJoinFunction;
 import operators.helper.JoinFunction;
-import operators.helper.Collector;
-import operators.helper.MapFunction;
 
 /*
 *
@@ -33,36 +30,19 @@ public class BinaryOperators {
 
 	// Join on after vertices
 	public List<List<Long>> joinOnAfterVertices(int firstCol, int secondCol) {
-		List<List<Long>> joinedResults = this.pathsLeft.parallelStream().map(list -> {
-			List<List<Long>> intermediateList = this.pathsRight.stream().map(listRight -> {
-				if(list.get(firstCol) == listRight.get(secondCol)){
+		for (int i_left = 0; i_left < this.pathsLeft.size(); i_left++){
+			List<Long> list = this.pathsLeft.get(i_left);
+			// List<List<Long>> joinedResults = this.pathsLeft.parallelStream().map(list -> {			
+			for (int i_right = 0; i_right < this.pathsRight.size(); i_right++){
+				List<Long> listRight = this.pathsRight.get(i_right);
+
+				if(list.get(firstCol).equals(listRight.get(secondCol))){
 					list.addAll(listRight.subList(secondCol+1, listRight.size()));
 				}
-				return list;
-			}).collect(Collectors.toList());
-
-			
-			return intermediateList;
-		}).flatMap(s -> s.stream()).collect(Collectors.toList());
-
-		return joinedResults;
-	}
-
-	private static class JoinOnAfterVertices
-			implements JoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
-		private int col;
-
-		public JoinOnAfterVertices(int secondCol) {
-			this.col = secondCol;
+				this.pathsLeft.set(i_left, list);
+			}
 		}
-
-		@Override
-		public ArrayList<Long> join(ArrayList<Long> leftVertices,
-				ArrayList<Long> rightVertices) throws Exception {
-			rightVertices.remove(this.col);
-			leftVertices.addAll(rightVertices);
-			return leftVertices;
-		}
+		return this.pathsLeft;
 	}
 
 	// Join on left vertices
@@ -95,33 +75,4 @@ public class BinaryOperators {
 			return rightPaths;
 		}
 	}
-
-	// Union
-	// public List<List<Long>> union() {
-	// 	List<List<Long>> unitedResults = this.pathsLeft
-	// 			.union(this.pathsRight)
-	// 			.distinct();
-	// 	return unitedResults;
-	// }
-
-	// Intersection
-	// public List<List<Long>> intersection() {
-	// 	List<List<Long>> intersectedResults = this.pathsLeft
-	// 			.join(this.pathsRight)
-	// 			.where(0)
-	// 			.equalTo(0)
-	// 			.with(new IntersectionResultsMerge());
-	// 	return intersectedResults;
-	// }
-
-	private static class IntersectionResultsMerge
-			implements FlatJoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
-		@Override
-		public void join(ArrayList<Long> leftPath, ArrayList<Long> rightPath,
-				Collector<ArrayList<Long>> intersectedPath) throws Exception {
-			if (leftPath.equals(rightPath))
-				intersectedPath.collect(leftPath);
-		}
-	}
-
 }

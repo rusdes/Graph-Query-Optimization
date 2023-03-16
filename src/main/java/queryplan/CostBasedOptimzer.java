@@ -242,8 +242,7 @@ public class CostBasedOptimzer {
 					ef = new AND<EdgeExtended<Long, Long, String, HashMap<String, String>>>(ef, newef);
 				}
 			}
-
-			// TODO: Check < or >
+			// TODO check < or >
 			if (e.getSourceVertex().getComponent().getEst() <= e.getTargetVertex().getComponent().getEst()) {
 				int firstCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
 				int secondCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
@@ -280,7 +279,8 @@ public class CostBasedOptimzer {
 						List<List<Long>> intermediateList = new ArrayList<>();
 
 						for (EdgeExtended<Long, Long, String, HashMap<String, String>> e1 : filteredEdgesIntermed) {
-							if (e1.getSourceId() == list.get(firstCol)) {
+							if (e1.getSourceId().equals(list.get(firstCol))) {
+							// if (e1.getSourceId() == list.get(firstCol)) {
 								List<Long> cloned_list = new ArrayList<Long>(list);
 								cloned_list.add(e1.getEdgeId());
 								cloned_list.add(e1.getTargetId());
@@ -300,7 +300,6 @@ public class CostBasedOptimzer {
 				leftColumns = e.getSourceVertex().getComponent().getColumns();
 
 				BinaryOperators b = new BinaryOperators(paths, e.getTargetVertex().getComponent().getData());
-
 				joinedPaths = b.joinOnAfterVertices(leftColumns.size() + 1, secondCol);
 
 				rightColumns = (ArrayList<Object>) e.getTargetVertex().getComponent().getColumns().clone();
@@ -342,7 +341,10 @@ public class CostBasedOptimzer {
 						List<List<Long>> intermediateList = new ArrayList<>();
 
 						for (EdgeExtended<Long, Long, String, HashMap<String, String>> e1 : filteredEdgesIntermed) {
-							if (e1.getTargetId() == list.get(firstCol)) {
+							// .equals() for Long, not ==
+							if (e1.getTargetId().equals(list.get(firstCol))) {
+							// if (e1.getTargetId() == list.get(firstCol)) {
+
 								List<Long> cloned_list = new ArrayList<Long>(list);
 								cloned_list.add(e1.getEdgeId());
 								cloned_list.add(e1.getSourceId());

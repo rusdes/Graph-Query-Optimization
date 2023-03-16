@@ -1,0 +1,5 @@
+ID|Labels|Properties
+596957|Person|primaryName,Anatoli Lunacharsky,birthYear,1875,deathYear,1933,primaryProfession,writer actor script_department
+9619|Movie|titleType,movie,primaryTitle,Congestion,originalTitle,Uplotnenie,isAdult,0,startYear,1918,endYear,unknown,runtimeMinutes,56,genres,unknown
+16881|Movie|titleType,movie,primaryTitle,The Bear's Wedding,originalTitle,Medvezhya svadba,isAdult,0,startYear,1925,endYear,unknown,runtimeMinutes,68,genres,Drama Horror
+20050|Movie|titleType,movie,primaryTitle,Salamander,originalTitle,Salamandra,isAdult,0,startYear,1928,endYear,unknown,runtimeMinutes,90,genres,Action Drama Thriller

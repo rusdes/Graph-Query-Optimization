@@ -330,28 +330,28 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case "30": {
-				// IMDB uncompressed
-				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				HashMap<String, Pair<String, String>> birthYearProps = new HashMap<>();
-				birthYearProps.put("value", new Pair<String, String>("<", "1850"));
-				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
-				// movieProps.put("originalTitle", new Pair<String, String>("eq",
-				// "Carmencita"));
+			// case "30": {
+			// 	// IMDB uncompressed
+			// 	HashMap<String, Pair<String, String>> personProps = new HashMap<>();
+			// 	HashMap<String, Pair<String, String>> birthYearProps = new HashMap<>();
+			// 	birthYearProps.put("value", new Pair<String, String>("<", "1850"));
+			// 	HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
+			// 	// movieProps.put("originalTitle", new Pair<String, String>("eq",
+			// 	// "Carmencita"));
 
-				QueryVertex person = new QueryVertex("Person", personProps, true);
-				QueryVertex birthYear = new QueryVertex("birthYear", birthYearProps, true);
-				QueryVertex movie = new QueryVertex("Movie", movieProps, false);
+			// 	QueryVertex person = new QueryVertex("Person", personProps, true);
+			// 	QueryVertex birthYear = new QueryVertex("birthYear", birthYearProps, true);
+			// 	QueryVertex movie = new QueryVertex("Movie", movieProps, false);
 
-				QueryEdge personMovie = new QueryEdge(person, movie, "actor",
-						new HashMap<String, Pair<String, String>>());
-				QueryEdge personBirthYear = new QueryEdge(person, birthYear, "hasProperty",
-						new HashMap<String, Pair<String, String>>());
+			// 	QueryEdge personMovie = new QueryEdge(person, movie, "actor",
+			// 			new HashMap<String, Pair<String, String>>());
+			// 	QueryEdge personBirthYear = new QueryEdge(person, birthYear, "hasProperty",
+			// 			new HashMap<String, Pair<String, String>>());
 
-				vs = new QueryVertex[] { person, birthYear, movie };
-				es = new QueryEdge[] { personMovie, personBirthYear };
-				break;
-			}
+			// 	vs = new QueryVertex[] { person, birthYear, movie };
+			// 	es = new QueryEdge[] { personMovie, personBirthYear };
+			// 	break;
+			// }
 		}
 
 		QueryGraph g = new QueryGraph(vs, es);
@@ -435,9 +435,8 @@ public class CostBasedOptimizerTest {
 			System.out.println(options);
 			res = pg.generateQueryPlan(options);
 			System.out.println(res);
-			
-			// print_result obj= new print_result(graph, res);
-			// obj.printTable();
+			print_result obj= new print_result(graph, res, name_key);
+			obj.printTable();
 		}
 
 		graph = null;

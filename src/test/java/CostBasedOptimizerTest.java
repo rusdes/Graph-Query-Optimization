@@ -284,44 +284,6 @@ public class CostBasedOptimizerTest {
 				es = new QueryEdge[] { personMovie, personBirthYear };
 				break;
 			}
-
-			case "31": {
-				// IMDB uncompressed
-				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("birthYear", new Pair<String, String>("<", "1850"));
-
-				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
-				// movieProps.put("originalTitle", new Pair<String, String>("eq",
-				// "Carmencita"));
-
-				QueryVertex a = new QueryVertex("Person", personProps, true);
-				QueryVertex b = new QueryVertex("Movie", movieProps, false);
-
-				QueryEdge ab = new QueryEdge(a, b, "actor", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[] { a, b };
-				es = new QueryEdge[] { ab };
-				break;
-			}
-
-			case "32": {
-				// IMDB uncompressed
-				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("birthYear", new Pair<String, String>("<", "1850"));
-
-				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
-				// movieProps.put("originalTitle", new Pair<String, String>("eq",
-				// "Carmencita"));
-
-				QueryVertex a = new QueryVertex("Person", personProps, true);
-				QueryVertex b = new QueryVertex("Movie", movieProps, false);
-
-				QueryEdge ab = new QueryEdge(a, b, "actor", new HashMap<String, Pair<String, String>>());
-
-				vs = new QueryVertex[] { a, b };
-				es = new QueryEdge[] { ab };
-				break;
-			}
 		}
 
 		QueryGraph g = new QueryGraph(vs, es);

@@ -13,9 +13,6 @@ import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import operators.helper.FilterFunction;
 
-// import org.apache.flink.api.java.List;
-// import org.apache.flink.api.common.functions.MapFunction;
-
 /*
 * A scan operator is used to extract all vertex IDs which satisfy certain filtering conditions.
 * The filtering conditions could be:
@@ -38,35 +35,6 @@ public class ScanOperators {
 		Set<Long> vertexIds = graph.getAllVertexIds();
 		return vertexIds;
 	}
-
-	// Extract vertex IDs into ArrayList from vertices
-	// private static class InitialVerticesToLists {
-	// public ArrayList<Long> map(
-	// VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex) throws
-	// Exception {
-	// ArrayList<Long> row = new ArrayList<>();
-	// row.add(vertex.getVertexId());
-	// return row;
-	// }
-	// }
-
-	// Get edge IDs of a graph
-	// not very useful so far
-	public List<Long> getInitialEdges() {
-		List<Long> edgeIds = graph.getAllEdgeIds();
-		return edgeIds;
-	}
-
-	// Extract edge IDs into ArrayList from edges
-	// also not very useful so far
-	// private static class InitialEdgesToLists {
-	// public ArrayList<Long> map(EdgeExtended<Long, Long, String, HashMap<String,
-	// String>> edge) throws Exception {
-	// ArrayList<Long> row = new ArrayList<>();
-	// row.add(edge.getEdgeId());
-	// return row;
-	// }
-	// }
 
 	// Get vertex ids with label constraints
 	public List<Long> getInitialVerticesByLabels(String labels) {

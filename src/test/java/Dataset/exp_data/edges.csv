@@ -1,4 +1,13 @@
 ID|sourceID|targetID|Label|Properties
-37252|596957|9619|actor|job,unknown,characters,["Cameo"]
-72158|596957|16881|writer|job,play,characters,unknown
-88067|596957|20050|writer|job,writer,characters,unknown
+46|497488|35|actor|job,unknown,characters,["Rip Van Winkle"]
+62|497488|75|actor|job,unknown,characters,["Rip Van Winkle"]
+75|497488|107|actor|job,unknown,characters,["Rip Van Winkle"]
+79|497488|108|actor|job,unknown,characters,["Rip Van Winkle"]
+83|497488|109|actor|job,unknown,characters,["Rip Van Winkle"]
+87|497488|110|actor|job,unknown,characters,["Rip Van Winkle"]
+91|497488|111|actor|job,unknown,characters,["Rip Van Winkle"]
+95|497488|112|actor|job,unknown,characters,["Rip Van Winkle"]
+401|497488|461|actor|job,unknown,characters,["Rip Van Winkle"]
+14400|497488|4483|writer|job,play,characters,unknown
+20437|497488|5958|writer|job,play,characters,unknown
+50809|497488|12447|writer|job,play,characters,unknown

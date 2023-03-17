@@ -33,15 +33,26 @@ public class CostBasedOptimizerTest {
 		// Boolean labeled = true; // change this to false to run on unlabeled data
 		System.out.println(
 				"1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 - Labeled Toy Dataset");
-		int choice = 2;
+		int choice = 4;
 		System.out.println("Choice: " + choice);
 
 		String dir = null;
 		String testQuery = null;
+		String name_key = null;
+		Boolean compare = false;
+
+		Set<String> options = new HashSet<>();
+		options.addAll(Arrays.asList("vertex_naive", "edges_naive"));
+		
+		// Description for all options
+		HashMap<String, ArrayList<String>> desc = new HashMap<>();
+		desc.put("Initial Vertex Mapping Method", new ArrayList<>(Arrays.asList("vertex_naive", "vertex_kdtree")));
+		desc.put("Edges Mapping Method", new ArrayList<>(Arrays.asList("edges_naive", "edges_kdtree")));
 
 		switch (choice) {
 			case 1: {
 				dir = "src/test/java/Dataset/compressed_imdb";
+				name_key= "primaryName";
 				testQuery = "21";
 				testQuery = "22";
 				break;
@@ -63,12 +74,13 @@ public class CostBasedOptimizerTest {
 
 			case 4: {
 				dir = "src/test/java/Dataset/";
-				testQuery = "0";
-				testQuery = "16";
-				testQuery = "17";
-				testQuery = "18";
-				testQuery = "19";
-				testQuery = "20";
+				name_key = "Name";
+				// testQuery = "0";
+				// testQuery = "16";
+				// testQuery = "0";
+				// testQuery = "18";
+				// testQuery = "19";
+				testQuery = "45";
 				break;
 			}
 		}
@@ -76,18 +88,6 @@ public class CostBasedOptimizerTest {
 		// defining source and target path for statistics files of edge and vertices
 		String srcDir = dir;
 		String tarDir = dir + "/Dataset_Statistics";
-
-		String name_key= "primaryName";
-	
-		String testQuery = "22";
-		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
-		Boolean compare = false;
-		
-		// Description for all options
-		HashMap<String, ArrayList<String>> desc = new HashMap<>();
-		desc.put("Initial Vertex Mapping Method", new ArrayList<>(Arrays.asList("vertex_naive", "vertex_kdtree")));
-		desc.put("Edges Mapping Method", new ArrayList<>(Arrays.asList("edges_naive", "edges_kdtree")));
 
 		// Write statistics to file if file is not present in tarDir
 		StatisticsCollector stats = new StatisticsCollector(srcDir, tarDir);
@@ -119,7 +119,7 @@ public class CostBasedOptimizerTest {
 		QueryVertex[] vs = new QueryVertex[] {};
 		QueryEdge[] es = new QueryEdge[] {};
 		switch (testQuery) {
-			case "0": {
+			case "40": {
 				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
 				canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
 				QueryVertex a = new QueryVertex("Artist", canelaCoxProps, false);
@@ -134,11 +134,10 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case "16": {
+			case "41": {
 
 				// find artists (who isnt canela cox) part of bands that performed in a concert
 				// here result is not right, will throw error
-
 				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
 				canelaCoxProps.put("Years Active", new Pair<String, String>("<=", "10"));
 				QueryVertex a = new QueryVertex("Artist", canelaCoxProps, true);
@@ -153,7 +152,7 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case "17": {
+			case "42": {
 				// HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
 				// canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
 				QueryVertex a = new QueryVertex("Artist", new HashMap<String, Pair<String, String>>(), true);
@@ -161,14 +160,14 @@ public class CostBasedOptimizerTest {
 				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
 
 				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
-				QueryEdge bc = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
+				QueryEdge ac = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
 
 				vs = new QueryVertex[] { a, b, c };
-				es = new QueryEdge[] { ab, bc };
+				es = new QueryEdge[] { ab, ac };
 				break;
 			}
 
-			case "18": {
+			case "43": {
 				// show all the artists that have performed in concerts
 				QueryVertex a = new QueryVertex("Artist", new HashMap<String, Pair<String, String>>(), true);
 				// QueryVertex b = new QueryVertex("Band", new HashMap<String, Pair<String,
@@ -184,7 +183,7 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case "19": {
+			case "44": {
 
 				// search for concerts that started before 2020
 
@@ -206,7 +205,7 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case "20": {
+			case "45": {
 
 				// search for artists and bands who performed in concerts after 2020 (OR case)
 
@@ -291,12 +290,20 @@ public class CostBasedOptimizerTest {
 		}
 
 		QueryGraph g = new QueryGraph(vs, es);
-		CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat, name_key);
-		List<HashSet<Set<String>>> res = new ArrayList<>();
-		List<HashSet<Set<String>>> res1 = new ArrayList<>();
-		List<HashSet<Set<String>>> res2 = new ArrayList<>();
-		List<HashSet<Set<String>>> res3 = new ArrayList<>();
-		List<HashSet<Set<String>>> res4 = new ArrayList<>();
+		// CostBasedOptimzerNew pg = new CostBasedOptimzerNew(g, graph, vstat, estat, name_key);
+		CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
+
+		// List<HashSet<Set<String>>> res = new ArrayList<>();
+		// List<HashSet<Set<String>>> res1 = new ArrayList<>();
+		// List<HashSet<Set<String>>> res2 = new ArrayList<>();
+		// List<HashSet<Set<String>>> res3 = new ArrayList<>();
+		// List<HashSet<Set<String>>> res4 = new ArrayList<>();
+
+		List<List<Long>> res = new ArrayList<>();
+		List<List<Long>> res1 = new ArrayList<>();
+		List<List<Long>> res2 = new ArrayList<>();
+		List<List<Long>> res3 = new ArrayList<>();
+		List<List<Long>> res4 = new ArrayList<>();
 
 		// Garbage Collector
 		verticesFromFile = null;
@@ -362,8 +369,8 @@ public class CostBasedOptimizerTest {
 			res = pg.generateQueryPlan(options);
 			System.out.println(res);
 			
-			print_result obj= new print_result(graph, res);
-			obj.printTable();
+			// print_result obj= new print_result(graph, res);
+			// obj.printTable();
 		}
 
 		graph = null;

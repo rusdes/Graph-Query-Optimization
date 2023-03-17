@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.LinkedHashSet;
 
 import static operators.datastructures.kdtree.Constants.STRING_MIN_VALUE;
 import static operators.datastructures.kdtree.Constants.STRING_MAX_VALUE;
@@ -46,13 +45,11 @@ public class CostBasedOptimzer {
 	GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph;
 	HashMap<String, Pair<Long, Double>> verticesStats;
 	HashMap<String, Pair<Long, Double>> edgesStats;
-	String name_key;
 
 	public CostBasedOptimzer(QueryGraph q,
 			GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> g,
 			HashMap<String, Pair<Long, Double>> vs,
-			HashMap<String, Pair<Long, Double>> es,
-			String name) {
+			HashMap<String, Pair<Long, Double>> es) {
 		// Query should also be in the form of a graph
 		query = q;
 		graph = g;
@@ -60,8 +57,6 @@ public class CostBasedOptimzer {
 		// statistics collected
 		verticesStats = vs;
 		edgesStats = es;
-
-		name_key= name;
 	}
 
 	public void naiveMethodInitialComponent() {
@@ -83,6 +78,17 @@ public class CostBasedOptimzer {
 					vf = new AND<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>(vf, newvf);
 				}
 			}
+
+			// List of singleton lists of initial vertices that satisfy the current filter
+			// condition.
+			// FilterFunction vf_exp = new LabelComparisonForVertices("Movie");
+			// FilterFunction newvf_exp = new PropertyFilterForVertices("primaryTitle", "eq", "Carmencita");
+
+			// vf_exp = new AND<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>(vf_exp, newvf_exp);
+
+
+			// List<List<Long>> paths1 = s.getInitialVerticesByBooleanExpressions(new LabelComparisonForVertices("Movie"));
+			// List<List<Long>> paths2 = s.getInitialVerticesByBooleanExpressions(newvf_exp);
 
 			List<List<Long>> paths = s.getInitialVerticesByBooleanExpressions(vf);
 
@@ -187,7 +193,7 @@ public class CostBasedOptimzer {
 		}
 	}
 
-	public List<HashSet<Set<String>>> generateQueryPlan(Set<String> options) throws Exception {
+	public List<List<Long>> generateQueryPlan(Set<String> options) throws Exception {
 		// Naive or KD Tree method
 		if (options.contains("vertex_naive")) {
 			naiveMethodInitialComponent();
@@ -217,6 +223,7 @@ public class CostBasedOptimzer {
 			ArrayList<Object> leftColumns, rightColumns;
 
 			// KDTree for labels as well
+
 			Object[] filteredEdges = queryKDTree(e.getProps(), e.getLabel(), "edge");
 			// System.out.println(filteredEdges);
 
@@ -231,8 +238,8 @@ public class CostBasedOptimzer {
 					ef = new AND<EdgeExtended<Long, Long, String, HashMap<String, String>>>(ef, newef);
 				}
 			}
-			// TODO check < or >
-			if (e.getSourceVertex().getComponent().getEst() >= e.getTargetVertex().getComponent().getEst()) {
+			// TODO check < or >. Error in some cases when set to >
+			if (e.getSourceVertex().getComponent().getEst() <= e.getTargetVertex().getComponent().getEst()) {
 				int firstCol = e.getSourceVertex().getComponent().getVertexIndex(e.getSourceVertex());
 				int secondCol = e.getTargetVertex().getComponent().getVertexIndex(e.getTargetVertex());
 
@@ -250,20 +257,20 @@ public class CostBasedOptimzer {
 					}
 				}
 
+				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
+				for (Object candEdge : filteredEdges) {
+					Long IDTargetVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
+							.getTargetId();
+					VertexExtended<Long, HashSet<String>, HashMap<String, String>> candTarget = graph
+							.getVertexByID(IDTargetVertex);
+					if (vf.filter(candTarget)) {
+						filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
+					}
+				}
+
 				// efficient try
 				// TODO: check with parallelStream()
 				if (options.contains("edges_kdtree")) {
-					List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
-					for (Object candEdge : filteredEdges) {
-						Long IDTargetVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
-								.getTargetId();
-						VertexExtended<Long, HashSet<String>, HashMap<String, String>> candTarget = graph
-								.getVertexByID(IDTargetVertex);
-						if (vf.filter(candTarget)) {
-							filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
-						}
-					}
-
 					paths = curr_paths.stream().map(list -> {
 						List<List<Long>> intermediateList = new ArrayList<>();
 
@@ -312,20 +319,20 @@ public class CostBasedOptimzer {
 					}
 				}
 
+				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
+				for (Object candEdge : filteredEdges) {
+					Long IDSourceVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
+							.getSourceId();
+					VertexExtended<Long, HashSet<String>, HashMap<String, String>> candSource = graph
+							.getVertexByID(IDSourceVertex);
+					if (vf.filter(candSource)) {
+						filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
+					}
+				}
+
 				// efficient try
 				// TODO: check with parallelStream()
 				if (options.contains("edges_kdtree")) {
-					List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
-					for (Object candEdge : filteredEdges) {
-						Long IDSourceVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
-								.getSourceId();
-						VertexExtended<Long, HashSet<String>, HashMap<String, String>> candSource = graph
-								.getVertexByID(IDSourceVertex);
-						if (vf.filter(candSource)) {
-							filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
-						}
-					}
-
 					paths = curr_paths.stream().map(list -> {
 						List<List<Long>> intermediateList = new ArrayList<>();
 
@@ -378,27 +385,40 @@ public class CostBasedOptimzer {
 		}
 
 		// Where to collect outputs
-		List<HashSet<Set<String>>> res = new ArrayList<>();
-		// System.out.println("query.getQueryVertices() "+query.getQueryVertices() );
-		for (QueryVertex qv : query.getQueryVertices()) {
-			if (qv.isOutput()) {
-				int pos = qv.getComponent().getVertexIndex(qv);
-				// System.out.println("qv.getComponent() "+qv.getComponent());
-				// System.out.println("pos "+pos);
-				HashSet<Set<String>> store = new HashSet<>();
-				// System.out.println("qv.getComponent().getData()"+ qv.getComponent().getData());
-				for (List<Long> indices : qv.getComponent().getData()) {
-					Set<String> vertex_value_set = new LinkedHashSet<String>();
-					Long key= indices.get(pos);
-					String value= graph.getVertexByID(key).getProps().get(name_key);
-					vertex_value_set.add(key.toString());
-					vertex_value_set.add(value);
-					store.add(vertex_value_set);
-					// System.out.println("store "+store);
+
+				// // Where to collect outputs
+		ArrayList<Object> columns = query.getQueryVertices()[0].getComponent().getColumns();
+		List<List<Long>> data = query.getQueryVertices()[0].getComponent().getData();
+		List<List<Long>> final_data = new ArrayList<>();
+		for(int i = 0; i < data.size(); i++)
+			final_data.add(new ArrayList<>());
+		
+		// int col_count = 0;
+		for(int col_ind = 0; col_ind < columns.size(); col_ind++){
+			if(columns.get(col_ind).getClass() == QueryVertex.class){
+				QueryVertex obj = (QueryVertex) columns.get(col_ind);
+				if(obj.isOutput()){
+					for(int i = 0; i < data.size(); i++){
+						final_data.get(i).add(data.get(i).get(col_ind));
+					}
 				}
-				res.add(store);
+				// col_count++;
 			}
 		}
-		return res;
+
+		return final_data;
+
+		// List<HashSet<Long>> res = new ArrayList<>();
+		// for (QueryVertex qv : query.getQueryVertices()) {
+		// 	if (qv.isOutput()) {
+		// 		int pos = qv.getComponent().getVertexIndex(qv);
+		// 		HashSet<Long> store = new HashSet<>();
+		// 		for (List<Long> indices : qv.getComponent().getData()) {
+		// 			store.add(indices.get(pos));
+		// 		}
+		// 		res.add(store);
+		// 	}
+		// }
+		// return res;
 	}
 }

@@ -79,17 +79,6 @@ public class CostBasedOptimzer {
 				}
 			}
 
-			// List of singleton lists of initial vertices that satisfy the current filter
-			// condition.
-			// FilterFunction vf_exp = new LabelComparisonForVertices("Movie");
-			// FilterFunction newvf_exp = new PropertyFilterForVertices("primaryTitle", "eq", "Carmencita");
-
-			// vf_exp = new AND<VertexExtended<Long, HashSet<String>, HashMap<String, String>>>(vf_exp, newvf_exp);
-
-
-			// List<List<Long>> paths1 = s.getInitialVerticesByBooleanExpressions(new LabelComparisonForVertices("Movie"));
-			// List<List<Long>> paths2 = s.getInitialVerticesByBooleanExpressions(newvf_exp);
-
 			List<List<Long>> paths = s.getInitialVerticesByBooleanExpressions(vf);
 
 			ArrayList<Object> cols = new ArrayList<>();

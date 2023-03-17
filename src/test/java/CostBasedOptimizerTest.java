@@ -2,6 +2,7 @@ import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
 import operators.helper.GraphCompressor;
+import operators.helper.print_result;
 
 import org.javatuples.*;
 
@@ -76,10 +77,13 @@ public class CostBasedOptimizerTest {
 		String srcDir = dir;
 		String tarDir = dir + "/Dataset_Statistics";
 
+		String name_key= "primaryName";
+	
+		String testQuery = "22";
 		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("vertex_kdtree", "edges_naive"));
-		Boolean compare = true;
-
+		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
+		Boolean compare = false;
+		
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();
 		desc.put("Initial Vertex Mapping Method", new ArrayList<>(Arrays.asList("vertex_naive", "vertex_kdtree")));
@@ -97,15 +101,15 @@ public class CostBasedOptimizerTest {
 		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = verticesFromFile.stream()
 				.map(elt -> VertexFromFileToDataSet(elt))
 				.collect(Collectors.toList());
-
-		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = edgesFromFile.stream()
+				
+				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = edgesFromFile.stream()
 				.map(elt -> EdgeFromFileToDataSet(elt))
 				.collect(Collectors.toList());
-
-		StatisticsTransformation sts = new StatisticsTransformation(tarDir);
-		HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
-		HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
-		GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph = GraphExtended
+				
+				StatisticsTransformation sts = new StatisticsTransformation(tarDir);
+				HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
+				HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
+				GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph = GraphExtended
 				.fromList(vertices, edges);
 
 		// System.out.println(graph.getKDTreeByLabel("Artist").toString()); //check the
@@ -157,7 +161,7 @@ public class CostBasedOptimizerTest {
 				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
 
 				QueryEdge ab = new QueryEdge(a, b, "Part Of", new HashMap<String, Pair<String, String>>());
-				QueryEdge bc = new QueryEdge(b, c, "Performed", new HashMap<String, Pair<String, String>>());
+				QueryEdge bc = new QueryEdge(a, c, "Performed", new HashMap<String, Pair<String, String>>());
 
 				vs = new QueryVertex[] { a, b, c };
 				es = new QueryEdge[] { ab, bc };
@@ -287,12 +291,12 @@ public class CostBasedOptimizerTest {
 		}
 
 		QueryGraph g = new QueryGraph(vs, es);
-		CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
-		List<HashSet<Long>> res = new ArrayList<>();
-		List<HashSet<Long>> res1 = new ArrayList<>();
-		List<HashSet<Long>> res2 = new ArrayList<>();
-		List<HashSet<Long>> res3 = new ArrayList<>();
-		List<HashSet<Long>> res4 = new ArrayList<>();
+		CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat, name_key);
+		List<HashSet<Set<String>>> res = new ArrayList<>();
+		List<HashSet<Set<String>>> res1 = new ArrayList<>();
+		List<HashSet<Set<String>>> res2 = new ArrayList<>();
+		List<HashSet<Set<String>>> res3 = new ArrayList<>();
+		List<HashSet<Set<String>>> res4 = new ArrayList<>();
 
 		// Garbage Collector
 		verticesFromFile = null;
@@ -302,7 +306,6 @@ public class CostBasedOptimizerTest {
 		vs = null;
 		es = null;
 		g = null;
-		graph = null;
 		vstat = null;
 		estat = null;
 
@@ -334,15 +337,15 @@ public class CostBasedOptimizerTest {
 			System.out.println("Results: " + res2);
 
 			// Vertex KDtree, Edge Naive
-			System.out.println("Vertex KDtree, Edge Naive: ");
-			long startTimeENaive = System.nanoTime();
-			for (int i = 0; i < 1; i++) {
-				res3 = pg.generateQueryPlan(
-						new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
-			}
-			long endTimeENaive = System.nanoTime();
-			System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
-			System.out.println("Results: " + res3);
+			// System.out.println("Vertex KDtree, Edge Naive: ");
+			// long startTimeENaive = System.nanoTime();
+			// for (int i = 0; i < 1; i++) {
+			// 	res3 = pg.generateQueryPlan(
+			// 			new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
+			// }
+			// long endTimeENaive = System.nanoTime();
+			// System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
+			// System.out.println("Results: " + res3);
 
 			// Vertex KDtree, Edge KDtree
 			System.out.println("Vertex KDtree, Edge KDtree");
@@ -357,8 +360,13 @@ public class CostBasedOptimizerTest {
 		} else {
 			System.out.println(options);
 			res = pg.generateQueryPlan(options);
-			System.out.print(res);
+			System.out.println(res);
+			
+			print_result obj= new print_result(graph, res);
+			obj.printTable();
 		}
+
+		graph = null;
 	}
 
 	public static List<Triplet<Long, String, String>> readVerticesLineByLine(Path filePath) throws Exception {

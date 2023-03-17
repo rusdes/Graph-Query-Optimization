@@ -214,14 +214,14 @@ public class CostBasedOptimizerTest {
 			case "22" : {
 				// IMDB query
 				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("birthYear", new Pair<String, String>("<", "1830"));
+				personProps.put("birthYear", new Pair<String, String>("<", "1850"));
 
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
 				// movieProps.put("originalTitle", new Pair<String, String>("eq", "Carmencita"));
 
 
 				QueryVertex a = new QueryVertex("Person",  personProps, true);
-				QueryVertex b = new QueryVertex("Movie",  movieProps, true);
+				QueryVertex b = new QueryVertex("Movie",  movieProps, false);
 
 				QueryEdge ab = new QueryEdge(a, b, "actor", new HashMap<String, Pair<String, String>>());
 
@@ -277,15 +277,15 @@ public class CostBasedOptimizerTest {
 			System.out.println("Results: " + res2);
 
 			// Vertex KDtree, Edge Naive
-			System.out.println("Vertex KDtree, Edge Naive: ");
-			long startTimeENaive = System.nanoTime();
-			for (int i = 0; i < 1; i++) {
-				res3 = pg.generateQueryPlan(
-						new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
-			}
-			long endTimeENaive = System.nanoTime();
-			System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
-			System.out.println("Results: " + res3);
+			// System.out.println("Vertex KDtree, Edge Naive: ");
+			// long startTimeENaive = System.nanoTime();
+			// for (int i = 0; i < 1; i++) {
+			// 	res3 = pg.generateQueryPlan(
+			// 			new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive")));
+			// }
+			// long endTimeENaive = System.nanoTime();
+			// System.out.println("time(ms): " + (endTimeENaive - startTimeENaive) / 1000000);
+			// System.out.println("Results: " + res3);
 
 			// Vertex KDtree, Edge KDtree
 			System.out.println("Vertex KDtree, Edge KDtree");
@@ -300,9 +300,8 @@ public class CostBasedOptimizerTest {
 		} else {
 			System.out.println(options);
 			res = pg.generateQueryPlan(options);
-			System.out.print(res);
+			System.out.println(res);
 			
-
 			print_result obj= new print_result(graph, res);
 			obj.printTable();
 		}

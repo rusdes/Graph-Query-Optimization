@@ -2,7 +2,6 @@ package operators;
 
 import java.util.ArrayList;
 import java.util.List;
-import operators.helper.JoinFunction;
 
 /*
 *
@@ -27,7 +26,26 @@ public class BinaryOperators {
 	}
 
 	// Join on after vertices
-	public List<List<Long>> joinOnAfterVertices(int firstCol, int secondCol) {
+ 	public List<List<Long>> joinOnAfterVertices(int firstCol, int secondCol) {
+
+		List<List<Long>> merged = new ArrayList<>();
+		for (int i_left = 0; i_left < this.pathsLeft.size(); i_left++){
+			List<Long> list = this.pathsLeft.get(i_left);
+			// List<List<Long>> joinedResults = this.pathsLeft.parallelStream().map(list -> {			
+			for (int i_right = 0; i_right < this.pathsRight.size(); i_right++){
+				List<Long> listRight = this.pathsRight.get(i_right);
+
+				if(list.get(firstCol).equals(listRight.get(secondCol))){
+					List<Long> list_to_add = new ArrayList<>(list);
+					list_to_add.addAll(listRight.subList(secondCol+1, listRight.size()));
+					merged.add(new ArrayList<>(list_to_add));
+				}
+			}
+		}
+		return merged;
+	}
+
+	public List<List<Long>> joinOnAfterVerticesOldVersion(int firstCol, int secondCol) {
 		for (int i_left = 0; i_left < this.pathsLeft.size(); i_left++){
 			List<Long> list = this.pathsLeft.get(i_left);
 			// List<List<Long>> joinedResults = this.pathsLeft.parallelStream().map(list -> {			
@@ -41,36 +59,5 @@ public class BinaryOperators {
 			}
 		}
 		return this.pathsLeft;
-	}
-
-	// Join on left vertices
-	// public List<List<Long>> joinOnBeforeVertices(int firstCol, int secondCol) {
-	// 	KeySelectorForColumns SelectorFirst = new KeySelectorForColumns(firstCol);
-	// 	KeySelectorForColumns SelectorSecond = new KeySelectorForColumns(secondCol);
-
-	// 	List<List<Long>> joinedResults = this.pathsLeft
-	// 			.join(this.pathsRight)
-	// 			.where(SelectorFirst)
-	// 			.equalTo(SelectorSecond)
-	// 			.with(new JoinOnBeforeVertices(firstCol));
-	// 	return joinedResults;
-	// }
-
-	private static class JoinOnBeforeVertices
-			implements JoinFunction<ArrayList<Long>, ArrayList<Long>, ArrayList<Long>> {
-
-		private int col;
-
-		public JoinOnBeforeVertices(int firstCol) {
-			this.col = firstCol;
-		}
-
-		@Override
-		public ArrayList<Long> join(ArrayList<Long> leftPaths,
-				ArrayList<Long> rightPaths) throws Exception {
-			leftPaths.remove(this.col);
-			rightPaths.addAll(leftPaths);
-			return rightPaths;
-		}
 	}
 }

@@ -34,7 +34,7 @@ public class QueryGraphComponent {
 	
 	public int getVertexIndex(QueryVertex qv) {
 		for(int i = 0; i < columns.size(); i++) {
-			if(columns.get(i) == qv) return i;
+			if(columns.get(i).equals(qv)) return i;
 		}
 		return -1;
 	}

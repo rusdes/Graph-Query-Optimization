@@ -35,16 +35,16 @@ public class CostBasedOptimizerTest {
 		// Boolean labeled = true; // change this to false to run on unlabeled data
 		// System.out.println(
 		// 		"1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 - Labeled Toy Dataset");
-		int choice = 2;
+		int choice = 8;
 		String testQuery= "30";
 		System.out.println("Choice: " + choice);
 
 		String dir = null;
 		String name_key = null;
-		Boolean compare = true;
+		Boolean compare = false;
 
 		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("vertex_kdtree", "edges_kdtree"));
+		options.addAll(Arrays.asList("vertex_naive", "edges_kdtree"));
 		
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();
@@ -67,7 +67,7 @@ public class CostBasedOptimizerTest {
 				dir = "src/test/java/Dataset/uncompressed_imdb";
 				// testQuery = "30";
 				name_key="value";
-				// testQuery = "31";
+				testQuery = "31";
 				// testQuery = "32";
 				break;
 			}
@@ -108,7 +108,7 @@ public class CostBasedOptimizerTest {
 
 			case 6: {
 				// Query- 30, 
-				dir = "src/test/java/Dataset/IMDB Medium";
+				dir = "src/test/java/Dataset/IMDB_Medium";
 				// testQuery = "30";
 				name_key="name";
 				// testQuery = "31";
@@ -118,11 +118,21 @@ public class CostBasedOptimizerTest {
 
 			case 7: {
 				// Query- 30, 
-				dir = "src/test/java/Dataset/IMDB Large";
+				dir = "src/test/java/Dataset/IMDB_Large";
 				// testQuery = "30";
 				name_key="name";
 				// testQuery = "31";
 				// testQuery = "32";
+				break;
+			}
+
+			case 8: {
+				// Query- 30, 
+				dir = "src/test/java/Dataset/exp_data";
+				// testQuery = "30";
+				name_key="value";
+				// testQuery = "31";
+				testQuery = "32";
 				break;
 			}
 		}
@@ -386,19 +396,67 @@ public class CostBasedOptimizerTest {
 				// movieProps.put("originalTitle", new Pair<String, String>("eq",
 				// "Carmencita"));
 
-				QueryVertex person = new QueryVertex("Person", personProps, true);
-				QueryVertex birthYear = new QueryVertex("birthYear", birthYearProps, true);
-				QueryVertex movie = new QueryVertex("Movie", movieProps, false);
+				QueryVertex a = new QueryVertex("Person", personProps, true);
+				QueryVertex b = new QueryVertex("birthYear", birthYearProps, true);
+				QueryVertex c = new QueryVertex("Movie", movieProps, false);
 
-				QueryEdge personMovie = new QueryEdge(person, movie, "composer",
+				QueryEdge ac = new QueryEdge(a, c, "composer",
 						new HashMap<String, Pair<String, String>>());
-				QueryEdge personBirthYear = new QueryEdge(person, birthYear, "hasProperty",
+				QueryEdge ab = new QueryEdge(a, b, "hasProperty",
 						new HashMap<String, Pair<String, String>>());
 
-				vs = new QueryVertex[] { person, birthYear, movie };
-				es = new QueryEdge[] { personMovie, personBirthYear };
+				vs = new QueryVertex[] { a, b, c };
+				es = new QueryEdge[] { ac, ab };
 				break;
 			}
+
+			case "31": {
+				// IMDB uncompressed
+				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
+				HashMap<String, Pair<String, String>> birthYearProps = new HashMap<>();
+				birthYearProps.put("value", new Pair<String, String>("<", "1810"));
+				// HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
+				// // movieProps.put("originalTitle", new Pair<String, String>("eq",
+				// "Carmencita"));
+
+				QueryVertex a = new QueryVertex("Person", personProps, true);
+				QueryVertex b = new QueryVertex("birthYear", birthYearProps, true);
+				// QueryVertex c = new QueryVertex("Movie", movieProps, false);
+
+				// QueryEdge ac = new QueryEdge(a, c, "composer",
+				// 		new HashMap<String, Pair<String, String>>());
+				QueryEdge ab = new QueryEdge(a, b, "hasProperty",
+						new HashMap<String, Pair<String, String>>());
+
+				vs = new QueryVertex[] { a, b,};
+				es = new QueryEdge[] { ab };
+				break;
+			}
+
+			case "32": {
+				// IMDB uncompressed
+				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
+				HashMap<String, Pair<String, String>> birthYearProps = new HashMap<>();
+				birthYearProps.put("value", new Pair<String, String>("eq", "Danny Acosta"));
+				// HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
+				// // movieProps.put("originalTitle", new Pair<String, String>("eq",
+				// "Carmencita"));
+
+				QueryVertex a = new QueryVertex("Person", personProps, true);
+				QueryVertex b = new QueryVertex("primaryName", birthYearProps, true);
+				// QueryVertex c = new QueryVertex("Movie", movieProps, false);
+
+				// QueryEdge ac = new QueryEdge(a, c, "composer",
+				// 		new HashMap<String, Pair<String, String>>());
+				QueryEdge ab = new QueryEdge(a, b, "hasProperty",
+						new HashMap<String, Pair<String, String>>());
+
+				vs = new QueryVertex[] { a, b,};
+				es = new QueryEdge[] { ab };
+				break;
+			}
+
+
 			// case "30": {
 			// 	// IMDB uncompressed
 			// 	HashMap<String, Pair<String, String>> personProps = new HashMap<>();

@@ -111,12 +111,13 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 		return this.KDTreeSetEdge.get(label);
 	}
 
-	public ArrayList<String> getPropKeySorted(String label) {
+	public ArrayList<String> getPropKeySorted(String label, String type) {
 		HashMap<String, String> props;
-		try {
-			props = (HashMap<String, String>) ((VertexExtended) this.KDTreeSetVertex.get(label).getRoot()).getProps();
-		} catch (Exception e) {
+		if(type.equals("edge")){
 			props = (HashMap<String, String>) ((EdgeExtended) this.KDTreeSetEdge.get(label).getRoot()).getProps();
+		}else{
+			props = (HashMap<String, String>) ((VertexExtended) this.KDTreeSetVertex.get(label).getRoot()).getProps();
+
 		}
 		Set<String> keySet = props.keySet();
 		return new ArrayList(new TreeSet(keySet));

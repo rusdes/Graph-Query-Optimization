@@ -99,7 +99,7 @@ public class CostBasedOptimzer {
 	}
 
 	private Object[] queryKDTree(HashMap<String, Pair<String, String>> givenProp, String label, String type) {
-		ArrayList<String> possibleKeys = graph.getPropKeySorted(label);
+		ArrayList<String> possibleKeys = graph.getPropKeySorted(label, type);
 
 		String KDKeyMin[] = new String[possibleKeys.size()];
 		String KDKeyMax[] = new String[possibleKeys.size()];
@@ -223,8 +223,9 @@ public class CostBasedOptimzer {
 			ArrayList<Object> leftColumns, rightColumns;
 
 			// KDTree for labels as well
-
-			Object[] filteredEdges = queryKDTree(e.getProps(), e.getLabel(), "edge");
+			Object[] filteredEdges = {};
+			if(options.contains("edges_kdtree"))
+				filteredEdges = queryKDTree(e.getProps(), e.getLabel(), "edge");
 			// System.out.println(filteredEdges);
 
 			FilterFunction ef;

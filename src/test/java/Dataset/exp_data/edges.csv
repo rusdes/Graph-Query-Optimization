@@ -1,13 +1,6 @@
 ID|sourceID|targetID|Label|Properties
-46|497488|35|actor|job,unknown,characters,["Rip Van Winkle"]
-62|497488|75|actor|job,unknown,characters,["Rip Van Winkle"]
-75|497488|107|actor|job,unknown,characters,["Rip Van Winkle"]
-79|497488|108|actor|job,unknown,characters,["Rip Van Winkle"]
-83|497488|109|actor|job,unknown,characters,["Rip Van Winkle"]
-87|497488|110|actor|job,unknown,characters,["Rip Van Winkle"]
-91|497488|111|actor|job,unknown,characters,["Rip Van Winkle"]
-95|497488|112|actor|job,unknown,characters,["Rip Van Winkle"]
-401|497488|461|actor|job,unknown,characters,["Rip Van Winkle"]
-14400|497488|4483|writer|job,play,characters,unknown
-20437|497488|5958|writer|job,play,characters,unknown
-50809|497488|12447|writer|job,play,characters,unknown
+97236|15002|110012|hasProperty|
+97237|15002|110013|hasProperty|
+97238|15002|110014|hasProperty|
+97239|15002|110015|hasProperty|
+97240|15002|110016|hasProperty|

@@ -5,93 +5,48 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
-import operators.datastructures.VertexExtended;
 import operators.datastructures.GraphExtended;
 
 public class print_result {
     GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph;
-    List<HashSet<Set<String>>> res1 = new ArrayList<>();
-    List<List<List<String>>> res;
-    int number_of_labels;
-    int max_height;
-    int a;
-    int max_length=0;
-    List<Integer> sizes = new ArrayList<>();
-    String labels[];
+    List<List<Long>> res1 = new ArrayList<>();
+    List<List<Long>> res;
+    String name_key;
     static String[][] table;
-    String[] row;
 
     public print_result(GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> g,
-    List<HashSet<Set<String>>> r){
+    List<List<Long>> r,
+    String key){
         graph= g;
-        res= convert_to_list(r);
-        number_of_labels= res.size();
-        labels= new String[number_of_labels];
+        res= r;
+        name_key= key;
         
-        for(int i=0; i<number_of_labels;i++){
-            a= res.get(i).size();
-            // System.out.println("help "+res.get(i).stream().findFirst().get().stream().findFirst().get());
-            String key= res.get(i).stream().findFirst().get().stream().findFirst().get();
-            long l=Long.parseLong(key);
-            // String label= graph.getVertexByID(l).getLabel();
-            // String label= res.get(i).stream().findFirst().get().getLabel();
-            labels[i]= graph.getVertexByID(l).getLabel();
-            sizes.add(a);
-            if(a>=max_length){
-                max_length=a;
-            }
-        }
+        int number_of_rows= res.size()+1;
+        int number_of_labels= res.get(0).size();
+        String[] labels= new String[number_of_labels];
+
+        table= new String[number_of_rows][number_of_labels];
+
+
         for(int i=0; i<number_of_labels; i++){
-            if (sizes.get(i) < max_length) {
-                fillZeros(res, i , max_length);
-            } 
+            String label= graph.getVertexByID(res.get(0).get(i)).getLabel();
+            labels[i]=label;
         }
-        
-        table= new String[max_length+1][number_of_labels];
-        table[0]=labels;
-            for(int i=1; i<=max_length; i++){
-                row=new String[number_of_labels];
-                String subrow;
-                for(int j=0; j< number_of_labels; j++){
-                    // System.out.println("res.get(j).get(i).get(0) "+res.get(j).get(i-1).get(0));
-                    // System.out.println("res.get(j).get(i).get(1) "+ res.get(j).get(i-1).get(1));
-                    subrow=res.get(j).get(i-1).get(0)+": "+ res.get(j).get(i-1).get(1);
-                    row[j]= subrow;
-                    // row[j]= "something";
-                }
-                table[i]= row;
+
+        table[0]= labels;
+
+        for(int i=0; i<number_of_rows-1; i++){
+            String[] row= new String[number_of_labels];
+            for(int j=0; j<number_of_labels; j++){
+                Long node= res.get(i).get(j);
+                String value= graph.getVertexByID(node).getProps().get(name_key);
+                String final_value = node.toString()+ ":" +value;
+                row[j]=final_value;
             }
+            table[i+1]=row;
         }
-    
-
-    public void fillZeros(List<List<List<String>>> res, int i, int max_length) {
-        List<String> zero= new ArrayList();
-        zero.add("");
-        zero.add("");
-        for(int j = res.get(i).size(); j < max_length; j++) {
-            res.get(i).add(zero);
-        }
-    }
-
-
-    public List<List<List<String>>> convert_to_list(List<HashSet<Set<String>>> res1){
-        List<List<List<String>>> res= new ArrayList<>();
-        for (int i = 0; i < res1.size(); i++){
-            List<List<String>> group= new ArrayList<>();
-            for (Set<String> ele : res1.get(i)) {
-                // Print HashSet data
-                List<String> node= new ArrayList<>();
-                for(String values: ele){
-                    node.add(values);
-                }
-            group.add(node);
-            }
-            res.add(group);
-        }
-        return res;
     }
 
     public void printTable() {
@@ -107,16 +62,11 @@ public class print_result {
                 columnLengths.put(i, a[i].length());
             }
         }));
-        // System.out.println("columnLengths = " + columnLengths);
-     
-        /*
-         * Prepare format String
-         */
+
         final StringBuilder formatString = new StringBuilder("");
         String flag = leftJustifiedRows ? "-" : "";
         columnLengths.entrySet().stream().forEach(e -> formatString.append("| %" + flag + e.getValue() + "s "));
         formatString.append("|\n");
-        // System.out.println("formatString = " + formatString.toString());
         System.out.println("");
      
         /*

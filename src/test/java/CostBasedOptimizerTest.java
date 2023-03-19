@@ -15,6 +15,7 @@ import queryplan.querygraph.QueryGraph;
 import queryplan.querygraph.QueryVertex;
 import queryplan.*;
 
+import java.io.File;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,13 +31,12 @@ import java.util.stream.Collectors;
 public class CostBasedOptimizerTest {
 	public static void main(String[] args) throws Exception {
 
-
-
 		// Boolean labeled = true; // change this to false to run on unlabeled data
 		// System.out.println(
-		// 		"1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 - Labeled Toy Dataset");
-		int choice = 8;
-		String testQuery= "30";
+		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
+		// Labeled Toy Dataset");
+		int choice = 2;
+		String testQuery = "30";
 		System.out.println("Choice: " + choice);
 
 		String dir = null;
@@ -45,7 +45,7 @@ public class CostBasedOptimizerTest {
 
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_naive", "edges_kdtree"));
-		
+
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();
 		desc.put("Initial Vertex Mapping Method", new ArrayList<>(Arrays.asList("vertex_naive", "vertex_kdtree")));
@@ -56,17 +56,17 @@ public class CostBasedOptimizerTest {
 				// Query- 21, 22, 23, 24
 				// dir = "src/test/java/Dataset/compressed_imdb";
 				dir = "src/test/java/Dataset/IMDB_Small";
-				name_key= "name";
+				name_key = "name";
 				// testQuery = "23";
 				// testQuery = "22";
 				break;
 			}
 
 			case 2: {
-				// Query- 30, 
+				// Query- 30,
 				dir = "src/test/java/Dataset/uncompressed_imdb";
 				// testQuery = "30";
-				name_key="value";
+				name_key = "value";
 				testQuery = "31";
 				// testQuery = "32";
 				break;
@@ -107,30 +107,30 @@ public class CostBasedOptimizerTest {
 			}
 
 			case 6: {
-				// Query- 30, 
+				// Query- 30,
 				dir = "src/test/java/Dataset/IMDB_Medium";
 				// testQuery = "30";
-				name_key="name";
+				name_key = "name";
 				// testQuery = "31";
 				// testQuery = "32";
 				break;
 			}
 
 			case 7: {
-				// Query- 30, 
+				// Query- 30,
 				dir = "src/test/java/Dataset/IMDB_Large";
 				// testQuery = "30";
-				name_key="name";
+				name_key = "name";
 				// testQuery = "31";
 				// testQuery = "32";
 				break;
 			}
 
 			case 8: {
-				// Query- 30, 
+				// Query- 30,
 				dir = "src/test/java/Dataset/exp_data";
 				// testQuery = "30";
-				name_key="value";
+				name_key = "value";
 				// testQuery = "31";
 				testQuery = "32";
 				break;
@@ -140,6 +140,10 @@ public class CostBasedOptimizerTest {
 		// defining source and target path for statistics files of edge and vertices
 		String srcDir = dir;
 		String tarDir = dir + "/Dataset_Statistics";
+		File theDir = new File(tarDir);
+		if (!theDir.exists()) {
+			theDir.mkdirs();
+		}
 
 		// Write statistics to file if file is not present in tarDir
 		StatisticsCollector stats = new StatisticsCollector(srcDir, tarDir);
@@ -150,22 +154,23 @@ public class CostBasedOptimizerTest {
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(
 				Paths.get(dir, "edges.csv"));
 
-		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = verticesFromFile.stream().map(elt -> VertexFromFileToDataSet(elt)).collect(Collectors.toList());
-				
-				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = edgesFromFile.stream()
+		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = verticesFromFile.stream()
+				.map(elt -> VertexFromFileToDataSet(elt)).collect(Collectors.toList());
+
+		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = edgesFromFile.stream()
 				.map(elt -> EdgeFromFileToDataSet(elt))
 				.collect(Collectors.toList());
-				
-				StatisticsTransformation sts = new StatisticsTransformation(tarDir);
-				HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
-				HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
-				GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph = GraphExtended
+
+		StatisticsTransformation sts = new StatisticsTransformation(tarDir);
+		HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
+		HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
+		GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph = GraphExtended
 				.fromList(vertices, edges);
 
 		// System.out.println(graph.getKDTreeByLabel("Artist").toString()); //check the
 		// kd tree data
-		GraphCompressor gc = new GraphCompressor();
-		gc.compress(graph);
+		// GraphCompressor gc = new GraphCompressor();
+		// gc.compress(graph);
 		QueryVertex[] vs = new QueryVertex[] {};
 		QueryEdge[] es = new QueryEdge[] {};
 		switch (testQuery) {
@@ -189,7 +194,7 @@ public class CostBasedOptimizerTest {
 			case "41": {
 
 				// expected output: [[4, 2, 5]]
-				
+
 				HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
 				canelaCoxProps.put("Years Active", new Pair<String, String>("<=", "10"));
 				QueryVertex a = new QueryVertex("Artist", canelaCoxProps, true);
@@ -208,7 +213,8 @@ public class CostBasedOptimizerTest {
 				// HashMap<String, Pair<String, String>> canelaCoxProps = new HashMap<>();
 				// canelaCoxProps.put("Name", new Pair<String, String>("eq", "Canela Cox"));
 
-				// expected output: [[4, 3, 5], [4, 3, 7], [4, 3, 8], [4, 2, 5], [6, 3, 5], [6, 3, 7], [6, 3, 8]]
+				// expected output: [[4, 3, 5], [4, 3, 7], [4, 3, 8], [4, 2, 5], [6, 3, 5], [6,
+				// 3, 7], [6, 3, 8]]
 				QueryVertex a = new QueryVertex("Artist", new HashMap<String, Pair<String, String>>(), true);
 				QueryVertex b = new QueryVertex("Band", new HashMap<String, Pair<String, String>>(), true);
 				QueryVertex c = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
@@ -295,10 +301,8 @@ public class CostBasedOptimizerTest {
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
 				movieProps.put("originalTitle", new Pair<String, String>("eq", "Carmencita"));
 
-
-				QueryVertex a = new QueryVertex("Person",  personProps, true);
-				QueryVertex b = new QueryVertex("Movie",  movieProps, true);
-				
+				QueryVertex a = new QueryVertex("Person", personProps, true);
+				QueryVertex b = new QueryVertex("Movie", movieProps, true);
 
 				QueryEdge ab = new QueryEdge(a, b, "director", new HashMap<String, Pair<String, String>>());
 
@@ -326,7 +330,7 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case "23" : {
+			case "23": {
 				// IMDB query
 				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
 				personProps.put("primaryProfession", new Pair<String, String>("eq", "camera_department"));
@@ -345,31 +349,32 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			
-			case "24" : {
+			case "24": {
 				// IMDB query
 				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				// personProps.put("primaryProfession", new Pair<String, String>("eq", "actor"));
-				
+				// personProps.put("primaryProfession", new Pair<String, String>("eq",
+				// "actor"));
+
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
-				// movieProps.put("originalTitle", new Pair<String, String>("eq", "Carmencita"));
-				
-				
-				QueryVertex a = new QueryVertex("Person",  personProps, true);
-				QueryVertex b = new QueryVertex("Movie",  movieProps, true);
-				
+				// movieProps.put("originalTitle", new Pair<String, String>("eq",
+				// "Carmencita"));
+
+				QueryVertex a = new QueryVertex("Person", personProps, true);
+				QueryVertex b = new QueryVertex("Movie", movieProps, true);
+
 				QueryEdge ab = new QueryEdge(a, b, "archive_footage", new HashMap<String, Pair<String, String>>());
-				
+
 				vs = new QueryVertex[] { a, b };
 				es = new QueryEdge[] { ab };
 				break;
 			}
 
-			case "25" : {
+			case "25": {
 				// IMDB query
-				// dont run for now, gotta test this query 
+				// dont run for now, gotta test this query
 				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				// personProps.put("primaryProfession", new Pair<String, String>("eq", "camera_department"));
+				// personProps.put("primaryProfession", new Pair<String, String>("eq",
+				// "camera_department"));
 
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
 				// movieProps.put("originalTitle", new Pair<String, String>("eq",
@@ -386,7 +391,7 @@ public class CostBasedOptimizerTest {
 				es = new QueryEdge[] { ab, ac };
 				break;
 			}
-			
+
 			case "30": {
 				// IMDB uncompressed
 				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
@@ -424,11 +429,11 @@ public class CostBasedOptimizerTest {
 				// QueryVertex c = new QueryVertex("Movie", movieProps, false);
 
 				// QueryEdge ac = new QueryEdge(a, c, "composer",
-				// 		new HashMap<String, Pair<String, String>>());
+				// new HashMap<String, Pair<String, String>>());
 				QueryEdge ab = new QueryEdge(a, b, "hasProperty",
 						new HashMap<String, Pair<String, String>>());
 
-				vs = new QueryVertex[] { a, b,};
+				vs = new QueryVertex[] { a, b, };
 				es = new QueryEdge[] { ab };
 				break;
 			}
@@ -447,42 +452,42 @@ public class CostBasedOptimizerTest {
 				// QueryVertex c = new QueryVertex("Movie", movieProps, false);
 
 				// QueryEdge ac = new QueryEdge(a, c, "composer",
-				// 		new HashMap<String, Pair<String, String>>());
+				// new HashMap<String, Pair<String, String>>());
 				QueryEdge ab = new QueryEdge(a, b, "hasProperty",
 						new HashMap<String, Pair<String, String>>());
 
-				vs = new QueryVertex[] { a, b,};
+				vs = new QueryVertex[] { a, b, };
 				es = new QueryEdge[] { ab };
 				break;
 			}
 
-
 			// case "30": {
-			// 	// IMDB uncompressed
-			// 	HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-			// 	HashMap<String, Pair<String, String>> birthYearProps = new HashMap<>();
-			// 	birthYearProps.put("value", new Pair<String, String>("<", "1850"));
-			// 	HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
-			// 	// movieProps.put("originalTitle", new Pair<String, String>("eq",
-			// 	// "Carmencita"));
+			// // IMDB uncompressed
+			// HashMap<String, Pair<String, String>> personProps = new HashMap<>();
+			// HashMap<String, Pair<String, String>> birthYearProps = new HashMap<>();
+			// birthYearProps.put("value", new Pair<String, String>("<", "1850"));
+			// HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
+			// // movieProps.put("originalTitle", new Pair<String, String>("eq",
+			// // "Carmencita"));
 
-			// 	QueryVertex person = new QueryVertex("Person", personProps, true);
-			// 	QueryVertex birthYear = new QueryVertex("birthYear", birthYearProps, true);
-			// 	QueryVertex movie = new QueryVertex("Movie", movieProps, false);
+			// QueryVertex person = new QueryVertex("Person", personProps, true);
+			// QueryVertex birthYear = new QueryVertex("birthYear", birthYearProps, true);
+			// QueryVertex movie = new QueryVertex("Movie", movieProps, false);
 
-			// 	QueryEdge personMovie = new QueryEdge(person, movie, "actor",
-			// 			new HashMap<String, Pair<String, String>>());
-			// 	QueryEdge personBirthYear = new QueryEdge(person, birthYear, "hasProperty",
-			// 			new HashMap<String, Pair<String, String>>());
+			// QueryEdge personMovie = new QueryEdge(person, movie, "actor",
+			// new HashMap<String, Pair<String, String>>());
+			// QueryEdge personBirthYear = new QueryEdge(person, birthYear, "hasProperty",
+			// new HashMap<String, Pair<String, String>>());
 
-			// 	vs = new QueryVertex[] { person, birthYear, movie };
-			// 	es = new QueryEdge[] { personMovie, personBirthYear };
-			// 	break;
+			// vs = new QueryVertex[] { person, birthYear, movie };
+			// es = new QueryEdge[] { personMovie, personBirthYear };
+			// break;
 			// }
 		}
 
 		QueryGraph g = new QueryGraph(vs, es);
-		// CostBasedOptimzerNew pg = new CostBasedOptimzerNew(g, graph, vstat, estat, name_key);
+		// CostBasedOptimzerNew pg = new CostBasedOptimzerNew(g, graph, vstat, estat,
+		// name_key);
 		CostBasedOptimzer pg = new CostBasedOptimzer(g, graph, vstat, estat);
 
 		// List<HashSet<Set<String>>> res = new ArrayList<>();
@@ -516,9 +521,9 @@ public class CostBasedOptimizerTest {
 			System.out.println("Vertex Naive, Edge Naive: ");
 			long startTimeNaive = System.nanoTime();
 			for (int i = 0; i < 1; i++) {
-			res1 = pg
-			.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive",
-			"edges_naive")));
+				res1 = pg
+						.generateQueryPlan(new HashSet<>(Arrays.asList("vertex_naive",
+								"edges_naive")));
 			}
 			long endTimeNaive = System.nanoTime();
 			System.out.println("time(ms): " + (endTimeNaive - startTimeNaive) / 1000000);
@@ -562,7 +567,7 @@ public class CostBasedOptimizerTest {
 			System.out.println(options);
 			res = pg.generateQueryPlan(options);
 			System.out.println(res);
-			print_result obj= new print_result(graph, res, name_key);
+			print_result obj = new print_result(graph, res, name_key);
 			obj.printTable();
 		}
 

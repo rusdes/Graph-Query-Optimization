@@ -36,7 +36,7 @@ public class CostBasedOptimizerTest {
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
 		int choice = 2;
-		String testQuery = "30";
+		String testQuery = "31";
 		System.out.println("Choice: " + choice);
 
 		String dir = null;
@@ -44,12 +44,12 @@ public class CostBasedOptimizerTest {
 		Boolean compare = false;
 
 		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("vertex_naive", "edges_kdtree"));
+		options.addAll(Arrays.asList("vertex_kdtree", "edges_naive"));
 
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();
 		desc.put("Initial Vertex Mapping Method", new ArrayList<>(Arrays.asList("vertex_naive", "vertex_kdtree")));
-		desc.put("Edges Mapping Method", new ArrayList<>(Arrays.asList("edges_naive", "edges_kdtree")));
+		desc.put("Edges Mapping Method", new ArrayList<>(Arrays.asList("edges_kdtree", "edges_kdtree")));
 
 		switch (choice) {
 			case 1: {
@@ -67,7 +67,7 @@ public class CostBasedOptimizerTest {
 				dir = "src/test/java/Dataset/uncompressed_imdb";
 				// testQuery = "30";
 				name_key = "value";
-				testQuery = "31";
+				// testQuery = "31";
 				// testQuery = "32";
 				break;
 			}
@@ -143,12 +143,11 @@ public class CostBasedOptimizerTest {
 		File theDir = new File(tarDir);
 		if (!theDir.exists()) {
 			theDir.mkdirs();
+			// Write statistics to file if file is not present in tarDir
+			StatisticsCollector stats = new StatisticsCollector(srcDir, tarDir);
+			stats.collect();
+			stats = null; // Free up memory
 		}
-
-		// Write statistics to file if file is not present in tarDir
-		StatisticsCollector stats = new StatisticsCollector(srcDir, tarDir);
-		stats.collect();
-		stats = null; // Free up memory
 
 		List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
 		List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(

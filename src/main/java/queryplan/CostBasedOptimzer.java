@@ -210,6 +210,7 @@ public class CostBasedOptimzer {
 			for (QueryEdge cand : edges) {
 				double estSrc = cand.getSourceVertex().getComponent().getEst();
 				double estTar = cand.getTargetVertex().getComponent().getEst();
+				
 				double estEdge = edgesStats.get(cand.getLabel()).getValue0() * estSrc * estTar;
 				if (minEst > estEdge) {
 					minEst = estEdge;

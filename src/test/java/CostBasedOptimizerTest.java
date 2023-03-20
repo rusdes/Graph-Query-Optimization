@@ -35,8 +35,8 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 7;
-		String testQuery = "23";
+		int choice = 4;
+		String testQuery = "45";
 		System.out.println("Choice: " + choice);
 
 		String dir = null;
@@ -53,7 +53,7 @@ public class CostBasedOptimizerTest {
 
 		switch (choice) {
 			case 1: {
-				// Query- 21, 22, 23, 24
+				// Query- 21, 22, 24
 				// dir = "src/test/java/Dataset/compressed_imdb";
 				dir = "src/test/java/Dataset/IMDB_Small";
 				name_key = "name";
@@ -563,7 +563,12 @@ public class CostBasedOptimizerTest {
 			long endTimeKD = System.nanoTime();
 			System.out.println("time(ms): " + (endTimeKD - startTimeKD) / 1000000);
 			System.out.println("Results: " + res4);
+			System.out.println("");
+			print_result obj = new print_result(graph, res4, name_key);
+			obj.printTable();
+
 		} else {
+
 			System.out.println(options);
 			res = pg.generateQueryPlan(options);
 			System.out.println(res);

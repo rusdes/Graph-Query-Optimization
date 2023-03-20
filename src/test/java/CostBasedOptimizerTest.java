@@ -35,13 +35,13 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 2;
-		String testQuery = "31";
+		int choice = 7;
+		String testQuery = "23";
 		System.out.println("Choice: " + choice);
 
 		String dir = null;
 		String name_key = null;
-		Boolean compare = false;
+		Boolean compare = true;
 
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_kdtree", "edges_naive"));
@@ -332,7 +332,7 @@ public class CostBasedOptimizerTest {
 			case "23" : {
 				// IMDB query
 				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("primaryProfession", new Pair<String, String>("eq", "writer"));
+				personProps.put("primaryProfession", new Pair<String, String>("eq", "editor"));
 				personProps.put("deathYear", new Pair<String, String>("<=", "1850"));
 
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
@@ -342,7 +342,7 @@ public class CostBasedOptimizerTest {
 				QueryVertex a = new QueryVertex("Person", personProps, true);
 				QueryVertex b = new QueryVertex("Movie", movieProps, false);
 
-				QueryEdge ab = new QueryEdge(a, b, "writer", new HashMap<String, Pair<String, String>>());
+				QueryEdge ab = new QueryEdge(a, b, "editor", new HashMap<String, Pair<String, String>>());
 
 				vs = new QueryVertex[] { a, b };
 				es = new QueryEdge[] { ab };

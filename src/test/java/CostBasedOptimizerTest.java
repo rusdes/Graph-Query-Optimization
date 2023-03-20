@@ -329,10 +329,11 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case "23": {
+			case "23" : {
 				// IMDB query
 				HashMap<String, Pair<String, String>> personProps = new HashMap<>();
-				personProps.put("primaryProfession", new Pair<String, String>("eq", "camera_department"));
+				personProps.put("primaryProfession", new Pair<String, String>("eq", "writer"));
+				personProps.put("deathYear", new Pair<String, String>("<=", "1850"));
 
 				HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
 				// movieProps.put("originalTitle", new Pair<String, String>("eq",
@@ -341,7 +342,7 @@ public class CostBasedOptimizerTest {
 				QueryVertex a = new QueryVertex("Person", personProps, true);
 				QueryVertex b = new QueryVertex("Movie", movieProps, false);
 
-				QueryEdge ab = new QueryEdge(a, b, "director", new HashMap<String, Pair<String, String>>());
+				QueryEdge ab = new QueryEdge(a, b, "writer", new HashMap<String, Pair<String, String>>());
 
 				vs = new QueryVertex[] { a, b };
 				es = new QueryEdge[] { ab };

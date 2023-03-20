@@ -35,8 +35,8 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 4;
-		String testQuery = "45";
+		int choice = 7;
+		String testQuery = "23";
 		System.out.println("Choice: " + choice);
 
 		String dir = null;
@@ -405,7 +405,7 @@ public class CostBasedOptimizerTest {
 				QueryVertex b = new QueryVertex("birthYear", birthYearProps, true);
 				QueryVertex c = new QueryVertex("Movie", movieProps, false);
 
-				QueryEdge ac = new QueryEdge(a, c, "composer",
+				QueryEdge ac = new QueryEdge(a, c, "actor",
 						new HashMap<String, Pair<String, String>>());
 				QueryEdge ab = new QueryEdge(a, b, "hasProperty",
 						new HashMap<String, Pair<String, String>>());

@@ -35,7 +35,7 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 1;
+		int choice = 7;
 		String testQuery = "21";
 		System.out.println("Choice: " + choice);
 

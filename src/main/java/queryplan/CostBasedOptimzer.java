@@ -173,7 +173,6 @@ public class CostBasedOptimzer {
 		// Query KD Tree from here to get inital vertex component
 		// Traverse each query vertex and generate a initial component
 
-		// TODO: Make parallel
 		for (QueryVertex qv : query.getQueryVertices()) {
 			double est = verticesStats.get(qv.getLabel()).getValue1();
 

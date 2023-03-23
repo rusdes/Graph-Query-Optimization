@@ -1,74 +1,86 @@
 package operators.datastructures;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.javatuples.Pair;
+import org.javatuples.Quartet;
+import org.javatuples.Triplet;
 
 import operators.datastructures.kdtree.KDTree;
-import static operators.datastructures.kdtree.Constants.STRING_MIN_VALUE;
-import static operators.datastructures.kdtree.Constants.STRING_MAX_VALUE;
+import operators.datastructures.kdtree.QuickSelect;
 
-class Tuple<R, S> implements Comparator<Tuple<String[], String>> {
-    public R key;
-    public S label;
-    int dim = 0;
-
-    public Tuple(R r, S s) {
-        this.key = r;
-        this.label = s;
-        // this.dim = dim;
-    }
-
-    @Override
-    public int compare(Tuple<String[], String> a, Tuple<String[], String> b) {
-        return (a.key)[this.dim].compareTo(b.key[this.dim]);
-    }
-}
-
-class Sort1 implements Comparator<Tuple<String[], String>> {
+class Sort implements Comparator<Object> {
     int dim;
 
-    public Sort1(int dim) {
+    public Sort(int dim) {
         this.dim = dim;
     }
 
     @Override
-    public int compare(Tuple<String[], String> a, Tuple<String[], String> b) {
-        return (a.key)[this.dim].compareTo(b.key[this.dim]);
+    public int compare(Object a, Object b) {
+        Pair<String[], String> p1 = (Pair<String[], String>) a;
+        Pair<String[], String> p2 = (Pair<String[], String>) b;
+
+        return (p1.getValue0())[this.dim].compareTo(p2.getValue0()[this.dim]);
     }
 }
 
 public class kd_exp {
     public static void main(String[] args) {
-        // KDTree kdTree = new KDTree(2); // 2 dimensions (x, y)
-        // // point insertion:
-        // kdTree.insert(new String[] { "James", "45" }, "Artist1");
-        // kdTree.insert(new String[] { "Roy", "70" }, "Artist2");
-        // kdTree.insert(new String[] { "Rushil", "50" }, "Artist3");
-        // kdTree.insert(new String[] { "Alan", "10" }, "Artist4");
-        // kdTree.insert(new String[] { "Jake", "90" }, "Artist5");
-        // kdTree.insert(new String[] { "Miley", "85" }, "Artist6");
 
-        // Object[] output = kdTree.range(new String[] { "Roy", STRING_MIN_VALUE },
-        //         new String[] { STRING_MAX_VALUE, Integer.toString(80) });
-        // System.out.println("Output = " + Arrays.toString(output));
-        // System.out.println("");
-        // System.out.println(kdTree.toString()); // check the data
+        Object[] array = new Object[6];
 
-        List<Tuple> arr = new ArrayList<Tuple>();
-        arr.add(new Tuple<String[], String>(new String[] { "James", "45" }, "Artist1"));
-        arr.add(new Tuple<String[], String>(new String[] { "Roy", "70" }, "Artist2"));
-        arr.add(new Tuple<String[], String>(new String[] { "Rushil", "50" }, "Artist3"));
-        arr.add(new Tuple<String[], String>(new String[] { "Alan", "10" }, "Artist4"));
-        arr.add(new Tuple<String[], String>(new String[] { "Jake", "90" }, "Artist5"));
-        arr.add(new Tuple<String[], String>(new String[] { "Miley", "85" }, "Artist6"));
+        array[0] = new Pair<String[], String>(new String[] { "James", "45" }, "Artist1");
+        array[1] = new Pair<String[], String>(new String[] { "Roy", "70" }, "Artist2");
+        array[2] = new Pair<String[], String>(new String[] { "Rushil", "50" }, "Artist3");
+        array[3] = new Pair<String[], String>(new String[] { "Alan", "10" }, "Artist4");
+        array[4] = new Pair<String[], String>(new String[] { "Jake", "90" }, "Artist5");
+        array[5] = new Pair<String[], String>(new String[] { "Miley", "85" }, "Artist6");
 
-        // Collections.sort(arr, new Sort1(0));
+        // Arrays.sort(array, new Sort(1));
+
+        for (Object tuple : array) {
+            Pair<String[], String> p = (Pair<String[], String>) tuple;
+            System.out.println(Arrays.toString(p.getValue0()));
+        }
+
+       KDTree kdtree = medianKDTree(array, 2);
+       System.out.println(kdtree.toString());
+    }
+
+    public static KDTree medianKDTree(Object[] arr, int dims) {
+        KDTree kdTree = new KDTree(dims);
+        QuickSelect medianObj = new QuickSelect();
+
+        Queue<Triplet<Integer, Integer, Integer>> queue = new LinkedList<>();
+        queue.add(new Triplet<Integer, Integer, Integer>(0, arr.length - 1, 0));
+        Triplet<Integer, Integer, Integer> cur_args;
+        while (!queue.isEmpty()) {
+            cur_args = queue.poll();
+            Quartet<Integer, Integer, Integer, Object> quartet = medianObj.median(arr, cur_args.getValue0(),
+                    cur_args.getValue1(), cur_args.getValue2() % dims);
+            
+            Pair<String[], String> p;
+            try {
+                p = (Pair<String[], String>) quartet.getValue3();
+            } catch (Exception e) {
+                continue;
+            }
+            kdTree.insert(p.getValue0(), p.getValue1());
+
+            if (quartet.getValue0().compareTo(quartet.getValue2() - 1) <= 0) {
+                queue.add(new Triplet<Integer, Integer, Integer>(quartet.getValue0(), quartet.getValue2() - 1,
+                        cur_args.getValue2() + 1));
+            }
+            if (quartet.getValue1().compareTo(quartet.getValue2() + 1) >= 0) {
+                queue.add(new Triplet<Integer, Integer, Integer>(quartet.getValue2() + 1, quartet.getValue1(),
+                        cur_args.getValue2() + 1));
+            }
+        }
+        return kdTree;
 
     }
 }

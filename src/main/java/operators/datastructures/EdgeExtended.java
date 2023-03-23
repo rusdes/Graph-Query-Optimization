@@ -10,7 +10,7 @@ package operators.datastructures;
  * @param <P> the edge properties type
  *  */
 
-public class EdgeExtended<E, K, L, P> {
+public class EdgeExtended<E, K, L, P> implements java.io.Serializable{
 	
 	// private static final long serialVersionUID = 1L;
 	// Long, Long, String, HashMap<String, String>

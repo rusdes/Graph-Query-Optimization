@@ -1,14 +1,30 @@
 package operators.datastructures;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.javatuples.Pair;
+import org.javatuples.Quartet;
+import org.javatuples.Triplet;
+
+import me.tongfei.progressbar.ProgressBar;
+
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
 import operators.datastructures.kdtree.KDTree;
+import operators.datastructures.kdtree.QuickSelect;
 
 /**
  * Extended graph for Cypher Implementation
@@ -22,7 +38,7 @@ import operators.datastructures.kdtree.KDTree;
  * 
  */
 
-public class GraphExtended<K, VL, VP, E, EL, EP> {
+public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable{
 
 	// private final List<VertexExtended<K, VL, VP>> vertices;
 	private HashMap<Long, VertexExtended<K, VL, VP>> vertices = new HashMap<>();
@@ -32,7 +48,10 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 
 	/* initialization */
 	private GraphExtended(List<VertexExtended<K, VL, VP>> vertices,
-			List<EdgeExtended<E, K, EL, EP>> edges) {
+			List<EdgeExtended<E, K, EL, EP>> edges,
+			Boolean Balanced_KDTree,
+			Boolean EdgeProps,
+			String path) throws ClassNotFoundException {
 
 		for (EdgeExtended<E, K, EL, EP> e : edges) {
 			Long id = (Long) e.getEdgeId();
@@ -43,23 +62,85 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 			Long id = (Long) v.getVertexId();
 			this.vertices.put(id, v);
 		}
-		InitializeKDTreeSet(vertices, edges);
+		InitializeKDTreeSet(vertices, edges, Balanced_KDTree, EdgeProps, path);
 	}
 
-	private void InitializeKDTreeSet(List<VertexExtended<K, VL, VP>> vertices, List<EdgeExtended<E, K, EL, EP>> edges) {
-		for (VertexExtended<K, VL, VP> vertex : vertices) {
-			String label = (String) vertex.getLabel();
+	private void InitializeKDTreeSet(List<VertexExtended<K, VL, VP>> vertices, List<EdgeExtended<E, K, EL, EP>> edges,
+			Boolean Balanced_KDTree, Boolean EdgeProps, String path) throws ClassNotFoundException {
+		HashMap<String, List<Pair<String[], VertexExtended<K, VL, VP>>>> hashMap = new HashMap<>();
+		
+		// Read object from file if present
+		String tarDir;
+		if (Balanced_KDTree) {
+			tarDir = path + "/KDTree/Balanced";
+		}else{
+			tarDir = path + "/KDTree/Unbalanced";
+		}
+		File theDir = new File(tarDir);
+		if (theDir.exists()) {
+			// theDir.mkdirs();
+			try {
+				ObjectInputStream objectInputStream = new ObjectInputStream(
+						new FileInputStream(tarDir + "/kdtree.ser"));
+				this.KDTreeSetVertex = (HashMap<String, KDTree>) objectInputStream.readObject();
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+			}
 
-			String[] keys = getKeys((HashMap<String, String>) vertex.getProps(), "vertex");
+		}
+		 else {
+			// Compute object from scratch if absent
+			for (VertexExtended<K, VL, VP> vertex : vertices) {
+				String label = (String) vertex.getLabel();
 
-			if (this.KDTreeSetVertex.containsKey(label)) {
-				this.KDTreeSetVertex.get(label).insert(keys, vertex);
-			} else {
-				KDTree kd = new KDTree(keys.length);
-				kd.insert(keys, vertex);
-				this.KDTreeSetVertex.put(label, kd);
+				String[] keys = getKeys((HashMap<String, String>) vertex.getProps(), "vertex");
+
+				// Generated Hashmap of vertices
+				if (Balanced_KDTree) {
+					if (!hashMap.containsKey(label)) {
+						hashMap.put(label, new ArrayList<>());
+					}
+					hashMap.get(label).add(new Pair<String[], VertexExtended<K, VL, VP>>(keys, vertex));
+				} else {
+					if (this.KDTreeSetVertex.containsKey(label)) {
+						this.KDTreeSetVertex.get(label).insert(keys, vertex);
+					} else {
+						KDTree kd = new KDTree(keys.length);
+						kd.insert(keys, vertex);
+						this.KDTreeSetVertex.put(label, kd);
+					}
+				}
+			}
+
+			// Convert each arraylist in hashmap to object array
+			if (Balanced_KDTree) {
+				HashMap<String, Object[]> hashMapArray = new HashMap<>();
+				for (String label : hashMap.keySet()) {
+					hashMapArray.put(label, hashMap.get(label).toArray());
+				}
+				for (String label : hashMapArray.keySet()) {
+					Pair<String[], String> p = (Pair<String[], String>) hashMapArray.get(label)[0];
+					int dims = p.getValue0().length;
+					KDTree kd = medianKDTree(hashMapArray.get(label), dims, label);
+					this.KDTreeSetVertex.put(label, kd);
+				}
+				hashMap = null; // garbage collector
+				hashMapArray = null;
+			}
+			// Wtite object to file if absent
+			theDir.mkdirs();
+			try{
+				FileOutputStream fileOutputStream = new FileOutputStream(tarDir + "/kdtree.ser");
+				ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+				//Writing the object 
+				objectOutputStream.writeObject(this.KDTreeSetVertex);
+				//Close the ObjectOutputStream
+				objectOutputStream.close();
+			}catch(IOException e){
+				e.printStackTrace();
 			}
 		}
+		
 
 		for (EdgeExtended<E, K, EL, EP> edge : edges) {
 			String label = (String) edge.getLabel();
@@ -76,6 +157,45 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 				this.KDTreeSetEdge.put(label, kd);
 			}
 		}
+	}
+
+	public static KDTree medianKDTree(Object[] arr, int dims, String label) {
+		KDTree kdTree = new KDTree(dims);
+		QuickSelect medianObj = new QuickSelect();
+		Queue<Triplet<Integer, Integer, Integer>> queue = new LinkedList<>();
+		queue.add(new Triplet<Integer, Integer, Integer>(0, arr.length - 1, 0));
+		Triplet<Integer, Integer, Integer> cur_args;
+
+		ProgressBar pb = new ProgressBar(("Building Balanced KDTree for " + label), arr.length); // name, initial max
+		pb.start();
+
+		while (!queue.isEmpty()) {
+			cur_args = queue.poll();
+			Quartet<Integer, Integer, Integer, Object> quartet = medianObj.median(arr, cur_args.getValue0(),
+					cur_args.getValue1(), cur_args.getValue2() % dims);
+
+			Pair<String[], String> p;
+			try {
+				p = (Pair<String[], String>) quartet.getValue3();
+			} catch (Exception e) {
+				System.out.println("count");
+				continue;
+			}
+			kdTree.insert(p.getValue0(), p.getValue1());
+			pb.step();
+			if (quartet.getValue0().compareTo(quartet.getValue2() - 1) <= 0) {
+				queue.add(new Triplet<Integer, Integer, Integer>(quartet.getValue0(), quartet.getValue2() - 1,
+						cur_args.getValue2() + 1));
+			}
+			if (quartet.getValue1().compareTo(quartet.getValue2() + 1) >= 0) {
+				queue.add(new Triplet<Integer, Integer, Integer>(quartet.getValue2() + 1, quartet.getValue1(),
+						cur_args.getValue2() + 1));
+			}
+		}
+
+		pb.stop();
+
+		return kdTree;
 	}
 
 	private String[] getKeys(HashMap<String, String> props, String type) {
@@ -113,9 +233,9 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 
 	public ArrayList<String> getPropKeySorted(String label, String type) {
 		HashMap<String, String> props;
-		if(type.equals("edge")){
+		if (type.equals("edge")) {
 			props = (HashMap<String, String>) ((EdgeExtended) this.KDTreeSetEdge.get(label).getRoot()).getProps();
-		}else{
+		} else {
 			props = (HashMap<String, String>) ((VertexExtended) this.KDTreeSetVertex.get(label).getRoot()).getProps();
 
 		}
@@ -156,9 +276,19 @@ public class GraphExtended<K, VL, VP, E, EL, EP> {
 
 	public static <K, VL, VP, E, EL, EP> GraphExtended<K, VL, VP, E, EL, EP> fromList(
 			List<VertexExtended<K, VL, VP>> vertices,
-			List<EdgeExtended<E, K, EL, EP>> edges) {
+			List<EdgeExtended<E, K, EL, EP>> edges,
+			Set<String> options,
+			String path) throws ClassNotFoundException {
+		Boolean balancedKdtree = false;
+		Boolean edgeProps = false;
+		if (options.contains("balanced_kdtree")) {
+			balancedKdtree = true;
+		} 
+		if (options.contains("edge_properties")) {
+			edgeProps = true;
+		}
+		return new GraphExtended<K, VL, VP, E, EL, EP>(vertices, edges, balancedKdtree, edgeProps, path);
 
-		return new GraphExtended<K, VL, VP, E, EL, EP>(vertices, edges);
 	}
 
 	public void deleteEdgeById(Long id) {

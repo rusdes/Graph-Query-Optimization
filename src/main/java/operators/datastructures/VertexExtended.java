@@ -8,7 +8,7 @@ package operators.datastructures;
  * @param <L> the vertex label type
  * @param <P> the vertex properties type
  */
-public class VertexExtended<K, L, P>{
+public class VertexExtended<K, L, P> implements java.io.Serializable{
 	
 	// private static final long serialVersionUID = 1L;
 	private K f0;

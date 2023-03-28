@@ -1,5 +1,6 @@
 package operators.datastructures;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.functors.FalsePredicate;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
 import org.javatuples.Triplet;
@@ -38,7 +40,7 @@ import operators.datastructures.kdtree.QuickSelect;
  * 
  */
 
-public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable{
+public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable {
 
 	// private final List<VertexExtended<K, VL, VP>> vertices;
 	private HashMap<Long, VertexExtended<K, VL, VP>> vertices = new HashMap<>();
@@ -68,27 +70,46 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 	private void InitializeKDTreeSet(List<VertexExtended<K, VL, VP>> vertices, List<EdgeExtended<E, K, EL, EP>> edges,
 			Boolean Balanced_KDTree, Boolean EdgeProps, String path) throws ClassNotFoundException {
 		HashMap<String, List<Pair<String[], VertexExtended<K, VL, VP>>>> hashMap = new HashMap<>();
-		
+		HashMap<String, List<Pair<String[], EdgeExtended<E, K, EL, EP>>>> hashMap_edge = new HashMap<>();
+
 		// Read object from file if present
-		String tarDir;
+		Boolean vertexBool = false, edgeBool = false;
+
+		String tarDir = path + "/KDTree/";
+		String str1;
 		if (Balanced_KDTree) {
-			tarDir = path + "/KDTree/Balanced";
-		}else{
-			tarDir = path + "/KDTree/Unbalanced";
+			str1 = "balanced.ser";
+		} else {
+			str1 = "unbalanced.ser";
 		}
 		File theDir = new File(tarDir);
+
 		if (theDir.exists()) {
 			// theDir.mkdirs();
 			try {
-				ObjectInputStream objectInputStream = new ObjectInputStream(
-						new FileInputStream(tarDir + "/kdtree.ser"));
-				this.KDTreeSetVertex = (HashMap<String, KDTree>) objectInputStream.readObject();
+				File file1 = new File(tarDir + "vertex/" + str1);
+				if (file1.exists()) {
+					ObjectInputStream objectInputStreamVertex = new ObjectInputStream(
+							new BufferedInputStream(new FileInputStream(tarDir + "vertex/" + str1)));
+
+					this.KDTreeSetVertex = (HashMap<String, KDTree>) objectInputStreamVertex.readObject();
+					vertexBool = true;
+				}
+
+				File file2 = new File(tarDir + "edge/" + str1);
+				if (file2.exists()) {
+					ObjectInputStream objectInputStreamEdge = new ObjectInputStream(
+							new BufferedInputStream(new FileInputStream(tarDir + "edge/" + str1)));
+
+					this.KDTreeSetEdge = (HashMap<String, KDTree>) objectInputStreamEdge.readObject();
+					edgeBool = true;
+				}
 			} catch (IOException ioException) {
 				ioException.printStackTrace();
 			}
 
 		}
-		 else {
+		if (!vertexBool) {
 			// Compute object from scratch if absent
 			for (VertexExtended<K, VL, VP> vertex : vertices) {
 				String label = (String) vertex.getLabel();
@@ -111,50 +132,102 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 					}
 				}
 			}
+		}
+		if (!edgeBool) {
+
+			for (EdgeExtended<E, K, EL, EP> edge : edges) {
+				String label = (String) edge.getLabel();
+				String id = edge.getEdgeId().toString();
+
+				String[] keys = getKeys((HashMap<String, String>) edge.getProps(), "edge");
+				keys[0] = id;
+
+				if (Balanced_KDTree) {
+					if (!hashMap_edge.containsKey(label)) {
+						hashMap_edge.put(label, new ArrayList<>());
+					}
+					hashMap_edge.get(label).add(new Pair<String[], EdgeExtended<E, K, EL, EP>>(keys, edge));
+				} else {
+					if (this.KDTreeSetEdge.containsKey(label)) {
+						this.KDTreeSetEdge.get(label).insert(keys, edge);
+					} else {
+						KDTree kd = new KDTree(keys.length);
+						kd.insert(keys, edge);
+						this.KDTreeSetEdge.put(label, kd);
+					}
+				}
+			}
+		}
+
+		if (!vertexBool || !edgeBool) {
 
 			// Convert each arraylist in hashmap to object array
 			if (Balanced_KDTree) {
 				HashMap<String, Object[]> hashMapArray = new HashMap<>();
-				for (String label : hashMap.keySet()) {
-					hashMapArray.put(label, hashMap.get(label).toArray());
+
+				if (!vertexBool) {
+					for (String label : hashMap.keySet()) {
+						hashMapArray.put(label, hashMap.get(label).toArray());
+					}
+					for (String label : hashMapArray.keySet()) {
+						Pair<String[], String> p = (Pair<String[], String>) hashMapArray.get(label)[0];
+						int dims = p.getValue0().length;
+						KDTree kd = medianKDTree(hashMapArray.get(label), dims, label);
+						this.KDTreeSetVertex.put(label, kd);
+					}
+					hashMap = null; // garbage collector
+					hashMapArray = new HashMap<>();
 				}
-				for (String label : hashMapArray.keySet()) {
-					Pair<String[], String> p = (Pair<String[], String>) hashMapArray.get(label)[0];
-					int dims = p.getValue0().length;
-					KDTree kd = medianKDTree(hashMapArray.get(label), dims, label);
-					this.KDTreeSetVertex.put(label, kd);
+
+				if (!edgeBool) {
+					// For Edge
+					for (String label : hashMap_edge.keySet()) {
+						hashMapArray.put(label, hashMap_edge.get(label).toArray());
+					}
+					for (String label : hashMapArray.keySet()) {
+						Pair<String[], String> p = (Pair<String[], String>) hashMapArray.get(label)[0];
+						int dims = p.getValue0().length;
+						KDTree kd = medianKDTree(hashMapArray.get(label), dims, label);
+						this.KDTreeSetEdge.put(label, kd);
+					}
+
+					hashMap_edge = null; // garbage collector
+					hashMapArray = null;
 				}
-				hashMap = null; // garbage collector
-				hashMapArray = null;
 			}
+
 			// Wtite object to file if absent
 			theDir.mkdirs();
-			try{
-				FileOutputStream fileOutputStream = new FileOutputStream(tarDir + "/kdtree.ser");
-				ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-				//Writing the object 
-				objectOutputStream.writeObject(this.KDTreeSetVertex);
-				//Close the ObjectOutputStream
-				objectOutputStream.close();
-			}catch(IOException e){
+			try {
+				if (!vertexBool) {
+					File f = new File(tarDir + "vertex/");
+					f.mkdirs();
+
+					ObjectOutputStream objectOutputStreamVertex = new ObjectOutputStream(
+							new FileOutputStream(tarDir + "vertex/" + str1));
+
+					// Writing the object
+					objectOutputStreamVertex.writeObject(this.KDTreeSetVertex);
+
+					// Close the ObjectOutputStream
+					objectOutputStreamVertex.close();
+				}
+
+				if (!edgeBool) {
+					File f = new File(tarDir + "edge/");
+					f.mkdirs();
+
+					ObjectOutputStream objectOutputStreamEdge = new ObjectOutputStream(
+							new FileOutputStream(tarDir + "edge/" + str1));
+
+					// Writing the object
+					objectOutputStreamEdge.writeObject(this.KDTreeSetEdge);
+
+					// Close the ObjectOutputStream
+					objectOutputStreamEdge.close();
+				}
+			} catch (IOException e) {
 				e.printStackTrace();
-			}
-		}
-		
-
-		for (EdgeExtended<E, K, EL, EP> edge : edges) {
-			String label = (String) edge.getLabel();
-			String id = edge.getEdgeId().toString();
-
-			String[] keys = getKeys((HashMap<String, String>) edge.getProps(), "edge");
-			keys[0] = id;
-
-			if (this.KDTreeSetEdge.containsKey(label)) {
-				this.KDTreeSetEdge.get(label).insert(keys, edge);
-			} else {
-				KDTree kd = new KDTree(keys.length);
-				kd.insert(keys, edge);
-				this.KDTreeSetEdge.put(label, kd);
 			}
 		}
 	}
@@ -283,7 +356,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 		Boolean edgeProps = false;
 		if (options.contains("balanced_kdtree")) {
 			balancedKdtree = true;
-		} 
+		}
 		if (options.contains("edge_properties")) {
 			edgeProps = true;
 		}

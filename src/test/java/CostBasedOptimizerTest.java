@@ -44,7 +44,7 @@ public class CostBasedOptimizerTest {
 		Boolean compare = true;
 
 		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("vertex_kdtree", "edges_naive", "balanced_kdtree"));
+		options.addAll(Arrays.asList("vertex_naive", "edges_naive"));
 
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();
@@ -488,7 +488,9 @@ public class CostBasedOptimizerTest {
 		}
 
 		QueryGraph g = new QueryGraph(vs, es);
-		GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph;
+		GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_unbal;
+		GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_bal;
+
 		CostBasedOptimzer pg_unbal;
 		CostBasedOptimzer pg_bal;
 
@@ -500,11 +502,11 @@ public class CostBasedOptimizerTest {
 		vs = null;
 		es = null;
 
-		graph = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("unbalanced_kdtree")), dir);
-		pg_unbal = new CostBasedOptimzer(g, graph, vstat, estat);
-		graph = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("balanced_kdtree")), dir);
-		pg_bal = new CostBasedOptimzer(g, graph, vstat, estat);
+		graph_unbal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("unbalanced_kdtree")), dir);
+		pg_unbal = new CostBasedOptimzer(g, graph_unbal, vstat, estat);
 
+		graph_bal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("balanced_kdtree")), dir);
+		pg_bal = new CostBasedOptimzer(g, graph_bal, vstat, estat);
 
 		System.out.println("Initialization Finished. \nStarting Query Execution...");
 		if (compare) {
@@ -524,14 +526,29 @@ public class CostBasedOptimizerTest {
 			System.out.println("time(ms): " + (endTime - startTime) / 1000000);
 			System.out.println("Results: " + res);
 
-			// Vertex Naive, Edge KDTree
-			System.out.println("\nVertex Naive, Edge KDtree: ");
+
+			// Vertex Naive, Edge KDTree, Unbalanced Edge KDTree
+			System.out.println("\nVertex Naive, Edge KDtree, Unbalanced Edge KDTree: ");
 
 			options = new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree"));
 
 			startTime = System.nanoTime();
 			for (int i = 0; i < 1; i++) {
 				res = pg_unbal.generateQueryPlan(options);
+			}
+			endTime = System.nanoTime();
+			System.out.println("time(ms): " + (endTime - startTime) / 1000000);
+			System.out.println("Results: " + res);
+
+
+			// Vertex Naive, Edge KDTree, Balanced Edge KDTree
+			System.out.println("\nVertex Naive, Edge KDtree, Balanced Edge KDTree: ");
+
+			options = new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree", "balanced_kdtree"));
+
+			startTime = System.nanoTime();
+			for (int i = 0; i < 1; i++) {
+				res = pg_bal.generateQueryPlan(options);
 			}
 			endTime = System.nanoTime();
 			System.out.println("time(ms): " + (endTime - startTime) / 1000000);
@@ -565,8 +582,8 @@ public class CostBasedOptimizerTest {
 			System.out.println("time(ms): " + (endTime - startTime) / 1000000);
 			System.out.println("Results: " + res);
 
-			// Vertex KDtree, Edge KDtree, Unbalanced Vertex KDTree
-			System.out.println("\nVertex KDtree, Edge KDtree, Unbalanced Vertex KDTree");
+			// Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
+			System.out.println("\nVertex KDtree, Edge KDtree, Unbalanced Both KDTrees");
 
 			options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree", "unbalanced_kdtree"));
 
@@ -579,8 +596,8 @@ public class CostBasedOptimizerTest {
 			System.out.println("Results: " + res);
 
 
-			// Vertex KDtree, Edge KDtree, Balanced Vertex KDTree
-			System.out.println("\nVertex KDtree, Edge KDtree, Balanced Vertex KDTree");
+			// Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
+			System.out.println("\nVertex KDtree, Edge KDtree, Balanced Both KDTrees");
 
 			options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree", "balanced_kdtree"));
 
@@ -592,23 +609,25 @@ public class CostBasedOptimizerTest {
 			System.out.println("time(ms): " + (endTime - startTime) / 1000000);
 			System.out.println("Results: " + res);
 
+
 			System.out.println();
-			print_result obj = new print_result(graph, res, name_key);
+			print_result obj = new print_result(graph_bal, res, name_key);
 			obj.printTable();
 		} else {
 			System.out.println(options);
-			graph = GraphExtended.fromList(vertices, edges, options, dir);
+			graph_bal = GraphExtended.fromList(vertices, edges, options, dir);
 			if(options.contains("balanced_kdtree")){
 				res = pg_bal.generateQueryPlan(options);
 			}else{
 				res = pg_unbal.generateQueryPlan(options);
 			}
 			System.out.println(res);
-			print_result obj = new print_result(graph, res, name_key);
+			print_result obj = new print_result(graph_bal, res, name_key);
 			obj.printTable();
 		}
 		// Garbage Collector
-		graph = null;
+		graph_bal = null;
+		graph_unbal = null;
 		vertices = null;
 		edges = null;
 		g = null;

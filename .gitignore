@@ -38,3 +38,4 @@ src/test/java/Dataset/imdb_nishant/edges.csv
 src/test/java/imdb_CostBasedOptimizerTest.java
 
 **/Dataset_Statistics/
+src/test/java/Dataset/IMDB_Large/KDTree/vertex/

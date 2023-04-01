@@ -1,20 +1,34 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.javatuples.Pair;
+import org.javatuples.Quintet;
+import org.javatuples.Triplet;
+
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
+import operators.datastructures.EdgeExtended;
+import operators.datastructures.GraphExtended;
+import operators.datastructures.VertexExtended;
+import operators.helper.print_result;
+import queryplan.CostBasedOptimzer;
+import queryplan.StatisticsCollector;
+import queryplan.StatisticsTransformation;
 import queryplan.querygraph.QueryEdge;
 import queryplan.querygraph.QueryGraph;
 import queryplan.querygraph.QueryVertex;
@@ -76,6 +90,8 @@ public class BatchQueryProcessing {
                         for (int i = 0; i < pprops.length - 1; i = i + 3) {
                             personProps.put(pprops[i], new Pair<String, String>(pprops[i + 1], pprops[i + 2]));
                         }
+                    } else {
+                        personProps = new HashMap<String, Pair<String, String>>();
                     }
                     QueryVertex person = new QueryVertex(line[1], personProps, true);
 
@@ -85,7 +101,10 @@ public class BatchQueryProcessing {
                         for (int i = 0; i < mprops.length - 1; i = i + 3) {
                             movieProps.put(mprops[i], new Pair<String, String>(mprops[i + 1], mprops[i + 2]));
                         }
+                    } else {
+                        movieProps = new HashMap<String, Pair<String, String>>();
                     }
+
                     QueryVertex movie = new QueryVertex(line[3], movieProps, true);
 
                     String edgeLabel = line[5];
@@ -171,16 +190,282 @@ public class BatchQueryProcessing {
         return queries;
     }
 
+    public static List<Triplet<Long, String, String>> readVerticesLineByLine(Path filePath) throws Exception {
+        List<Triplet<Long, String, String>> list = new ArrayList<>();
+        try (Reader reader = Files.newBufferedReader(filePath)) {
+            try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1)
+                    .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+                    .build()) {
+                String[] line;
+                while ((line = csvReader.readNext()) != null) {
+                    Triplet<Long, String, String> holder = new Triplet<Long, String, String>(Long.parseLong(line[0]),
+                            line[1], line[2]);
+                    list.add(holder);
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<Quintet<Long, Long, Long, String, String>> readEdgesLineByLine(Path filePath) throws Exception {
+        List<Quintet<Long, Long, Long, String, String>> list = new ArrayList<>();
+        try (Reader reader = Files.newBufferedReader(filePath)) {
+            try (CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1)
+                    .withCSVParser(new CSVParserBuilder().withSeparator('|').build())
+                    .build()) {
+                String[] line;
+                while ((line = csvReader.readNext()) != null) {
+                    Quintet<Long, Long, Long, String, String> holder = new Quintet<Long, Long, Long, String, String>(
+                            Long.parseLong(line[0]), Long.parseLong(line[1]),
+                            Long.parseLong(line[2]), line[3], line[4]);
+                    list.add(holder);
+                }
+            }
+        }
+        return list;
+    }
+
+    public static VertexExtended<Long, HashSet<String>, HashMap<String, String>> VertexFromFileToDataSet(
+            Triplet<Long, String, String> vertexFromFile) {
+        VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex = new VertexExtended<Long, HashSet<String>, HashMap<String, String>>();
+        vertex.setVertexId(vertexFromFile.getValue0());
+
+        String label = vertexFromFile.getValue1().split(",")[0];
+        vertex.setLabel(label);
+
+        HashMap<String, String> properties = new HashMap<>();
+        String[] props = vertexFromFile.getValue2().split(",");
+
+        if (props.length > 1) {
+            for (int i = 0; i < props.length - 1; i = i + 2) {
+                properties.put(props[i], props[i + 1]);
+            }
+        }
+        vertex.setProps(properties);
+
+        return vertex;
+    }
+
+    public static EdgeExtended<Long, Long, String, HashMap<String, String>> EdgeFromFileToDataSet(
+            Quintet<Long, Long, Long, String, String> edgeFromFile) {
+
+        EdgeExtended<Long, Long, String, HashMap<String, String>> edge = new EdgeExtended<Long, Long, String, HashMap<String, String>>();
+
+        edge.setEdgeId(edgeFromFile.getValue0());
+        edge.setSourceId(edgeFromFile.getValue1());
+        edge.setTargetId(edgeFromFile.getValue2());
+        edge.setLabel(edgeFromFile.getValue3());
+
+        HashMap<String, String> properties = new HashMap<>();
+        String[] props = edgeFromFile.getValue4().split(",");
+        if (props.length > 1) {
+            for (int i = 0; i < props.length - 1; i = i + 2) {
+                properties.put(props[i], props[i + 1]);
+            }
+        }
+        edge.setProps(properties);
+
+        return edge;
+
+    }
+
     public static void main(String[] args) throws Exception {
 
-        String dir = "src/test/java/Queries";
-        HashMap<String, List<Query>> queries = LoadQueries(Paths.get(dir, "queries.csv"));
+        String queryDir = "src/test/java/Queries";
+        HashMap<String, List<Query>> queries = LoadQueries(Paths.get(queryDir, "queries.csv"));
         System.out.println("Simple, Medium and Complex QueryGraph Buckets generated\n");
         System.out.println("Difficulty\tCount\n-----------------------");
         for (String difficulty : queries.keySet()) {
             System.out.println(difficulty + "\t\t" + queries.get(difficulty).size());
         }
-        // TO DO - Pipline these queries into the execution engine
-    }
+        System.out.println();
 
+        String dir = null;
+        String name_key = "name";
+        int choice = 1;
+        Boolean compare = true;
+        Set<String> options = new HashSet<>();
+        options.addAll(Arrays.asList("vertex_naive", "edges_naive"));
+
+        // Description for all options
+        HashMap<String, ArrayList<String>> desc = new HashMap<>();
+        desc.put("Initial Vertex Mapping Method", new ArrayList<>(Arrays.asList("vertex_naive", "vertex_kdtree")));
+        desc.put("Edges Mapping Method", new ArrayList<>(Arrays.asList("edges_kdtree", "edges_kdtree")));
+        desc.put("KDTree Type", new ArrayList<>(Arrays.asList("unbalanced_kdtree", "balanced_kdtree")));
+        desc.put("Edge Properties Present", new ArrayList<>(Arrays.asList("no_edge_properties", "edge_properties")));
+
+        switch (choice) {
+            case 1: {
+                dir = "src/test/java/Dataset/IMDB_Small";
+                break;
+            }
+
+            case 2: {
+                dir = "src/test/java/Dataset/IMDB_Medium";
+                break;
+            }
+
+            case 3: {
+                dir = "src/test/java/Dataset/IMDB_Large";
+                break;
+            }
+        }
+
+        String srcDir = dir;
+        String tarDir = dir + "/Dataset_Statistics";
+        File theDir = new File(tarDir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+            // Write statistics to file if file is not present in tarDir
+            StatisticsCollector stats = new StatisticsCollector(srcDir, tarDir);
+            stats.collect();
+            stats = null; // Free up memory
+        }
+
+        List<Triplet<Long, String, String>> verticesFromFile = readVerticesLineByLine(Paths.get(dir, "vertices.csv"));
+        List<Quintet<Long, Long, Long, String, String>> edgesFromFile = readEdgesLineByLine(
+                Paths.get(dir, "edges.csv"));
+
+        List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = verticesFromFile.stream()
+                .map(elt -> VertexFromFileToDataSet(elt)).collect(Collectors.toList());
+
+        List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = edgesFromFile.stream()
+                .map(elt -> EdgeFromFileToDataSet(elt))
+                .collect(Collectors.toList());
+
+        StatisticsTransformation sts = new StatisticsTransformation(tarDir);
+        HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
+        HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
+        // TO DO - Pipline these queries into the execution engine
+        HashMap<String, HashMap<String, Long>> finalResultTable = new HashMap<>();
+
+        // Internal HashMap Keys
+        // VNEN - Vertex Naive, Edge Naive
+        // VNEKUbalEK - Vertex Naive, Edge KDTree, Unbalanced Edge KDTree
+        // VNEKBalEK - Vertex Naive, Edge KDTree, Balanced Edge KDTree
+        // VKENUbalVK - Vertex KDtree, Edge Naive, Unbalanced Vertex KDTree
+        // VKENBalVK - Vertex KDtree, Edge Naive, Balanced Vertex KDTree
+        // VKEKUbalVEK - Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
+        // VKEKBalVEK - Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
+
+        for (String difficulty : queries.keySet()) {
+            System.out.println("Testing for " + difficulty + " queries: ");
+            HashMap<String, Long> internalMap = new HashMap<>();
+            Long time_VNEN = 0L;
+            Long time_VNEKUbalEK = 0L;
+            Long time_VNEKBalEK = 0L;
+            Long time_VKENUbalVK = 0L;
+            Long time_VKENBalVK = 0L;
+            Long time_VKEKUbalVEK = 0L;
+            Long time_VKEKBalVEK = 0L;
+            int qcount = 0;
+            for (Query query : queries.get(difficulty)) {
+
+                QueryGraph g = query.getQueryGraph();
+                System.out.print("Running Query - " + query.getQueryId() + ": ");
+                GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_unbal;
+                GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_bal;
+
+                CostBasedOptimzer pg_unbal;
+                CostBasedOptimzer pg_bal;
+
+                List<List<Long>> res = new ArrayList<>();
+
+                graph_unbal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("unbalanced_kdtree")),
+                        dir);
+                pg_unbal = new CostBasedOptimzer(g, graph_unbal, vstat, estat);
+
+                graph_bal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("balanced_kdtree")),
+                        dir);
+                pg_bal = new CostBasedOptimzer(g, graph_bal, vstat, estat);
+
+                if (compare) {
+                    long startTime, endTime;
+
+                    // Vertex Naive, Edge Naive
+                    options = new HashSet<>(Arrays.asList("vertex_naive", "edges_naive"));
+
+                    startTime = System.nanoTime();
+                    for (int i = 0; i < 1; i++) {
+                        res = pg_unbal.generateQueryPlan(options);
+                    }
+                    endTime = System.nanoTime();
+                    time_VNEN += (endTime - startTime) / 1000000;
+
+                    // Vertex Naive, Edge KDTree, Unbalanced Edge KDTree
+                    options = new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree"));
+                    startTime = System.nanoTime();
+                    for (int i = 0; i < 1; i++) {
+                        res = pg_unbal.generateQueryPlan(options);
+                    }
+                    endTime = System.nanoTime();
+                    time_VNEKUbalEK += (endTime - startTime) / 1000000;
+
+                    // Vertex Naive, Edge KDTree, Balanced Edge KDTree
+                    options = new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree", "balanced_kdtree"));
+                    startTime = System.nanoTime();
+                    for (int i = 0; i < 1; i++) {
+                        res = pg_bal.generateQueryPlan(options);
+                    }
+                    endTime = System.nanoTime();
+                    time_VNEKBalEK += (endTime - startTime) / 1000000;
+
+                    // Vertex KDtree, Edge Naive, Unbalanced Vertex KDTree
+                    options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive", "unbalanced_kdtree"));
+                    startTime = System.nanoTime();
+                    for (int i = 0; i < 1; i++) {
+                        res = pg_unbal.generateQueryPlan(options);
+                    }
+                    endTime = System.nanoTime();
+                    time_VKENUbalVK += (endTime - startTime) / 1000000;
+
+                    // Vertex KDtree, Edge Naive, Balanced Vertex KDTree
+                    options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive", "balanced_kdtree"));
+                    startTime = System.nanoTime();
+                    for (int i = 0; i < 1; i++) {
+                        res = pg_bal.generateQueryPlan(options);
+                    }
+                    endTime = System.nanoTime();
+                    time_VKENBalVK += (endTime - startTime) / 1000000;
+
+                    // Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
+                    options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree", "unbalanced_kdtree"));
+                    startTime = System.nanoTime();
+                    for (int i = 0; i < 1; i++) {
+                        res = pg_unbal.generateQueryPlan(options);
+                    }
+                    endTime = System.nanoTime();
+                    time_VKEKUbalVEK += (endTime - startTime) / 1000000;
+
+                    // Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
+                    options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree", "balanced_kdtree"));
+                    startTime = System.nanoTime();
+                    for (int i = 0; i < 1; i++) {
+                        res = pg_bal.generateQueryPlan(options);
+                    }
+                    endTime = System.nanoTime();
+                    time_VKEKBalVEK += (endTime - startTime) / 1000000;
+                } else {
+                    System.out.println(options);
+                    graph_bal = GraphExtended.fromList(vertices, edges, options, dir);
+                    if (options.contains("balanced_kdtree")) {
+                        res = pg_bal.generateQueryPlan(options);
+                    } else {
+                        res = pg_unbal.generateQueryPlan(options);
+                    }
+                }
+                qcount++;
+                System.out.println("Done");
+            }
+
+            internalMap.put("VNEN", time_VNEN / qcount);
+            internalMap.put("VNEKUbalEK", time_VNEKUbalEK / qcount);
+            internalMap.put("VNEKBalEK", time_VNEKBalEK / qcount);
+            internalMap.put("VKENUbalVK", time_VKENUbalVK / qcount);
+            internalMap.put("VKENBalVK", time_VKENBalVK / qcount);
+            internalMap.put("VKEKUbalVEK", time_VKEKUbalVEK / qcount);
+            internalMap.put("VKEKBalVEK", time_VKEKBalVEK / qcount);
+            finalResultTable.put(difficulty, internalMap);
+        }
+    }
 }

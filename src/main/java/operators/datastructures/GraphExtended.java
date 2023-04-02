@@ -239,34 +239,32 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 		queue.add(new Triplet<Integer, Integer, Integer>(0, arr.length - 1, 0));
 		Triplet<Integer, Integer, Integer> cur_args;
 
-		ProgressBar pb = new ProgressBar(("Building Balanced KDTree for " + label), arr.length); // name, initial max
-		pb.start();
+		try (ProgressBar pb = new ProgressBar(("Building Balanced KDTree for " + label), arr.length)) {
 
-		while (!queue.isEmpty()) {
-			cur_args = queue.poll();
-			Quartet<Integer, Integer, Integer, Object> quartet = medianObj.median(arr, cur_args.getValue0(),
-					cur_args.getValue1(), cur_args.getValue2() % dims);
+			while (!queue.isEmpty()) {
+				cur_args = queue.poll();
+				Quartet<Integer, Integer, Integer, Object> quartet = medianObj.median(arr, cur_args.getValue0(),
+						cur_args.getValue1(), cur_args.getValue2() % dims);
 
-			Pair<String[], String> p;
-			try {
-				p = (Pair<String[], String>) quartet.getValue3();
-			} catch (Exception e) {
-				System.out.println("count");
-				continue;
-			}
-			kdTree.insert(p.getValue0(), p.getValue1());
-			pb.step();
-			if (quartet.getValue0().compareTo(quartet.getValue2() - 1) <= 0) {
-				queue.add(new Triplet<Integer, Integer, Integer>(quartet.getValue0(), quartet.getValue2() - 1,
-						cur_args.getValue2() + 1));
-			}
-			if (quartet.getValue1().compareTo(quartet.getValue2() + 1) >= 0) {
-				queue.add(new Triplet<Integer, Integer, Integer>(quartet.getValue2() + 1, quartet.getValue1(),
-						cur_args.getValue2() + 1));
+				Pair<String[], String> p;
+				try {
+					p = (Pair<String[], String>) quartet.getValue3();
+				} catch (Exception e) {
+					System.out.println("count");
+					continue;
+				}
+				kdTree.insert(p.getValue0(), p.getValue1());
+				pb.step();
+				if (quartet.getValue0().compareTo(quartet.getValue2() - 1) <= 0) {
+					queue.add(new Triplet<Integer, Integer, Integer>(quartet.getValue0(), quartet.getValue2() - 1,
+							cur_args.getValue2() + 1));
+				}
+				if (quartet.getValue1().compareTo(quartet.getValue2() + 1) >= 0) {
+					queue.add(new Triplet<Integer, Integer, Integer>(quartet.getValue2() + 1, quartet.getValue1(),
+							cur_args.getValue2() + 1));
+				}
 			}
 		}
-
-		pb.stop();
 
 		return kdTree;
 	}

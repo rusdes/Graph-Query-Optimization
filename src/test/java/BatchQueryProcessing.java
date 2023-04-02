@@ -1,7 +1,9 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,7 +69,7 @@ public class BatchQueryProcessing {
 
     public static HashMap<String, List<Query>> LoadQueries(Path path)
             throws Exception {
-
+        System.out.println("\nLoading Queries...");
         HashMap<String, List<Query>> queries = new HashMap<>();
         List<Query> simple = new ArrayList<>();
         List<Query> medium = new ArrayList<>();
@@ -269,9 +271,36 @@ public class BatchQueryProcessing {
 
     }
 
+    /**
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
 
         String queryDir = "src/test/java/Queries";
+        int queryChoice = 1;
+        switch (queryChoice) {
+            case 1: {
+                queryDir += "/Too Less"; // Total - 4.5K queries
+                break;
+            }
+
+            case 2: {
+                queryDir += "/Less"; // Total - 75K queries
+                break;
+            }
+
+            case 3: {
+                queryDir += "/Many"; // Total - 150K queries
+                break;
+            }
+
+            case 4: {
+                queryDir += "/Too Many"; // Total - 300K queries
+                break;
+            }
+        }
+
         HashMap<String, List<Query>> queries = LoadQueries(Paths.get(queryDir, "queries.csv"));
         System.out.println("Simple, Medium and Complex QueryGraph Buckets generated\n");
         System.out.println("Difficulty\tCount\n-----------------------");
@@ -281,7 +310,6 @@ public class BatchQueryProcessing {
         System.out.println();
 
         String dir = null;
-        String name_key = "name";
         int choice = 1;
         Boolean compare = true;
         Set<String> options = new HashSet<>();
@@ -336,7 +364,6 @@ public class BatchQueryProcessing {
         StatisticsTransformation sts = new StatisticsTransformation(tarDir);
         HashMap<String, Pair<Long, Double>> vstat = sts.getVerticesStatistics();
         HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
-        // TO DO - Pipline these queries into the execution engine
         HashMap<String, HashMap<String, Long>> finalResultTable = new HashMap<>();
 
         // Internal HashMap Keys
@@ -347,9 +374,9 @@ public class BatchQueryProcessing {
         // VKENBalVK - Vertex KDtree, Edge Naive, Balanced Vertex KDTree
         // VKEKUbalVEK - Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
         // VKEKBalVEK - Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
-
+        int totalQueriesExecuted = 0;
         for (String difficulty : queries.keySet()) {
-            System.out.println("Testing for " + difficulty + " queries: ");
+            System.out.println("\nTesting for " + difficulty + " queries: ");
             HashMap<String, Long> internalMap = new HashMap<>();
             Long time_VNEN = 0L;
             Long time_VNEKUbalEK = 0L;
@@ -362,7 +389,7 @@ public class BatchQueryProcessing {
             for (Query query : queries.get(difficulty)) {
 
                 QueryGraph g = query.getQueryGraph();
-                System.out.print("Running Query - " + query.getQueryId() + ": ");
+                System.out.print("Executing Query-" + query.getQueryId() + ": ");
                 GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_unbal;
                 GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_bal;
 
@@ -455,7 +482,7 @@ public class BatchQueryProcessing {
                     }
                 }
                 qcount++;
-                System.out.println("Done");
+                System.out.println("Completed");
             }
 
             internalMap.put("VNEN", time_VNEN / qcount);
@@ -466,6 +493,47 @@ public class BatchQueryProcessing {
             internalMap.put("VKEKUbalVEK", time_VKEKUbalVEK / qcount);
             internalMap.put("VKEKBalVEK", time_VKEKBalVEK / qcount);
             finalResultTable.put(difficulty, internalMap);
+            totalQueriesExecuted += qcount;
+        }
+
+        System.out.println("Query Execution Completed: Executed " + totalQueriesExecuted + " Queries");
+        writeResultsToCSV(finalResultTable, queryDir);
+
+    }
+
+    public static void writeResultsToCSV(HashMap<String, HashMap<String, Long>> data, String filePath) {
+        // first create file object for file placed at location
+        // specified by filepath
+        try {
+
+            // create FileWriter object with file as parameter
+            System.out.print("Generating results.csv: ");
+            filePath = filePath + "/results.csv";
+            PrintWriter writer = new PrintWriter(filePath);
+            List<String> executionStrategy = new ArrayList<>();
+            executionStrategy.add("VNEN");
+            executionStrategy.add("VNEKUbalEK");
+            executionStrategy.add("VNEKBalEK");
+            executionStrategy.add("VKENUbalVK");
+            executionStrategy.add("VKENBalVK");
+            executionStrategy.add("VKEKUbalVEK");
+            executionStrategy.add("VKEKBalVEK");
+
+            writer.println("Difficulty|VNEN|VNEKUbalEK|VNEKBalEK|VKENUbalVK|VKENBalVK|VKEKUbalVEK|VKEKBalVEK");
+
+            for (String difficulty : data.keySet()) {
+                String toBePrinted = difficulty;
+                for (String strategy : executionStrategy) {
+                    toBePrinted += "|" + data.get(difficulty).get(strategy);
+                }
+                writer.println(toBePrinted);
+            }
+
+            // closing writer connection
+            writer.close();
+            System.out.println("Done");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

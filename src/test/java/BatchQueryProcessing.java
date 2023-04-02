@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 import org.javatuples.Pair;
@@ -24,6 +25,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
+import me.tongfei.progressbar.ProgressBar;
 import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
@@ -310,7 +312,8 @@ public class BatchQueryProcessing {
         System.out.println();
 
         String dir = null;
-        int choice = 1;
+        String name_key = "name";
+        int choice = 2;
         Boolean compare = true;
         Set<String> options = new HashSet<>();
         options.addAll(Arrays.asList("vertex_naive", "edges_naive"));
@@ -366,136 +369,204 @@ public class BatchQueryProcessing {
         HashMap<String, Pair<Long, Double>> estat = sts.getEdgesStatistics();
         HashMap<String, HashMap<String, Long>> finalResultTable = new HashMap<>();
 
+        GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_unbal;
+        GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_bal;
+
+        graph_unbal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("unbalanced_kdtree")),
+                dir);
+        graph_bal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("balanced_kdtree")),
+                dir);
+
         // Internal HashMap Keys
-        // VNEN - Vertex Naive, Edge Naive
-        // VNEKUbalEK - Vertex Naive, Edge KDTree, Unbalanced Edge KDTree
-        // VNEKBalEK - Vertex Naive, Edge KDTree, Balanced Edge KDTree
-        // VKENUbalVK - Vertex KDtree, Edge Naive, Unbalanced Vertex KDTree
-        // VKENBalVK - Vertex KDtree, Edge Naive, Balanced Vertex KDTree
-        // VKEKUbalVEK - Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
-        // VKEKBalVEK - Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
+        // VnEn - Vertex Naive, Edge Naive
+        // VnEkUbalEk - Vertex Naive, Edge KDTree, Unbalanced Edge KDTree
+        // VnEkBalEk - Vertex Naive, Edge KDTree, Balanced Edge KDTree
+        // VkEnUbalVk - Vertex KDtree, Edge Naive, Unbalanced Vertex KDTree
+        // VkEnBalVk - Vertex KDtree, Edge Naive, Balanced Vertex KDTree
+        // VkEkUbalVEk - Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
+        // VkEkBalVEk - Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
+
+        int numQueries = 100;
         int totalQueriesExecuted = 0;
-        for (String difficulty : queries.keySet()) {
-            System.out.println("\nTesting for " + difficulty + " queries: ");
-            HashMap<String, Long> internalMap = new HashMap<>();
-            Long time_VNEN = 0L;
-            Long time_VNEKUbalEK = 0L;
-            Long time_VNEKBalEK = 0L;
-            Long time_VKENUbalVK = 0L;
-            Long time_VKENBalVK = 0L;
-            Long time_VKEKUbalVEK = 0L;
-            Long time_VKEKBalVEK = 0L;
-            int qcount = 0;
-            for (Query query : queries.get(difficulty)) {
 
-                QueryGraph g = query.getQueryGraph();
-                System.out.print("Executing Query-" + query.getQueryId() + ": ");
-                GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_unbal;
-                GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph_bal;
+        ForkJoinPool myPool = new ForkJoinPool(4);
+        System.out.println("getParallelism=" + myPool.getParallelism());
 
-                CostBasedOptimzer pg_unbal;
-                CostBasedOptimzer pg_bal;
+        myPool.submit(() -> {
+            queries.keySet().parallelStream().forEach((difficulty) -> {
 
-                List<List<Long>> res = new ArrayList<>();
+                HashMap<String, Long> internalMap = new HashMap<>();
+                Long time_VnEn = 0L;
+                Long time_VnEkUbalEk = 0L;
+                Long time_VnEkBalEk = 0L;
+                Long time_VkEnUbalVk = 0L;
+                Long time_VkEnBalVk = 0L;
+                Long time_VkEkUbalVEk = 0L;
+                Long time_VkEkBalVEk = 0L;
+                int qcount = 0;
 
-                graph_unbal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("unbalanced_kdtree")),
-                        dir);
-                pg_unbal = new CostBasedOptimzer(g, graph_unbal, vstat, estat);
+                // Serial
 
-                graph_bal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("balanced_kdtree")),
-                        dir);
-                pg_bal = new CostBasedOptimzer(g, graph_bal, vstat, estat);
+                try (ProgressBar pb = new ProgressBar(
+                        ("Query (" + difficulty + ") on " + Thread.currentThread().getName().substring(15)),
+                        numQueries)) {
 
-                if (compare) {
-                    long startTime, endTime;
+                    for (Query query : queries.get(difficulty)) {
+                        pb.step();
 
-                    // Vertex Naive, Edge Naive
-                    options = new HashSet<>(Arrays.asList("vertex_naive", "edges_naive"));
+                        QueryGraph g = query.getQueryGraph();
 
-                    startTime = System.nanoTime();
-                    for (int i = 0; i < 1; i++) {
-                        res = pg_unbal.generateQueryPlan(options);
-                    }
-                    endTime = System.nanoTime();
-                    time_VNEN += (endTime - startTime) / 1000000;
+                        CostBasedOptimzer pg_unbal;
+                        CostBasedOptimzer pg_bal;
 
-                    // Vertex Naive, Edge KDTree, Unbalanced Edge KDTree
-                    options = new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree"));
-                    startTime = System.nanoTime();
-                    for (int i = 0; i < 1; i++) {
-                        res = pg_unbal.generateQueryPlan(options);
-                    }
-                    endTime = System.nanoTime();
-                    time_VNEKUbalEK += (endTime - startTime) / 1000000;
+                        List<List<Long>> res = new ArrayList<>();
 
-                    // Vertex Naive, Edge KDTree, Balanced Edge KDTree
-                    options = new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree", "balanced_kdtree"));
-                    startTime = System.nanoTime();
-                    for (int i = 0; i < 1; i++) {
-                        res = pg_bal.generateQueryPlan(options);
-                    }
-                    endTime = System.nanoTime();
-                    time_VNEKBalEK += (endTime - startTime) / 1000000;
+                        pg_unbal = new CostBasedOptimzer(g, graph_unbal, vstat, estat);
 
-                    // Vertex KDtree, Edge Naive, Unbalanced Vertex KDTree
-                    options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive", "unbalanced_kdtree"));
-                    startTime = System.nanoTime();
-                    for (int i = 0; i < 1; i++) {
-                        res = pg_unbal.generateQueryPlan(options);
-                    }
-                    endTime = System.nanoTime();
-                    time_VKENUbalVK += (endTime - startTime) / 1000000;
+                        pg_bal = new CostBasedOptimzer(g, graph_bal, vstat, estat);
 
-                    // Vertex KDtree, Edge Naive, Balanced Vertex KDTree
-                    options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive", "balanced_kdtree"));
-                    startTime = System.nanoTime();
-                    for (int i = 0; i < 1; i++) {
-                        res = pg_bal.generateQueryPlan(options);
-                    }
-                    endTime = System.nanoTime();
-                    time_VKENBalVK += (endTime - startTime) / 1000000;
+                        if (compare) {
+                            long startTime, endTime;
 
-                    // Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
-                    options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree", "unbalanced_kdtree"));
-                    startTime = System.nanoTime();
-                    for (int i = 0; i < 1; i++) {
-                        res = pg_unbal.generateQueryPlan(options);
-                    }
-                    endTime = System.nanoTime();
-                    time_VKEKUbalVEK += (endTime - startTime) / 1000000;
+                            // Vertex Naive, Edge Naive
+                            Set<String> options1 = new HashSet<>(Arrays.asList("vertex_naive", "edges_naive"));
 
-                    // Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
-                    options = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree", "balanced_kdtree"));
-                    startTime = System.nanoTime();
-                    for (int i = 0; i < 1; i++) {
-                        res = pg_bal.generateQueryPlan(options);
-                    }
-                    endTime = System.nanoTime();
-                    time_VKEKBalVEK += (endTime - startTime) / 1000000;
-                } else {
-                    System.out.println(options);
-                    graph_bal = GraphExtended.fromList(vertices, edges, options, dir);
-                    if (options.contains("balanced_kdtree")) {
-                        res = pg_bal.generateQueryPlan(options);
-                    } else {
-                        res = pg_unbal.generateQueryPlan(options);
+                            startTime = System.nanoTime();
+                            for (int i = 0; i < 1; i++) {
+                                try {
+                                    res = pg_unbal.generateQueryPlan(options1);
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                            endTime = System.nanoTime();
+                            time_VnEn += (endTime - startTime) / 1000000;
+
+                            // Vertex Naive, Edge KDTree, Unbalanced Edge KDTree
+                            options1 = new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree"));
+                            startTime = System.nanoTime();
+                            for (int i = 0; i < 1; i++) {
+                                try {
+                                    res = pg_unbal.generateQueryPlan(options1);
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                            endTime = System.nanoTime();
+                            time_VnEkUbalEk += (endTime - startTime) / 1000000;
+
+                            // Vertex Naive, Edge KDTree, Balanced Edge KDTree
+                            options1 = new HashSet<>(Arrays.asList("vertex_naive", "edges_kdtree", "balanced_kdtree"));
+                            startTime = System.nanoTime();
+                            for (int i = 0; i < 1; i++) {
+                                try {
+                                    res = pg_bal.generateQueryPlan(options1);
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                            endTime = System.nanoTime();
+                            time_VnEkBalEk += (endTime - startTime) / 1000000;
+
+                            // Vertex KDtree, Edge Naive, Unbalanced Vertex KDTree
+                            options1 = new HashSet<>(
+                                    Arrays.asList("vertex_kdtree", "edges_naive", "unbalanced_kdtree"));
+                            startTime = System.nanoTime();
+                            for (int i = 0; i < 1; i++) {
+                                try {
+                                    res = pg_unbal.generateQueryPlan(options1);
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                            endTime = System.nanoTime();
+                            time_VkEnUbalVk += (endTime - startTime) / 1000000;
+
+                            // Vertex KDtree, Edge Naive, Balanced Vertex KDTree
+                            options1 = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_naive", "balanced_kdtree"));
+                            startTime = System.nanoTime();
+                            for (int i = 0; i < 1; i++) {
+                                try {
+                                    res = pg_bal.generateQueryPlan(options1);
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                            endTime = System.nanoTime();
+                            time_VkEnBalVk += (endTime - startTime) / 1000000;
+
+                            // Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
+                            options1 = new HashSet<>(
+                                    Arrays.asList("vertex_kdtree", "edges_kdtree", "unbalanced_kdtree"));
+                            startTime = System.nanoTime();
+                            for (int i = 0; i < 1; i++) {
+                                try {
+                                    res = pg_unbal.generateQueryPlan(options1);
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                            endTime = System.nanoTime();
+                            time_VkEkUbalVEk += (endTime - startTime) / 1000000;
+
+                            // Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
+                            options1 = new HashSet<>(Arrays.asList("vertex_kdtree", "edges_kdtree", "balanced_kdtree"));
+                            startTime = System.nanoTime();
+                            for (int i = 0; i < 1; i++) {
+                                try {
+                                    res = pg_bal.generateQueryPlan(options1);
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                            endTime = System.nanoTime();
+                            time_VkEkBalVEk += (endTime - startTime) / 1000000;
+                        } else {
+                            System.out.println(options);
+                            if (options.contains("balanced_kdtree")) {
+                                try {
+                                    res = pg_bal.generateQueryPlan(options);
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    res = pg_unbal.generateQueryPlan(options);
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        qcount++;
+                        // System.out.println("Done");
+                        if (qcount == numQueries)
+                            break;
                     }
                 }
-                qcount++;
-                System.out.println("Completed");
-            }
 
-            internalMap.put("VNEN", time_VNEN / qcount);
-            internalMap.put("VNEKUbalEK", time_VNEKUbalEK / qcount);
-            internalMap.put("VNEKBalEK", time_VNEKBalEK / qcount);
-            internalMap.put("VKENUbalVK", time_VKENUbalVK / qcount);
-            internalMap.put("VKENBalVK", time_VKENBalVK / qcount);
-            internalMap.put("VKEKUbalVEK", time_VKEKUbalVEK / qcount);
-            internalMap.put("VKEKBalVEK", time_VKEKBalVEK / qcount);
-            finalResultTable.put(difficulty, internalMap);
-            totalQueriesExecuted += qcount;
-        }
+                internalMap.put("VNEN", time_VnEn / qcount);
+                internalMap.put("VNEKUbalEK", time_VnEkUbalEk / qcount);
+                internalMap.put("VNEKBalEK", time_VnEkBalEk / qcount);
+                internalMap.put("VKENUbalVK", time_VkEnUbalVk / qcount);
+                internalMap.put("VKENBalVK", time_VkEnBalVk / qcount);
+                internalMap.put("VKEKUbalVEK", time_VkEkUbalVEk / qcount);
+                internalMap.put("VKEKBalVEK", time_VkEkBalVEk / qcount);
+                finalResultTable.put(difficulty, internalMap);
+                totalQueriesExecuted += qcount;
+            });
+        }).get();
 
+        // }
+        System.out.println(finalResultTable);
         System.out.println("Query Execution Completed: Executed " + totalQueriesExecuted + " Queries");
         writeResultsToCSV(finalResultTable, queryDir);
 

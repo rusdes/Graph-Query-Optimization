@@ -35,8 +35,8 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 7;
-		String testQuery = "21";
+		int choice = 9;
+		String testQuery = "33";
 		System.out.println("Choice: " + choice);
 
 		String dir = null;
@@ -138,6 +138,17 @@ public class CostBasedOptimizerTest {
 				// testQuery = "31";
 				testQuery = "32";
 				break;
+			}
+
+			case 9: {
+				// Query- 30,
+				dir = "src/test/java/Dataset/smallest_dblp";
+				// testQuery = "30";
+				name_key = "name";
+				// testQuery = "31";
+				testQuery = "33";
+				break;
+				
 			}
 		}
 
@@ -463,6 +474,29 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
+			case "33": {
+				// dblp query
+				HashMap<String, Pair<String, String>> bookProps = new HashMap<>();
+				HashMap<String, Pair<String, String>> authorProps = new HashMap<>();
+				bookProps.put("name", new Pair<String, String>("eq", "Exploiting environment configurability in reinforcement learning."));
+				// HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
+				// // movieProps.put("originalTitle", new Pair<String, String>("eq",
+				// "Carmencita"));
+
+				QueryVertex a = new QueryVertex("book", bookProps, true);
+				QueryVertex b = new QueryVertex("series", authorProps, true);
+				// QueryVertex c = new QueryVertex("Movie", movieProps, false);
+
+				// QueryEdge ac = new QueryEdge(a, c, "composer",
+				// new HashMap<String, Pair<String, String>>());
+				QueryEdge ab = new QueryEdge(a, b, "is_part_of",
+						new HashMap<String, Pair<String, String>>());
+
+				vs = new QueryVertex[] { a, b};
+				es = new QueryEdge[] { ab };
+				break;
+			}
+
 			// case "30": {
 			// // IMDB uncompressed
 			// HashMap<String, Pair<String, String>> personProps = new HashMap<>();
@@ -660,6 +694,7 @@ public class CostBasedOptimizerTest {
 					.build()) {
 				String[] line;
 				while ((line = csvReader.readNext()) != null) {
+					System.out.println(line[0]);
 					Quintet<Long, Long, Long, String, String> holder = new Quintet<Long, Long, Long, String, String>(
 							Long.parseLong(line[0]), Long.parseLong(line[1]),
 							Long.parseLong(line[2]), line[3], line[4]);

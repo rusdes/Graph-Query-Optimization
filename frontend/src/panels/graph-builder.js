@@ -7,8 +7,6 @@ import {
 } from "../graph-shared";
 import { buildShortFormIfPrefixExists } from "../utils";
 
-// possible feature-rich alternative: https://github.com/wbkd/react-flow --> https://www.npmjs.com/package/react-flow-renderer
-
 let graph;
 let nodeIdCounter = 0,
   edgeIdCounter = 0;
@@ -43,6 +41,8 @@ const setGraphBuilderData = (graphData) => {
 };
 
 const interpretFromModel = (nodeOrEdge) => {
+  console.log(nodeOrEdge);
+
   switch (nodeOrEdge.type) {
     case "NamedNode":
       nodeOrEdge.label = buildShortFormIfPrefixExists(
@@ -383,9 +383,15 @@ const onValidGraphChange = (callback) => {
   graphChangeCallback = callback;
 };
 
+const final_nodes_edges = () => {
+  return {nodes: JSON.parse(JSON.stringify(nodes)), edges: JSON.parse(JSON.stringify(edges))}
+}
+
+
 export {
   initGraphBuilder,
   setGraphBuilderData,
   onValidGraphChange,
   getNodePosByValue,
+  final_nodes_edges,
 };

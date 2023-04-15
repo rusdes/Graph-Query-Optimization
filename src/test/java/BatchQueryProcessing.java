@@ -280,7 +280,7 @@ public class BatchQueryProcessing {
     public static void main(String[] args) throws Exception {
 
         String queryDir = "src/test/java/Queries";
-        int queryChoice = 1;
+        int queryChoice = 2;
         switch (queryChoice) {
             case 1: {
                 queryDir += "/Too Less"; // Total - 4.5K queries
@@ -313,7 +313,7 @@ public class BatchQueryProcessing {
 
         String dir = null;
         String name_key = "name";
-        int choice = 2;
+        int choice = 3;
         Boolean compare = true;
         Set<String> options = new HashSet<>();
         options.addAll(Arrays.asList("vertex_naive", "edges_naive"));
@@ -386,11 +386,9 @@ public class BatchQueryProcessing {
         // VkEkUbalVEk - Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
         // VkEkBalVEk - Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
 
-        int numQueries = 100;
-        int totalQueriesExecuted = 0;
+        int numQueries = 1000;
 
         ForkJoinPool myPool = new ForkJoinPool(4);
-        System.out.println("getParallelism=" + myPool.getParallelism());
 
         myPool.submit(() -> {
             queries.keySet().parallelStream().forEach((difficulty) -> {
@@ -561,13 +559,13 @@ public class BatchQueryProcessing {
                 internalMap.put("VKEKUbalVEK", time_VkEkUbalVEk / qcount);
                 internalMap.put("VKEKBalVEK", time_VkEkBalVEk / qcount);
                 finalResultTable.put(difficulty, internalMap);
-                totalQueriesExecuted += qcount;
             });
         }).get();
 
         // }
+        System.out.println();
         System.out.println(finalResultTable);
-        System.out.println("Query Execution Completed: Executed " + totalQueriesExecuted + " Queries");
+        System.out.println("\nQuery Execution Completed: Executed " + numQueries * 3 + " Queries");
         writeResultsToCSV(finalResultTable, queryDir);
 
     }
@@ -578,7 +576,7 @@ public class BatchQueryProcessing {
         try {
 
             // create FileWriter object with file as parameter
-            System.out.print("Generating results.csv: ");
+            System.out.print("\nGenerating results.csv: ");
             filePath = filePath + "/results.csv";
             PrintWriter writer = new PrintWriter(filePath);
             List<String> executionStrategy = new ArrayList<>();

@@ -5,7 +5,7 @@
 
   <style>
     body {
-      /* display: flex; */
+      /* display:flex; */
       align-items: center;
       justify-content: center;
       /* overflow: hidden; */
@@ -95,6 +95,7 @@
       background: #343434;
     }
   </style>
+  <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
 </head>
 <body>
   <div id="context-menu">
@@ -105,10 +106,17 @@
         <b>New node:</b> click on the canvas, <b>New edge:</b> drag one node close enough to another one,
         <b>Rename</b> node or edge by clicking on it, <b>Remove</b> node or edge by right-clicking on it
     </div>-->
-  <table>
+  <table style="background-color:#eee;">
     <tr>
       <td style="vertical-align: top; width: 600px; padding-right: 10px">
-        <div id="sparqlEditorDiv"></div>
+        <form id="selectDataset">
+          <p>Please select the dataset:</p>
+         <input type="radio" id="toy" name="dataset" value="Toy Dataset">
+         <label for="toy">Toy Dataset</label><br>
+         <input type="radio" id="imdb" name="dataset" value="IMDB Dataset">
+         <label for="imdb">IMDB Dataset</label><br>
+        </form>
+
         <div id="languageInterpreterDiv"></div>
       </td>
       <td style="padding-bottom: 10px">
@@ -131,7 +139,7 @@
       <td colspan="2">
         <div id="outputWrapperDiv">
           <div id="queryResultsDiv"></div>
-          <div id="graphOutputDiv"></div>
+          <div id="chartDiv"></div>
         </div>
       </td>
     </tr>
@@ -144,16 +152,13 @@
         width: 700,
         height: 424,
       },
-      sparqlEditor: {
-        div: document.getElementById("sparqlEditorDiv"),
-      },
       languageInterpreter: {
         div: document.getElementById("languageInterpreterDiv"),
       },
-      graphOutput: {
-        div: document.getElementById("graphOutputDiv"),
-        width: 999,
-        height: 600,
+      chart: {
+        div: document.getElementById("chartDiv"),
+        width: 600,
+        height: 100,
       },
       resultsTable: {
         queryResultsDiv: document.getElementById("queryResultsDiv"),
@@ -164,6 +169,9 @@
           "queryResultsSentenceDiv"
         ),
         outputWrapperDiv: document.getElementById("outputWrapperDiv"),
+        datasetChoiceToy: document.getElementById("toy"),
+        datasetChoiceIMDB: document.getElementById("imdb"),
+
       },
     });
   </script>

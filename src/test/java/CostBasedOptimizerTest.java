@@ -35,7 +35,7 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 7;
+		int choice = 1;
 		String testQuery = "21";
 		System.out.println("Choice: " + choice);
 
@@ -175,6 +175,18 @@ public class CostBasedOptimizerTest {
 		QueryVertex[] vs = new QueryVertex[] {};
 		QueryEdge[] es = new QueryEdge[] {};
 		switch (testQuery) {
+			
+			case "0": {
+				// expected output: [[4, 5], [6, 5]]
+				QueryVertex a = new QueryVertex("Artist", new HashMap<String, Pair<String, String>>(), true);
+				QueryVertex b = new QueryVertex("Concert", new HashMap<String, Pair<String, String>>(), true);
+
+				QueryEdge ab = new QueryEdge(a, b, "Performed", new HashMap<String, Pair<String, String>>());
+
+				vs = new QueryVertex[] { a, b};
+				es = new QueryEdge[] { ab };
+				break;
+			}
 
 			case "40": {
 				// expected output: [[4, 5], [6, 5]]

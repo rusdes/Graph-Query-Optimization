@@ -1,126 +1,146 @@
-import { onValidSparqlChange, setSparqlQuery, getQuery } from './panels/sparql-editor'
-import { setGraphBuilderData, onValidGraphChange } from './panels/graph-builder';
-import { getEditorValue, onEditorChange, updateLanguageEditor } from "./panels/language-interpreter";
-import { querySparqlEndpoint, fetchAllTriplesFromEndpoint, extractTriplesFromQuery, insertResultForVariable, orderNodesArray, extractWordFromUri, SPARQL_ENDPOINT } from "./utils";
-import { highlightGraphOutputSubset, setGraphOutputData } from "./panels/graph-output";
+import { setGraphBuilderData, final_nodes_edges } from "./panels/graph-builder";
+import { insertResultForVariable } from "./utils";
 import { buildTable } from "./panels/results-table";
+import { addOrGetNode, addEdge } from "./utils";
+import axios from 'axios';
+import { setChartOutput } from "./panels/chart-output";
 
-const parser = new require('sparqljs').Parser();
-const generator = new require('sparqljs').Generator();
-let currentSparqlModel;
 let outputElements;
 
-const Domain = {
-    SPARQL: 1, GRAPH: 2, LANGUAGE: 3
-};
-let acceptingChanges = true; // to avoid changes triggering circular onChange-calls
-
-const initModel = _outputElements => {
-    onValidSparqlChange(data => acceptingChanges && translateToOtherDomains(Domain.SPARQL, data));
-    onValidGraphChange(data => acceptingChanges && translateToOtherDomains(Domain.GRAPH, data));
-    onEditorChange(data => acceptingChanges && translateToOtherDomains(Domain.LANGUAGE, data));
-
-    outputElements = _outputElements;
-    document.getElementById(outputElements.submitButtonId).addEventListener('click', () => submitSparqlQuery());
-
-    let emptyQuery = "PREFIX : <http://onto.de/default#>\n" +
-        "SELECT * WHERE {\n" +
-        "  ?s ?p ?o ;\n" +
-        "}";
-
-    let exampleQuery = "PREFIX : <http://onto.de/default#>\n" +
-        "SELECT * WHERE {\n" +
-        "  ?someone :isA :Human ;\n" +
-        "  \t:rentsA ?flat .\n" +
-        "  ?flat :isLocatedIn :Hamburg .\n" +
-        "  ?someone ?opinion :DowntownAbbey .\n" +
-        "  ?flat :isOnFloor 2 .\n" +
-        "}";
-    /*let query = "PREFIX : <http://onto.de/default#> \n" +
-        "CONSTRUCT { \n" +
-        "  ?someone :livesIn ?location . \n" +
-        "} WHERE { \n" +
-        "    ?someone :isA :Human . \n" +
-        "    ?someone :likes :iceCream . \n" +
-        "    ?someone :rentsA ?flat . \n" +
-        "    ?flat :isLocatedIn ?location . \n" +
-        "}";*/
-    setSparqlQuery(SPARQL_ENDPOINT ? emptyQuery : exampleQuery);
+async function getResults(dataset_choice) {
+	const response = await axios
+  .post("http://localhost:8080/query", {
+    dataset: dataset_choice,
+    nodes: [
+      {
+        id: 1,
+        label: "Artist",
+        // props: [{ key: "Name", value: "Canela Cox", op: "eq" }],
+        props: [{}],
+        retValue: "True",
+      },
+      { id: 2, label: "Concert", props: [{}], retValue: "True" },
+    ],
+    edges: [{ from: 1, to: 2, label: "Performed", props: [{}] }],
+  });
+  let data;
+  console.log("Check", response);
+  if(response.status === 200){
+    data = response.data;
+  }else{
+    data = null;
+  }
+  console.log("Data is: ", data);
+  return data;
 };
 
-const submitSparqlQuery = () => {
-    outputElements.outputWrapperDiv.style.display = 'flex';
-    let prefixes = currentSparqlModel.prefixes;
-    fetchAllTriplesFromEndpoint(prefixes, allGraphData => {
-        allGraphData.nodes = orderNodesArray(Object.values(allGraphData.nodes));
-        setGraphOutputData(allGraphData);
-        querySparqlEndpoint(getQuery(), false, false, (variables, rows) => {
-            console.log("query result:", variables, rows);
-            buildTable(variables, rows, prefixes, selectedRow => {
-                let queryGraphData = null;
-                let filledSentence = "";
-                if (selectedRow) {
-                    queryGraphData = extractTriplesFromQuery(currentSparqlModel, true, true);
-                    queryGraphData.nodes = orderNodesArray(Object.values(queryGraphData.nodes));
-                    queryGraphData.nodes.forEach(node => insertResultForVariable(node, selectedRow))
-                    queryGraphData.edges.forEach(edge => insertResultForVariable(edge, selectedRow));
-                    console.log("queryGraphData", queryGraphData);
-                    let sentence = getEditorValue(); // sentence with variables in it
-                    Object.keys(selectedRow).forEach(key => {
-                        if (key === "tr") return;
-                        let filledVar = "<b>" + extractWordFromUri(selectedRow[key].value) + "</b>";
-                        // get the editor value as JSON object instead to avoid having to parse it from raw text? TODO
-                        sentence = sentence.replace("<" + key + ">", filledVar);
-                    });
-                    filledSentence = "--> " + sentence;
-                }
-                outputElements.queryResultsSentenceDiv.innerHTML = filledSentence;
-                highlightGraphOutputSubset(queryGraphData);
-            });
-        }).then();
-    });
+const init_graph_ex = () => {
+  let nodes = {};
+  let edges = [];
+
+  let subNode = addOrGetNode(nodes, { value: "Artist", termType: "Variable" });
+  let objNode = addOrGetNode(nodes, { value: "Concert", termType: "Variable" });
+  addEdge(
+    edges,
+    { value: "Performed", termType: "Variable" },
+    subNode.id,
+    objNode.id
+  );
+
+  return { prefixes: [], nodes: nodes, edges: edges };
 };
 
-const translateToOtherDomains = (sourceDomain, data) => {
-    acceptingChanges = false;
-    switch (sourceDomain) {
-        case Domain.SPARQL:
-            currentSparqlModel = parser.parse(data);
-            updateLanguageEditor(currentSparqlModel);
-            setGraphBuilderData(extractTriplesFromQuery(currentSparqlModel, true, true)); // edge.source/target will be made the node objects instead of just ids
-            break;
-        case Domain.GRAPH:
-            currentSparqlModel = constructSparqlModelFromGraphBuilderData(data);
-            setSparqlQuery(generator.stringify(currentSparqlModel));
-            updateLanguageEditor(currentSparqlModel);
-            break;
-        case Domain.LANGUAGE:
-            // not supported (yet)
-            break;
+const initModel = (_outputElements) => {
+  outputElements = _outputElements;
+  document
+    .getElementById(outputElements.submitButtonId)
+    .addEventListener("click", () => submitBtn());
+
+  setGraphBuilderData(init_graph_ex()); // edge.source/target will be made the node objects instead of just ids
+};
+
+const submitBtn = async() => {
+  let dataset_choice = null;
+  if (outputElements.datasetChoiceToy.checked) {
+    dataset_choice = "Toy";
+  } else if (outputElements.datasetChoiceIMDB.checked) {
+    dataset_choice = "IMDB";
+  }
+  if (dataset_choice == null) {
+    alert("Please Select a Dataset");
+    return;
+  }
+  console.log(dataset_choice);
+
+  // POST Request
+  let res = getResults(dataset_choice);
+  let [data] = await Promise.all([res]);
+
+  const runtime = data.runtime;
+  data = data.results;
+  console.log("API Results");
+  console.log(data);
+
+  outputElements.outputWrapperDiv.style.display = "flex";
+  setChartOutput(runtime);
+
+  // variables -> column header; rows -> row of table;
+
+  let variables = final_nodes_edges().nodes.filter((n) => {
+    return n.type === "Variable";
+  });
+
+
+  let c11 = {
+    value: "J.Lo",
+    props: {},
+  };
+
+  let c12 = {
+    value: "Feed India",
+    props: {},
+  };
+
+  let c21 = {
+    value: "Chris Martin",
+    props: {},
+  };
+
+  let c22 = {
+    value: "Global Concert",
+    props: {},
+  };
+
+  let rows = [
+    // { Artist: c11, Concert: c12 },
+    // { Artist: c21, Concert: c22 },
+  ];
+
+  for(let r = 0; r < data.length; r++){
+    const map1 = new Map();
+    for(let c = 0; c<data[0].length; c++){
+      map1.set(data[r][c][0], data[r][c][1]);
     }
-    acceptingChanges = true;
-};
+    rows.push(map1);
+  }
 
-const constructSparqlModelFromGraphBuilderData = data => {
-    let isConstructQuery = data.constructTriples.length > 0;
-    let constructedSparqlModel = {
-        prefixes: data.prefixes,
-        queryType: isConstructQuery ? "CONSTRUCT" : "SELECT",
-        type: "query",
-        where: [{
-            type: "bgp",
-            triples: data.whereTriples
-        }]
-    };
-    if (isConstructQuery) {
-        constructedSparqlModel.template = data.constructTriples;
-    } else {
-        constructedSparqlModel.variables = [{
-            termType: "Wildcard",
-            value: "*"
-        }];
+  let prefixes = [];
+
+  console.log("query result:", variables, rows);
+  console.log("query result row:", rows);
+
+
+  buildTable(variables, rows, prefixes, (selectedRow) => {
+    let queryGraphData = final_nodes_edges();
+    console.log("nodes and edges", queryGraphData);
+
+    if (selectedRow) {
+      queryGraphData.nodes.forEach((node) => {
+        insertResultForVariable(node, selectedRow);
+      });
+      console.log("queryGraphData", queryGraphData);
     }
-    return constructedSparqlModel;
+  });
 };
 
-export { initModel }
+export { initModel };

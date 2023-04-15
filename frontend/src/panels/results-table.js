@@ -1,5 +1,3 @@
-import { buildShortFormIfPrefixExists } from "../utils";
-
 let parentEl;
 let selectedRow = null;
 
@@ -8,6 +6,7 @@ const initResultsTable = config => {
 };
 
 const buildTable = (variables, rows, prefixes, onRowSelected) => {
+    console.log("Rows: ", rows);
     while (parentEl.firstChild) parentEl.removeChild(parentEl.lastChild);
     let table = document.createElement('table');
     table.setAttribute("id", "queryResultsTable");
@@ -23,10 +22,12 @@ const buildTable = (variables, rows, prefixes, onRowSelected) => {
         tr = document.createElement('tr');
         row.tr = tr;
         variables.forEach(col => {
-            let cell = row[col.value];
+            let cell = row.get(col.value);
+
             let td = document.createElement('td');
-            td.classList.add(cell.termType);
-            let text = document.createTextNode(buildShortFormIfPrefixExists(prefixes, cell.value));
+            td.classList.add("Variable");
+            let text = document.createTextNode(cell);
+
             td.appendChild(text);
             tr.appendChild(td);
         });

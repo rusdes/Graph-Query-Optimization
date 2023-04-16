@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,10 +33,12 @@ import operators.datastructures.kdtree.QuickSelect;
 
 public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable {
 
-	public class GSONClass {
+	public class SerClass implements Serializable {
+		private static final long serialVersionUID = 1234567L;
+
 		HashMap<String, KDTree> hashMap;
 
-		public GSONClass(HashMap<String, KDTree> hm) {
+		public SerClass(HashMap<String, KDTree> hm) {
 			this.hashMap = hm;
 		}
 	}
@@ -43,8 +46,8 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 	// private final List<VertexExtended<K, VL, VP>> vertices;
 	private HashMap<Long, VertexExtended<K, VL, VP>> vertices = new HashMap<>();
 	private final HashMap<Long, EdgeExtended> edges = new HashMap<>();
-	private HashMap<String, KDTree> KDTreeSetVertex = new HashMap<>();
-	private HashMap<String, KDTree> KDTreeSetEdge = new HashMap<>();
+	private SerClass KDTreeSetVertex = new SerClass(new HashMap<>());
+	private SerClass KDTreeSetEdge = new SerClass(new HashMap<>());
 
 	/* initialization */
 	private GraphExtended(List<VertexExtended<K, VL, VP>> vertices,
@@ -89,7 +92,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 			try {
 				File file1 = new File(tarDir + "vertex/" + str1);
 				if (file1.exists()) {
-					this.KDTreeSetVertex = ReadObjectFromFile(tarDir + "vertex/" + str1);
+					this.KDTreeSetVertex.hashMap = ReadObjectFromFile(tarDir + "vertex/" + str1);
 					// Gson gson = new GsonBuilder().setPrettyPrinting().create();
 					// this.KDTreeSetVertex = gson.fromJson(new FileReader(tarDir + "vertex/" +
 					// str1), fooType);
@@ -99,7 +102,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 
 				File file2 = new File(tarDir + "edge/" + str1);
 				if (file2.exists()) {
-					this.KDTreeSetEdge = ReadObjectFromFile(tarDir + "edge/" + str1);
+					this.KDTreeSetEdge.hashMap = ReadObjectFromFile(tarDir + "edge/" + str1);
 					// Gson gson = new GsonBuilder().setPrettyPrinting().create();
 					// this.KDTreeSetEdge = gson.fromJson(new FileReader(tarDir + "edge/" + str1),
 					// fooType);
@@ -125,12 +128,12 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 					}
 					hashMap.get(label).add(new Pair<String[], VertexExtended<K, VL, VP>>(keys, vertex));
 				} else {
-					if (this.KDTreeSetVertex.containsKey(label)) {
-						this.KDTreeSetVertex.get(label).insert(keys, vertex);
+					if (this.KDTreeSetVertex.hashMap.containsKey(label)) {
+						this.KDTreeSetVertex.hashMap.get(label).insert(keys, vertex);
 					} else {
 						KDTree kd = new KDTree(keys.length);
 						kd.insert(keys, vertex);
-						this.KDTreeSetVertex.put(label, kd);
+						this.KDTreeSetVertex.hashMap.put(label, kd);
 					}
 				}
 			}
@@ -150,12 +153,12 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 					}
 					hashMap_edge.get(label).add(new Pair<String[], EdgeExtended>(keys, edge));
 				} else {
-					if (this.KDTreeSetEdge.containsKey(label)) {
-						this.KDTreeSetEdge.get(label).insert(keys, edge);
+					if (this.KDTreeSetEdge.hashMap.containsKey(label)) {
+						this.KDTreeSetEdge.hashMap.get(label).insert(keys, edge);
 					} else {
 						KDTree kd = new KDTree(keys.length);
 						kd.insert(keys, edge);
-						this.KDTreeSetEdge.put(label, kd);
+						this.KDTreeSetEdge.hashMap.put(label, kd);
 					}
 				}
 			}
@@ -175,7 +178,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 						Pair<String[], String> p = (Pair<String[], String>) hashMapArray.get(label)[0];
 						int dims = p.getValue0().length;
 						KDTree kd = medianKDTree(hashMapArray.get(label), dims, label);
-						this.KDTreeSetVertex.put(label, kd);
+						this.KDTreeSetVertex.hashMap.put(label, kd);
 					}
 					hashMap = null; // garbage collector
 					hashMapArray = new HashMap<>();
@@ -190,7 +193,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 						Pair<String[], String> p = (Pair<String[], String>) hashMapArray.get(label)[0];
 						int dims = p.getValue0().length;
 						KDTree kd = medianKDTree(hashMapArray.get(label), dims, label);
-						this.KDTreeSetEdge.put(label, kd);
+						this.KDTreeSetEdge.hashMap.put(label, kd);
 					}
 
 					hashMap_edge = null; // garbage collector
@@ -224,7 +227,8 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 			objectOut.close();
 			System.out.println("The Object  was succesfully written to a file");
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			// ex.printStackTrace();
+			System.out.println("error");
 		}
 	}
 
@@ -293,25 +297,25 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 
 	public HashMap<String, KDTree> getAllKDTrees(String type) {
 		if (type.equals("edge")) {
-			return this.KDTreeSetEdge;
+			return this.KDTreeSetEdge.hashMap;
 		}
-		return this.KDTreeSetVertex;
+		return this.KDTreeSetVertex.hashMap;
 	}
 
 	public KDTree getKDTreeVertexByLabel(String label) {
-		return this.KDTreeSetVertex.get(label);
+		return this.KDTreeSetVertex.hashMap.get(label);
 	}
 
 	public KDTree getKDTreeEdgeByLabel(String label) {
-		return this.KDTreeSetEdge.get(label);
+		return this.KDTreeSetEdge.hashMap.get(label);
 	}
 
 	public ArrayList<String> getPropKeySorted(String label, String type) {
 		HashMap<String, String> props;
 		if (type.equals("edge")) {
-			props = ((EdgeExtended) this.KDTreeSetEdge.get(label).getRoot()).getProps();
+			props = ((EdgeExtended) this.KDTreeSetEdge.hashMap.get(label).getRoot()).getProps();
 		} else {
-			props = (HashMap<String, String>) ((VertexExtended) this.KDTreeSetVertex.get(label).getRoot()).getProps();
+			props = (HashMap<String, String>) ((VertexExtended) this.KDTreeSetVertex.hashMap.get(label).getRoot()).getProps();
 		}
 		Set<String> keySet = props.keySet();
 		return new ArrayList(new TreeSet(keySet));

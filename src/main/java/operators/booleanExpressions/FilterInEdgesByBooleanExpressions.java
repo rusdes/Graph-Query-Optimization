@@ -11,19 +11,19 @@ import operators.helper.FilterFunction;
 import operators.helper.FlatJoinFunction;
 // import org.apache.flink.util.Collector;
 
-public class FilterInEdgesByBooleanExpressions implements FlatJoinFunction<ArrayList<Long>, EdgeExtended<Long, Long, String, HashMap<String, String>>, ArrayList<Long>>{
+public class FilterInEdgesByBooleanExpressions implements FlatJoinFunction<ArrayList<Long>, EdgeExtended, ArrayList<Long>>{
 
-	private FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges;
+	private FilterFunction<EdgeExtended> filterEdges;
 	
 	
-	public FilterInEdgesByBooleanExpressions(FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges) {
+	public FilterInEdgesByBooleanExpressions(FilterFunction<EdgeExtended> filterEdges) {
 		this.filterEdges = filterEdges;
 	}
 
 	@Override
 	public void join(
 			ArrayList<Long> edgeId,
-			EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
+			EdgeExtended edge,
 			Collector<ArrayList<Long>> selectedVertexId) throws Exception {
 		if(this.filterEdges.filter(edge) == true) {
 			edgeId.add(edge.getEdgeId());

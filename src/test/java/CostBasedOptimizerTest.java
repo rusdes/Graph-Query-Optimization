@@ -41,10 +41,10 @@ public class CostBasedOptimizerTest {
 
 		String dir = null;
 		String name_key = null;
-		Boolean compare = true;
+		Boolean compare = false;
 
 		Set<String> options = new HashSet<>();
-		options.addAll(Arrays.asList("vertex_naive", "edges_naive"));
+		options.addAll(Arrays.asList("vertex_naive", "edges_kdtree", "balanced_kdtree"));
 
 		// Description for all options
 		HashMap<String, ArrayList<String>> desc = new HashMap<>();

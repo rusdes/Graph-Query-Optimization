@@ -93,20 +93,12 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 				File file1 = new File(tarDir + "vertex/" + str1);
 				if (file1.exists()) {
 					this.KDTreeSetVertex.hashMap = ReadObjectFromFile(tarDir + "vertex/" + str1);
-					// Gson gson = new GsonBuilder().setPrettyPrinting().create();
-					// this.KDTreeSetVertex = gson.fromJson(new FileReader(tarDir + "vertex/" +
-					// str1), fooType);
-
 					vertexBool = true;
 				}
 
 				File file2 = new File(tarDir + "edge/" + str1);
 				if (file2.exists()) {
 					this.KDTreeSetEdge.hashMap = ReadObjectFromFile(tarDir + "edge/" + str1);
-					// Gson gson = new GsonBuilder().setPrettyPrinting().create();
-					// this.KDTreeSetEdge = gson.fromJson(new FileReader(tarDir + "edge/" + str1),
-					// fooType);
-
 					edgeBool = true;
 				}
 			} catch (IOException ioException) {
@@ -202,20 +194,21 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 			}
 
 			// Wtite object to file if absent
-			theDir.mkdirs();
-			if (!vertexBool) {
-				File f = new File(tarDir + "vertex/");
-				f.mkdirs();
+			// theDir.mkdirs();
+			// if (!vertexBool) {
+			// 	File f = new File(tarDir + "vertex/");
+			// 	f.mkdirs();
 
-				WriteObjectToFile(this.KDTreeSetVertex, tarDir + "vertex/" + str1);
-			}
+			// 	WriteObjectToFile(this.KDTreeSetVertex, tarDir + "vertex/" + str1);
+			// }
 
-			if (!edgeBool) {
-				File f = new File(tarDir + "edge/");
-				f.mkdirs();
-
-				WriteObjectToFile(this.KDTreeSetEdge, tarDir + "edge/" + str1);
-			}
+			// if (!edgeBool) {
+			// 	File f = new File(tarDir + "edge/");
+			// 	f.mkdirs();
+			// 	for (String hkey : this.KDTreeSetEdge.hashMap.keySet()) {
+			// 		WriteObjectToFile(this.KDTreeSetEdge.hashMap.get(hkey), tarDir + "edge/" + str1 + "/" + hkey);
+			// 	}
+			// }
 		}
 	}
 

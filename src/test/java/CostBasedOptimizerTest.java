@@ -142,13 +142,12 @@ public class CostBasedOptimizerTest {
 
 			case 9: {
 				// Query- 30,
-				dir = "src/test/java/Dataset/smallest_dblp";
+				dir = "src/test/java/Dataset/dblp_small";
 				// testQuery = "30";
 				name_key = "name";
 				// testQuery = "31";
 				testQuery = "33";
 				break;
-				
 			}
 		}
 
@@ -536,7 +535,7 @@ public class CostBasedOptimizerTest {
 		vs = null;
 		es = null;
 
-		graph_unbal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("unbalanced_kdtree")), dir);
+ 		graph_unbal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("unbalanced_kdtree")), dir);
 		pg_unbal = new CostBasedOptimzer(g, graph_unbal, vstat, estat);
 
 		graph_bal = GraphExtended.fromList(vertices, edges, new HashSet<>(Arrays.asList("balanced_kdtree")), dir);
@@ -694,7 +693,7 @@ public class CostBasedOptimizerTest {
 					.build()) {
 				String[] line;
 				while ((line = csvReader.readNext()) != null) {
-					System.out.println(line[0]);
+					// System.out.println(line[0]);
 					Quintet<Long, Long, Long, String, String> holder = new Quintet<Long, Long, Long, String, String>(
 							Long.parseLong(line[0]), Long.parseLong(line[1]),
 							Long.parseLong(line[2]), line[3], line[4]);

@@ -12,9 +12,9 @@ import java.io.Serializable;
 
 class HPoint implements Serializable{
 
-    protected String[] coord;
+    String[] coord;
 
-    protected HPoint(int n) {
+    public HPoint(int n) {
         coord = new String[n];
     }
 

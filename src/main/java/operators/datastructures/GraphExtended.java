@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,10 +15,11 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.functors.FalsePredicate;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
 import org.javatuples.Triplet;
+
+import com.google.gson.reflect.TypeToken;
 
 import me.tongfei.progressbar.ProgressBar;
 
@@ -28,34 +30,30 @@ import java.util.Queue;
 import operators.datastructures.kdtree.KDTree;
 import operators.datastructures.kdtree.QuickSelect;
 
-/**
- * Extended graph for Cypher Implementation
- * 
- * @param <K>  the key type for vertex identifiers
- * @param <VL> the value type of vertex labels
- * @param <VP> the value type of vertex properties
- * @param <E>  the key type for edge identifiers
- * @param <EL> the value type of edge label
- * @param <EP> the value type of edge properties
- * 
- */
-
 public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable {
+
+	public class GSONClass {
+		HashMap<String, KDTree> hashMap;
+
+		public GSONClass(HashMap<String, KDTree> hm) {
+			this.hashMap = hm;
+		}
+	}
 
 	// private final List<VertexExtended<K, VL, VP>> vertices;
 	private HashMap<Long, VertexExtended<K, VL, VP>> vertices = new HashMap<>();
-	private final HashMap<Long, EdgeExtended<E, K, EL, EP>> edges = new HashMap<>();
+	private final HashMap<Long, EdgeExtended> edges = new HashMap<>();
 	private HashMap<String, KDTree> KDTreeSetVertex = new HashMap<>();
 	private HashMap<String, KDTree> KDTreeSetEdge = new HashMap<>();
 
 	/* initialization */
 	private GraphExtended(List<VertexExtended<K, VL, VP>> vertices,
-			List<EdgeExtended<E, K, EL, EP>> edges,
+			List<EdgeExtended> edges,
 			Boolean Balanced_KDTree,
 			Boolean EdgeProps,
 			String path) throws ClassNotFoundException {
 
-		for (EdgeExtended<E, K, EL, EP> e : edges) {
+		for (EdgeExtended e : edges) {
 			Long id = (Long) e.getEdgeId();
 			this.edges.put(id, e);
 		}
@@ -67,10 +65,13 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 		InitializeKDTreeSet(vertices, edges, Balanced_KDTree, EdgeProps, path);
 	}
 
-	private void InitializeKDTreeSet(List<VertexExtended<K, VL, VP>> vertices, List<EdgeExtended<E, K, EL, EP>> edges,
+	private void InitializeKDTreeSet(List<VertexExtended<K, VL, VP>> vertices, List<EdgeExtended> edges,
 			Boolean Balanced_KDTree, Boolean EdgeProps, String path) throws ClassNotFoundException {
 		HashMap<String, List<Pair<String[], VertexExtended<K, VL, VP>>>> hashMap = new HashMap<>();
-		HashMap<String, List<Pair<String[], EdgeExtended<E, K, EL, EP>>>> hashMap_edge = new HashMap<>();
+		HashMap<String, List<Pair<String[], EdgeExtended>>> hashMap_edge = new HashMap<>();
+
+		Type fooType = new TypeToken<HashMap<String, KDTree>>() {
+		}.getType();
 
 		// Read object from file if present
 		Boolean vertexBool = false, edgeBool = false;
@@ -78,30 +79,31 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 		String tarDir = path + "/KDTree/";
 		String str1;
 		if (Balanced_KDTree) {
-			str1 = "balanced.ser";
+			str1 = "balanced";
 		} else {
-			str1 = "unbalanced.ser";
+			str1 = "unbalanced";
 		}
 		File theDir = new File(tarDir);
 
 		if (theDir.exists()) {
-			// theDir.mkdirs();
 			try {
 				File file1 = new File(tarDir + "vertex/" + str1);
 				if (file1.exists()) {
-					ObjectInputStream objectInputStreamVertex = new ObjectInputStream(
-							new BufferedInputStream(new FileInputStream(tarDir + "vertex/" + str1)));
+					this.KDTreeSetVertex = ReadObjectFromFile(tarDir + "vertex/" + str1);
+					// Gson gson = new GsonBuilder().setPrettyPrinting().create();
+					// this.KDTreeSetVertex = gson.fromJson(new FileReader(tarDir + "vertex/" +
+					// str1), fooType);
 
-					this.KDTreeSetVertex = (HashMap<String, KDTree>) objectInputStreamVertex.readObject();
 					vertexBool = true;
 				}
 
 				File file2 = new File(tarDir + "edge/" + str1);
 				if (file2.exists()) {
-					ObjectInputStream objectInputStreamEdge = new ObjectInputStream(
-							new BufferedInputStream(new FileInputStream(tarDir + "edge/" + str1)));
+					this.KDTreeSetEdge = ReadObjectFromFile(tarDir + "edge/" + str1);
+					// Gson gson = new GsonBuilder().setPrettyPrinting().create();
+					// this.KDTreeSetEdge = gson.fromJson(new FileReader(tarDir + "edge/" + str1),
+					// fooType);
 
-					this.KDTreeSetEdge = (HashMap<String, KDTree>) objectInputStreamEdge.readObject();
 					edgeBool = true;
 				}
 			} catch (IOException ioException) {
@@ -135,7 +137,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 		}
 		if (!edgeBool) {
 
-			for (EdgeExtended<E, K, EL, EP> edge : edges) {
+			for (EdgeExtended edge : edges) {
 				String label = (String) edge.getLabel();
 				String id = edge.getEdgeId().toString();
 
@@ -146,7 +148,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 					if (!hashMap_edge.containsKey(label)) {
 						hashMap_edge.put(label, new ArrayList<>());
 					}
-					hashMap_edge.get(label).add(new Pair<String[], EdgeExtended<E, K, EL, EP>>(keys, edge));
+					hashMap_edge.get(label).add(new Pair<String[], EdgeExtended>(keys, edge));
 				} else {
 					if (this.KDTreeSetEdge.containsKey(label)) {
 						this.KDTreeSetEdge.get(label).insert(keys, edge);
@@ -198,38 +200,40 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 
 			// Wtite object to file if absent
 			theDir.mkdirs();
-			try {
-				if (!vertexBool) {
-					File f = new File(tarDir + "vertex/");
-					f.mkdirs();
+			if (!vertexBool) {
+				File f = new File(tarDir + "vertex/");
+				f.mkdirs();
 
-					ObjectOutputStream objectOutputStreamVertex = new ObjectOutputStream(
-							new FileOutputStream(tarDir + "vertex/" + str1));
+				WriteObjectToFile(this.KDTreeSetVertex, tarDir + "vertex/" + str1);
+			}
 
-					// Writing the object
-					objectOutputStreamVertex.writeObject(this.KDTreeSetVertex);
+			if (!edgeBool) {
+				File f = new File(tarDir + "edge/");
+				f.mkdirs();
 
-					// Close the ObjectOutputStream
-					objectOutputStreamVertex.close();
-				}
-
-				if (!edgeBool) {
-					File f = new File(tarDir + "edge/");
-					f.mkdirs();
-
-					ObjectOutputStream objectOutputStreamEdge = new ObjectOutputStream(
-							new FileOutputStream(tarDir + "edge/" + str1));
-
-					// Writing the object
-					objectOutputStreamEdge.writeObject(this.KDTreeSetEdge);
-
-					// Close the ObjectOutputStream
-					objectOutputStreamEdge.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+				WriteObjectToFile(this.KDTreeSetEdge, tarDir + "edge/" + str1);
 			}
 		}
+	}
+
+	public void WriteObjectToFile(Object serObj, String filepath) {
+		try {
+			FileOutputStream fileOut = new FileOutputStream(filepath);
+			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+			objectOut.writeObject(serObj);
+			objectOut.close();
+			System.out.println("The Object  was succesfully written to a file");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public HashMap<String, KDTree> ReadObjectFromFile(String filepath) throws IOException, ClassNotFoundException {
+			FileInputStream fileIn = new FileInputStream(filepath);
+			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+			Object obj = objectIn.readObject();
+			objectIn.close();
+			return (HashMap<String, KDTree>)obj;
 	}
 
 	public static KDTree medianKDTree(Object[] arr, int dims, String label) {
@@ -305,10 +309,9 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 	public ArrayList<String> getPropKeySorted(String label, String type) {
 		HashMap<String, String> props;
 		if (type.equals("edge")) {
-			props = (HashMap<String, String>) ((EdgeExtended) this.KDTreeSetEdge.get(label).getRoot()).getProps();
+			props = ((EdgeExtended) this.KDTreeSetEdge.get(label).getRoot()).getProps();
 		} else {
 			props = (HashMap<String, String>) ((VertexExtended) this.KDTreeSetVertex.get(label).getRoot()).getProps();
-
 		}
 		Set<String> keySet = props.keySet();
 		return new ArrayList(new TreeSet(keySet));
@@ -324,7 +327,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 	}
 
 	/* get all edges in a graph */
-	public Collection<EdgeExtended<E, K, EL, EP>> getEdges() {
+	public Collection<EdgeExtended> getEdges() {
 		return this.edges.values();
 	}
 
@@ -347,7 +350,7 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 
 	public static <K, VL, VP, E, EL, EP> GraphExtended<K, VL, VP, E, EL, EP> fromList(
 			List<VertexExtended<K, VL, VP>> vertices,
-			List<EdgeExtended<E, K, EL, EP>> edges,
+			List<EdgeExtended> edges,
 			Set<String> options,
 			String path) throws ClassNotFoundException {
 		Boolean balancedKdtree = false;

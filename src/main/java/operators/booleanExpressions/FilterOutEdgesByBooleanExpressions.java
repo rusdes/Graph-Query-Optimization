@@ -16,10 +16,10 @@ import operators.helper.FilterFunction;
 // @SuppressWarnings("serial")
 public class FilterOutEdgesByBooleanExpressions{
 
-	private FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges;
+	private FilterFunction<EdgeExtended> filterEdges;
 	private FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices;
 	
-	public FilterOutEdgesByBooleanExpressions(FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges,
+	public FilterOutEdgesByBooleanExpressions(FilterFunction<EdgeExtended> filterEdges,
 										FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices) {
 		this.filterEdges = filterEdges;
 		this.filterVertices = filterVertices;
@@ -27,7 +27,7 @@ public class FilterOutEdgesByBooleanExpressions{
 
 	// @Override
 	public boolean join(
-			EdgeExtended<Long, Long, String, HashMap<String, String>> edge,
+			EdgeExtended edge,
 			VertexExtended<Long, HashSet<String>, HashMap<String, String>> nextVertex
 			) throws Exception {
 		if(this.filterEdges.filter(edge) == true && this.filterVertices.filter(nextVertex) == true){

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import operators.datastructures.EdgeExtended;
 import operators.helper.FilterFunction;
 
-public class PropertyFilterForEdges implements FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>>{
+public class PropertyFilterForEdges implements FilterFunction<EdgeExtended>{
 
 
 	private String propertyKey;
@@ -24,7 +24,7 @@ public class PropertyFilterForEdges implements FilterFunction<EdgeExtended<Long,
 	
 	@Override
 	public boolean filter(
-			EdgeExtended<Long, Long, String, HashMap<String, String>> edge)
+			EdgeExtended edge)
 			throws Exception {
 		if(edge.getProps().get(this.propertyKey) == null) {
 			return false;

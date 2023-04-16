@@ -1,5 +1,7 @@
 package operators.datastructures;
 
+import java.util.HashMap;
+
 // import org.apache.flink.api.java.tuple.Quintet;
 // import org.javatuples.Quintet;
 /**
@@ -10,17 +12,17 @@ package operators.datastructures;
  * @param <P> the edge properties type
  *  */
 
-public class EdgeExtended<E, K, L, P> implements java.io.Serializable{
+public class EdgeExtended implements java.io.Serializable{
 	
 	// private static final long serialVersionUID = 1L;
 	// Long, Long, String, HashMap<String, String>
-	private E f0;
-	private K f1, f2;
-	private L f3;
-	private P f4;
+	Long f0;
+	Long f1, f2;
+	String f3;
+	HashMap<String, String> f4;
 	public EdgeExtended(){}
 
-	public EdgeExtended(E edgeId, K srcId, K trgId, L label, P props) {
+	public EdgeExtended(Long edgeId, Long srcId, Long trgId, String label, HashMap<String, String> props) {
 		this.f0 = edgeId;
 		this.f1 = srcId;
 		this.f2 = trgId;
@@ -28,43 +30,43 @@ public class EdgeExtended<E, K, L, P> implements java.io.Serializable{
 		this.f4 = props;
 	}
 	
-	public void setEdgeId(E edgeId) {
+	public void setEdgeId(Long edgeId) {
 		this.f0 = edgeId;
 	}
 
-	public E getEdgeId() {
+	public Long getEdgeId() {
 		return this.f0;
 	}
 	
-	public void setSourceId(K srcId) {
+	public void setSourceId(Long srcId) {
 		this.f1 = srcId;
 	}
 
-	public K getSourceId() {
+	public Long getSourceId() {
 		return this.f1;
 	}
 
-	public void setTargetId(K targetId) {
+	public void setTargetId(Long targetId) {
 		this.f2 = targetId;
 	}
 
-	public K getTargetId() {
+	public Long getTargetId() {
 		return f2;
 	}
 
-	public void setLabel(L label) {
+	public void setLabel(String label) {
 		this.f3 = label;
 	}
 
-	public L getLabel() {
+	public String getLabel() {
 		return f3;
 	}
 
-	public void setProps(P props) {
+	public void setProps(HashMap<String, String> props) {
 		this.f4 = props;
 	}	
 	
-	public P getProps() {
+	public HashMap<String, String> getProps() {
 		return f4;
 	}
 		

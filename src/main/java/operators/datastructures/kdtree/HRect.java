@@ -1,5 +1,7 @@
 package operators.datastructures.kdtree;
 
+import java.io.Serializable;
+
 /**
  * %SVN.HEADER%
  * 
@@ -9,7 +11,7 @@ package operators.datastructures.kdtree;
 
 // Hyper-Rectangle class supporting KDTree class
 
-class HRect {
+class HRect implements Serializable {
 
     protected HPoint min;
     protected HPoint max;

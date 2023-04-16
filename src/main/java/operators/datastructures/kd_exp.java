@@ -1,7 +1,13 @@
 package operators.datastructures;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -29,7 +35,7 @@ class Sort implements Comparator<Object> {
 }
 
 public class kd_exp {
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
 
         Object[] array = new Object[6];
 
@@ -42,13 +48,19 @@ public class kd_exp {
 
         // Arrays.sort(array, new Sort(1));
 
-        for (Object tuple : array) {
-            Pair<String[], String> p = (Pair<String[], String>) tuple;
-            System.out.println(Arrays.toString(p.getValue0()));
-        }
+        ObjectInputStream objectInputStreamEdge;
+        try {
+            objectInputStreamEdge = new ObjectInputStream(new BufferedInputStream(new FileInputStream("src/test/java/Dataset/dblp_small/KDTree/edge/unbalanced.ser")));
+            HashMap<String, KDTree> KDTreeSetEdge = (HashMap<String, KDTree>) objectInputStreamEdge.readObject();
 
-       KDTree kdtree = medianKDTree(array, 2);
-       System.out.println(kdtree.toString());
+        } catch (Exception e) {
+            StackTraceElement[] elements = e.getStackTrace();
+            System.err.println(
+                    "===================================== \n" + "[ERROR] lorem ipsum");
+            for (int i = 0; i < 15; i++) {
+                System.err.println(elements[i]);
+            }
+        }
     }
 
     public static KDTree medianKDTree(Object[] arr, int dims) {

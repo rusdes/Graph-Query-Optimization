@@ -236,7 +236,7 @@ public class CostBasedOptimzer {
 						.clone();
 				for (String k : props.keySet()) {
 					newef = new PropertyFilterForEdges(k, props.get(k).getValue0(), props.get(k).getValue1());
-					ef = new AND<EdgeExtended<Long, Long, String, HashMap<String, String>>>(ef, newef);
+					ef = new AND<EdgeExtended>(ef, newef);
 				}
 			}
 			// TODO check < or >. Error in some cases when set to >
@@ -258,14 +258,14 @@ public class CostBasedOptimzer {
 					}
 				}
 
-				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
+				List<EdgeExtended> filteredEdgesIntermed = new ArrayList<>();
 				for (Object candEdge : filteredEdges) {
-					Long IDTargetVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
+					Long IDTargetVertex = ((EdgeExtended) candEdge)
 							.getTargetId();
 					VertexExtended<Long, HashSet<String>, HashMap<String, String>> candTarget = graph
 							.getVertexByID(IDTargetVertex);
 					if (vf.filter(candTarget)) {
-						filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
+						filteredEdgesIntermed.add((EdgeExtended) candEdge);
 					}
 				}
 
@@ -275,7 +275,7 @@ public class CostBasedOptimzer {
 					paths = curr_paths.stream().map(list -> {
 						List<List<Long>> intermediateList = new ArrayList<>();
 
-						for (EdgeExtended<Long, Long, String, HashMap<String, String>> e1 : filteredEdgesIntermed) {
+						for (EdgeExtended e1 : filteredEdgesIntermed) {
 							if (e1.getSourceId().equals(list.get(firstCol))) {
 							// if (e1.getSourceId() == list.get(firstCol)) {
 								List<Long> cloned_list = new ArrayList<Long>(list);
@@ -320,14 +320,14 @@ public class CostBasedOptimzer {
 					}
 				}
 
-				List<EdgeExtended<Long, Long, String, HashMap<String, String>>> filteredEdgesIntermed = new ArrayList<>();
+				List<EdgeExtended> filteredEdgesIntermed = new ArrayList<>();
 				for (Object candEdge : filteredEdges) {
-					Long IDSourceVertex = ((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge)
+					Long IDSourceVertex = ((EdgeExtended) candEdge)
 							.getSourceId();
 					VertexExtended<Long, HashSet<String>, HashMap<String, String>> candSource = graph
 							.getVertexByID(IDSourceVertex);
 					if (vf.filter(candSource)) {
-						filteredEdgesIntermed.add((EdgeExtended<Long, Long, String, HashMap<String, String>>) candEdge);
+						filteredEdgesIntermed.add((EdgeExtended) candEdge);
 					}
 				}
 
@@ -337,7 +337,7 @@ public class CostBasedOptimzer {
 					paths = curr_paths.stream().map(list -> {
 						List<List<Long>> intermediateList = new ArrayList<>();
 
-						for (EdgeExtended<Long, Long, String, HashMap<String, String>> e1 : filteredEdgesIntermed) {
+						for (EdgeExtended e1 : filteredEdgesIntermed) {
 							// .equals() for Long, not ==
 							if (e1.getTargetId().equals(list.get(firstCol))) {
 							// if (e1.getTargetId() == list.get(firstCol)) {

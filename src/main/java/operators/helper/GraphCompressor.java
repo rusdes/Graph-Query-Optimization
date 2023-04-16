@@ -14,10 +14,10 @@ import operators.datastructures.VertexExtended;
 public class GraphCompressor {
 
     public void compress(
-            GraphExtended<Long, HashSet<String>, HashMap<String, String>, Long, String, HashMap<String, String>> graph) {
-        List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edgesToBeCompressed = new ArrayList<>();
+            GraphExtended graph) {
+        List<EdgeExtended> edgesToBeCompressed = new ArrayList<>();
         Collection<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = graph.getVertices();
-        Collection<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = graph.getEdges();
+        Collection<EdgeExtended> edges = graph.getEdges();
         boolean isCompressible = true;
         System.out.println("Checking Dataset for Compressibility");
         for (VertexExtended<Long, HashSet<String>, HashMap<String, String>> vertex : vertices) {
@@ -30,11 +30,11 @@ public class GraphCompressor {
         if (isCompressible) {
             System.out.println("Initiating Compression");
             Set<Long> sourceIds = new HashSet<>();
-            for (EdgeExtended<Long, Long, String, HashMap<String, String>> edge : edges) {
+            for (EdgeExtended edge : edges) {
                 sourceIds.add(edge.getSourceId());
             }
 
-            for (EdgeExtended<Long, Long, String, HashMap<String, String>> edge : edges) {
+            for (EdgeExtended edge : edges) {
                 if (!sourceIds.contains(edge.getTargetId())) {
                     edgesToBeCompressed.add(edge);
                 }
@@ -61,7 +61,7 @@ public class GraphCompressor {
 
             Set<Long> verticesToBeDeleted = new HashSet<>();
             Set<Long> edgesToBeDeleted = new HashSet<>();
-            for (EdgeExtended<Long, Long, String, HashMap<String, String>> toBeCompressed : edgesToBeCompressed) {
+            for (EdgeExtended toBeCompressed : edgesToBeCompressed) {
                 if (toBeCompressed != null) {
                     VertexExtended<Long, HashSet<String>, HashMap<String, String>> source = graph
                             .getVertexByID(toBeCompressed.getSourceId());

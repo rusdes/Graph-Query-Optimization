@@ -181,7 +181,7 @@ public class API {
         List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = verticesFromFile.stream()
                 .map(elt -> VertexFromFileToDataSet(elt)).collect(Collectors.toList());
 
-        List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = edgesFromFile.stream()
+        List<EdgeExtended> edges = edgesFromFile.stream()
                 .map(elt -> EdgeFromFileToDataSet(elt))
                 .collect(Collectors.toList());
 
@@ -409,11 +409,10 @@ public class API {
         return vertex;
     }
 
-    public static EdgeExtended<Long, Long, String, HashMap<String, String>> EdgeFromFileToDataSet(
+    public static EdgeExtended EdgeFromFileToDataSet(
             Quintet<Long, Long, Long, String, String> edgeFromFile) {
 
-        EdgeExtended<Long, Long, String, HashMap<String, String>> edge = new EdgeExtended<Long, Long, String, HashMap<String, String>>();
-
+        EdgeExtended edge = new EdgeExtended();
         edge.setEdgeId(edgeFromFile.getValue0());
         edge.setSourceId(edgeFromFile.getValue1());
         edge.setTargetId(edgeFromFile.getValue2());

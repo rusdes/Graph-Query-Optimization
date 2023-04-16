@@ -42,9 +42,9 @@ public class UnaryOperators {
 	}
 
 	// No specific requirements on selected edges on right side
-	public List<EdgeExtended<Long, Long, String, HashMap<String, String>>> selectOutEdges(Long sourceVertexID) {
+	public List<EdgeExtended> selectOutEdges(Long sourceVertexID) {
 
-		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edgeIDs = graph
+		List<EdgeExtended> edgeIDs = graph
 				.getEdges()
 				.stream()
 				.filter(e -> e.getSourceId().equals(sourceVertexID))
@@ -54,14 +54,14 @@ public class UnaryOperators {
 
 	// Select outgoing edges by boolean expressions
 	public List<List<Long>> selectOutEdgesByBooleanExpressions(int col,
-			FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges,
+			FilterFunction<EdgeExtended> filterEdges,
 			FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices) {
 
 		FilterOutEdgesByBooleanExpressions filterEdg = new FilterOutEdgesByBooleanExpressions(filterEdges,
 				filterVertices);
 
 		List<List<Long>> selectedResults = this.paths.parallelStream().map(list -> {
-			List<EdgeExtended<Long, Long, String, HashMap<String, String>>> outEdges = this
+			List<EdgeExtended> outEdges = this
 					.selectOutEdges(list.get(col)) // outgoing edges from vertex at col
 					.stream()
 					.filter(e -> {
@@ -76,7 +76,7 @@ public class UnaryOperators {
 					.collect(Collectors.toList());
 
 			List<List<Long>> intermediateList = new ArrayList<>();
-			for (EdgeExtended<Long, Long, String, HashMap<String, String>> outE : outEdges) {
+			for (EdgeExtended outE : outEdges) {
 				List<Long> cloned_list = new ArrayList<Long>(list);
 				cloned_list.add(outE.getEdgeId());
 				cloned_list.add(outE.getTargetId());
@@ -91,9 +91,9 @@ public class UnaryOperators {
 	}
 
 	// No specific requirements on selected edges on left side
-	public List<EdgeExtended<Long, Long, String, HashMap<String, String>>> selectInEdges(Long targetVertexID) {
+	public List<EdgeExtended> selectInEdges(Long targetVertexID) {
 
-		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edgeIDs = graph
+		List<EdgeExtended> edgeIDs = graph
 				.getEdges()
 				.stream()
 				.filter(e -> e.getTargetId().equals(targetVertexID))
@@ -103,7 +103,7 @@ public class UnaryOperators {
 
 	// Select ingoing edges by boolean expressions
 	public List<List<Long>> selectInEdgesByBooleanExpressions(int col,
-			FilterFunction<EdgeExtended<Long, Long, String, HashMap<String, String>>> filterEdges,
+			FilterFunction<EdgeExtended> filterEdges,
 			FilterFunction<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> filterVertices) {
 
 		FilterOutEdgesByBooleanExpressions filterEdg = new FilterOutEdgesByBooleanExpressions(filterEdges,
@@ -111,7 +111,7 @@ public class UnaryOperators {
 
 		List<List<Long>> selectedResults = this.paths.parallelStream().map(list -> {
 
-			List<EdgeExtended<Long, Long, String, HashMap<String, String>>> inEdges = this
+			List<EdgeExtended> inEdges = this
 					.selectInEdges(list.get(col))
 					.stream()
 					.filter(e -> {
@@ -125,7 +125,7 @@ public class UnaryOperators {
 					.collect(Collectors.toList());
 
 			List<List<Long>> intermediateList = new ArrayList<>();
-			for (EdgeExtended<Long, Long, String, HashMap<String, String>> inE : inEdges) {
+			for (EdgeExtended inE : inEdges) {
 				List<Long> cloned_list = new ArrayList<Long>(list);
 				cloned_list.add(inE.getEdgeId());
 				cloned_list.add(inE.getSourceId());

@@ -35,7 +35,7 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 1;
+		int choice = 10;
 		String testQuery = "21";
 		System.out.println("Choice: " + choice);
 
@@ -93,7 +93,7 @@ public class CostBasedOptimizerTest {
 				// testQuery = "0";
 				// testQuery = "18";
 				// testQuery = "19";
-				// testQuery = "45";
+				testQuery = "45";
 				break;
 			}
 
@@ -142,6 +142,16 @@ public class CostBasedOptimizerTest {
 
 			case 9: {
 				// Query- 30,
+				dir = "src/test/java/Dataset/dblp_super_small";
+				// testQuery = "30";
+				name_key = "name";
+				// testQuery = "31";
+				testQuery = "33";
+				break;
+			}
+
+			case 10: {
+				// Query- 30,
 				dir = "src/test/java/Dataset/dblp_small";
 				// testQuery = "30";
 				name_key = "name";
@@ -170,7 +180,7 @@ public class CostBasedOptimizerTest {
 		List<VertexExtended<Long, HashSet<String>, HashMap<String, String>>> vertices = verticesFromFile.stream()
 				.map(elt -> VertexFromFileToDataSet(elt)).collect(Collectors.toList());
 
-		List<EdgeExtended<Long, Long, String, HashMap<String, String>>> edges = edgesFromFile.stream()
+		List<EdgeExtended> edges = edgesFromFile.stream()
 				.map(elt -> EdgeFromFileToDataSet(elt))
 				.collect(Collectors.toList());
 
@@ -737,10 +747,10 @@ public class CostBasedOptimizerTest {
 		return vertex;
 	}
 
-	public static EdgeExtended<Long, Long, String, HashMap<String, String>> EdgeFromFileToDataSet(
+	public static EdgeExtended EdgeFromFileToDataSet(
 			Quintet<Long, Long, Long, String, String> edgeFromFile) {
 
-		EdgeExtended<Long, Long, String, HashMap<String, String>> edge = new EdgeExtended<Long, Long, String, HashMap<String, String>>();
+		EdgeExtended edge = new EdgeExtended();
 
 		edge.setEdgeId(edgeFromFile.getValue0());
 		edge.setSourceId(edgeFromFile.getValue1());

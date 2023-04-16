@@ -9,7 +9,6 @@ package operators.datastructures.kdtree;
 import java.io.Serializable;
 import java.util.Vector;
 
-
 /**
  * KDTree is a class supporting KD-tree insertion, deletion, equality search,
  * range search, and nearest neighbor(s) using double-precision floating-point
@@ -24,33 +23,31 @@ import java.util.Vector;
  * <LI>As with Hashtables, values inserted into a KD-tree are not cloned.
  * Modifying a value between insertion and retrieval will therefore modify the
  * value stored in the tree.
- *</UL>
+ * </UL>
  * 
  * @author Simon Levy, Bjoern Heckel
  * @version %I%, %G%
  * @since JDK1.2
  */
-public class KDTree implements Serializable{
-
+public class KDTree implements Serializable {
+	private static final long serialVersionUID = 1L;
 	// K = number of dimensions
-	private int m_K;
-
+	int m_K;
 	// root of KD-tree
-	private KDNode m_root;
+	KDNode m_root;
 
 	/**
 	 * Creates a KD-tree with specified number of dimensions.
 	 * 
 	 * @param k
-	 *            number of dimensions
+	 *          number of dimensions
 	 */
 	public KDTree(int k) {
-
 		m_K = k;
 		m_root = null;
 	}
 
-	public Object getRoot(){
+	public Object getRoot() {
 		return this.m_root.v;
 	}
 
@@ -67,14 +64,14 @@ public class KDTree implements Serializable{
 	 * </PRE>
 	 * 
 	 * @param key
-	 *            key for KD-tree node
+	 *              key for KD-tree node
 	 * @param value
-	 *            value at that key
+	 *              value at that key
 	 * 
 	 * @throws KeySizeException
-	 *             if key.length mismatches K
+	 *                               if key.length mismatches K
 	 * @throws KeyDuplicateException
-	 *             if key already in tree
+	 *                               if key already in tree
 	 */
 	public void insert(String[] key, Object value) {
 
@@ -82,11 +79,15 @@ public class KDTree implements Serializable{
 			throw new RuntimeException("KDTree: wrong key size!");
 		}
 
-		else
-			m_root = KDNode.ins(new HPoint(key), value, m_root, 0, m_K);
+		else {
+			// m_root = KDNode.ins(new HPoint(key), value, m_root, 0, m_K);
+			if (m_root == null) {
+				m_root = KDNode.ins_iterative(new HPoint(key), value, m_root, 0, m_K);
+			} else {
+				KDNode.ins_iterative(new HPoint(key), value, m_root, 0, m_K);
+			}
+		}
 	}
-
-	
 
 	/**
 	 * Find KD-tree node whose key is identical to key. Uses algorithm
@@ -98,7 +99,7 @@ public class KDTree implements Serializable{
 	 * @return object at key, or null if not found
 	 * 
 	 * @throws KeySizeException
-	 *             if key.length mismatches K
+	 *                          if key.length mismatches K
 	 */
 	public Object search(String[] key) {
 
@@ -120,9 +121,9 @@ public class KDTree implements Serializable{
 	 *            key for KD-tree node
 	 * 
 	 * @throws KeySizeException
-	 *             if key.length mismatches K
+	 *                             if key.length mismatches K
 	 * @throws KeyMissingException
-	 *             if no node in tree has key
+	 *                             if no node in tree has key
 	 */
 	public void delete(String[] key) {
 
@@ -148,14 +149,14 @@ public class KDTree implements Serializable{
 	 * Gonnet & Baeza-Yates.
 	 * 
 	 * @param lowk
-	 *            lower-bounds for key
+	 *             lower-bounds for key
 	 * @param uppk
-	 *            upper-bounds for key
+	 *             upper-bounds for key
 	 * 
 	 * @return array of Objects whose keys fall in range [lowk,uppk]
 	 * 
 	 * @throws KeySizeException
-	 *             on mismatch among lowk.length, uppk.length, or K
+	 *                          on mismatch among lowk.length, uppk.length, or K
 	 */
 	public Object[] range(String[] lowk, String[] uppk) {
 
@@ -169,7 +170,7 @@ public class KDTree implements Serializable{
 
 		else {
 			Vector<KDNode> v = new Vector<KDNode>();
-			KDNode.rsearch(new HPoint(lowk), new HPoint(uppk), m_root, 0, m_K, v);
+			KDNode.rsearch_iterative(new HPoint(lowk), new HPoint(uppk), m_root, 0, m_K, v);
 			Object[] o = new Object[v.size()];
 			for (int i = 0; i < v.size(); ++i) {
 				KDNode n = v.elementAt(i);

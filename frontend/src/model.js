@@ -29,24 +29,11 @@ async function getResults(dataset_choice) {
     })
   });
 
-  console.log("titty: ", nodes_data);
-
 	const response = await axios
   .post("http://localhost:8080/query", {
     dataset: dataset_choice,
     nodes: nodes_data,
-    // nodes: [
-    //   {
-    //     id: 1,
-    //     label: "Artist",
-    //     // props: [{ key: "Name", value: "Canela Cox", op: "eq" }],
-    //     props: [{}],
-    //     retValue: "True",
-    //   },
-    //   { id: 2, label: "Concert", props: [{}], retValue: "True" },
-    // ],
     edges: [{ from: 0, to: 1, label: "Performed", props: [{}] }],
-    // edges: edges_data
   });
   let data;
   console.log("Check", response);

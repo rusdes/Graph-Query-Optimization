@@ -102,31 +102,7 @@ const submitBtn = async() => {
     return n.type === "Variable";
   });
 
-
-  let c11 = {
-    value: "J.Lo",
-    props: {},
-  };
-
-  let c12 = {
-    value: "Feed India",
-    props: {},
-  };
-
-  let c21 = {
-    value: "Chris Martin",
-    props: {},
-  };
-
-  let c22 = {
-    value: "Global Concert",
-    props: {},
-  };
-
-  let rows = [
-    // { Artist: c11, Concert: c12 },
-    // { Artist: c21, Concert: c22 },
-  ];
+  let rows = [];
 
   for(let r = 0; r < data.length; r++){
     const map1 = new Map();
@@ -140,7 +116,6 @@ const submitBtn = async() => {
 
   console.log("query result:", variables, rows);
   console.log("query result row:", rows);
-
 
   buildTable(variables, rows, prefixes, (selectedRow) => {
     let queryGraphData = final_nodes_edges();

@@ -108,7 +108,7 @@
     </div>-->
   <table style="background-color:#eee;">
     <tr>
-      <td style="vertical-align: top; width: 600px; padding-right: 10px">
+      <td style="vertical-align: top; text-align: left; width: 600px; padding-right: 10px">
         <form id="selectDataset">
           <p>Please select the dataset:</p>
          <input type="radio" id="toy" name="dataset" value="Toy Dataset">
@@ -116,10 +116,8 @@
          <input type="radio" id="imdb" name="dataset" value="IMDB Dataset">
          <label for="imdb">IMDB Dataset</label><br>
         </form>
-
-        <div id="languageInterpreterDiv"></div>
       </td>
-      <td style="padding-bottom: 10px">
+      <td style="padding-bottom: 10px; justify-content: center">
         <div id="graphBuilderDiv"></div>
       </td>
     </tr>
@@ -131,16 +129,13 @@
       </td>
     </tr>
     <tr>
-      <td colspan="2">
-        <div id="queryResultsSentenceDiv" style="padding: 20px"></div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">
+      <td style="vertical-align: top; justify-content: center; text-align: center; width: 600px">
         <div id="outputWrapperDiv">
           <div id="queryResultsDiv"></div>
-          <div id="chartDiv"></div>
         </div>
+      </td>
+      <td>
+          <div id="chartDiv"></div>
       </td>
     </tr>
   </table>
@@ -151,9 +146,6 @@
         div: document.getElementById("graphBuilderDiv"),
         width: 700,
         height: 424,
-      },
-      languageInterpreter: {
-        div: document.getElementById("languageInterpreterDiv"),
       },
       chart: {
         div: document.getElementById("chartDiv"),

@@ -1,6 +1,9 @@
 let div;
 
 const setChartOutput = (runtime_data) => {
+  div.style.backgroundWidth = "thick";
+  div.style.backgroundColor = "red";
+
   var data = [
     {
       x: [
@@ -46,6 +49,7 @@ const setChartOutput = (runtime_data) => {
 
   Plotly.newPlot(div, data, layout, { displayModeBar: false });
 };
+
 const initChartOutput = (config) => {
   div = config.div;
 };

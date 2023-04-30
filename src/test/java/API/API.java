@@ -88,7 +88,7 @@ class QueryData {
                 props.put(key, p);
             }
 
-            vs[id - 1] = new QueryVertex(label, props, rv.equals("True") ? true : false);
+            vs[id] = new QueryVertex(label, props, rv.equals("True") ? true : false);
             counter++;
         }
 
@@ -112,7 +112,7 @@ class QueryData {
                 props.put(key, p);
             }
 
-            es[counter] = new QueryEdge(vs[from - 1], vs[to - 1], label, props);
+            es[counter] = new QueryEdge(vs[from], vs[to], label, props);
             counter++;
         }
         return new QueryGraph(vs, es);

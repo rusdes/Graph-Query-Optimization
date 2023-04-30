@@ -1,15 +1,14 @@
 const addOrGetNode = (nodes, subOrObj, markNew = false) => {
-    let value = subOrObj.value;
-    if (!nodes[value]) {
-        nodes[value] = { id: Object.keys(nodes).length, value: value, type: subOrObj.termType, children: [], paths: [] , props: {}};
-        if (markNew) nodes[value].isNewInConstruct = true;
+    if (!nodes[subOrObj.value]) {
+        nodes[subOrObj.value] = { id: Object.keys(nodes).length, value: subOrObj.value, type: subOrObj.termType, children: [], paths: [] , props: subOrObj.props};
+        if (markNew) nodes[subOrObj.value].isNewInConstruct = true;
     }
-    return nodes[value];
+    return nodes[subOrObj.value];
 };
 
 const addEdge = (edges, predicate, subNodeId, objNodeId, markNew = false) => {
     let value = predicate.value;
-    let edge = { id: edges.length, source: subNodeId, target: objNodeId, value: value, type: predicate.termType };
+    let edge = { id: edges.length, source: subNodeId, target: objNodeId, value: value, type: predicate.termType, props: predicate.props};
     if (markNew) edge.isNewInConstruct = true;
     edges.push(edge);
 };

@@ -8,20 +8,45 @@ import { setChartOutput } from "./panels/chart-output";
 let outputElements;
 
 async function getResults(dataset_choice) {
+  let queryGraphData = final_nodes_edges();
+  let nodes_data = [];
+  let edges_data = [];
+
+  await queryGraphData.nodes.forEach((node) => {
+    nodes_data.push({
+      id: node.id,
+      label: node.value,
+      props: node.props,
+      retValue: "True",
+    })
+  });
+
+  await queryGraphData.edges.forEach((edge) => {
+    edges_data.push({ from: edge.source,
+      to: edge.target,
+      label: edge.value,
+      props: edge.props,
+    })
+  });
+
+  console.log("titty: ", nodes_data);
+
 	const response = await axios
   .post("http://localhost:8080/query", {
     dataset: dataset_choice,
-    nodes: [
-      {
-        id: 1,
-        label: "Artist",
-        // props: [{ key: "Name", value: "Canela Cox", op: "eq" }],
-        props: [{}],
-        retValue: "True",
-      },
-      { id: 2, label: "Concert", props: [{}], retValue: "True" },
-    ],
-    edges: [{ from: 1, to: 2, label: "Performed", props: [{}] }],
+    nodes: nodes_data,
+    // nodes: [
+    //   {
+    //     id: 1,
+    //     label: "Artist",
+    //     // props: [{ key: "Name", value: "Canela Cox", op: "eq" }],
+    //     props: [{}],
+    //     retValue: "True",
+    //   },
+    //   { id: 2, label: "Concert", props: [{}], retValue: "True" },
+    // ],
+    edges: [{ from: 0, to: 1, label: "Performed", props: [{}] }],
+    // edges: edges_data
   });
   let data;
   console.log("Check", response);
@@ -38,11 +63,11 @@ const init_graph_ex = () => {
   let nodes = {};
   let edges = [];
 
-  let subNode = addOrGetNode(nodes, { value: "Artist", termType: "Variable" });
-  let objNode = addOrGetNode(nodes, { value: "Concert", termType: "Variable" });
+  let subNode = addOrGetNode(nodes, { value: "Artist", termType: "Variable", props: [{}] });
+  let objNode = addOrGetNode(nodes, { value: "Concert", termType: "Variable", props: [{}] });
   addEdge(
     edges,
-    { value: "Performed", termType: "Variable" },
+    { value: "Performed", termType: "Variable", props: [{}] },
     subNode.id,
     objNode.id
   );

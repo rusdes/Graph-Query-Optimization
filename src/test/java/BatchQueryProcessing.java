@@ -279,29 +279,42 @@ public class BatchQueryProcessing {
      */
     public static void main(String[] args) throws Exception {
 
-        String queryDir = "src/test/java/Queries";
-        int queryChoice = 2;
-        switch (queryChoice) {
+        String queryDir = null;
+        String dir = null;
+        // String name_key = "name";
+        int choice = 4;
+        switch (choice) {
             case 1: {
-                queryDir += "/Too Less"; // Total - 4.5K queries
+                dir = "src/test/java/Dataset/IMDB_Small";
+                queryDir = "src/test/java/Queries/imdb";
                 break;
             }
 
             case 2: {
-                queryDir += "/Less"; // Total - 75K queries
+                dir = "src/test/java/Dataset/IMDB_Medium";
+                queryDir = "src/test/java/Queries/imdb";
                 break;
             }
 
             case 3: {
-                queryDir += "/Many"; // Total - 150K queries
+                dir = "src/test/java/Dataset/IMDB_Large";
+                queryDir = "src/test/java/Queries/imdb";
                 break;
             }
 
             case 4: {
-                queryDir += "/Too Many"; // Total - 300K queries
-                break;
-            }
+				dir = "src/test/java/Dataset/dblp_super_small";
+                queryDir = "src/test/java/Queries/dblp";
+				break;
+			}
+
+			case 5: {
+				dir = "src/test/java/Dataset/dblp_small";
+                queryDir = "src/test/java/Queries/dblp";
+				break;
+			}
         }
+        
 
         HashMap<String, List<Query>> queries = LoadQueries(Paths.get(queryDir, "queries.csv"));
         System.out.println("Simple, Medium and Complex QueryGraph Buckets generated\n");
@@ -311,9 +324,7 @@ public class BatchQueryProcessing {
         }
         System.out.println();
 
-        String dir = null;
-        String name_key = "name";
-        int choice = 3;
+        
         Boolean compare = true;
         Set<String> options = new HashSet<>();
         options.addAll(Arrays.asList("vertex_naive", "edges_naive"));
@@ -325,22 +336,6 @@ public class BatchQueryProcessing {
         desc.put("KDTree Type", new ArrayList<>(Arrays.asList("unbalanced_kdtree", "balanced_kdtree")));
         desc.put("Edge Properties Present", new ArrayList<>(Arrays.asList("no_edge_properties", "edge_properties")));
 
-        switch (choice) {
-            case 1: {
-                dir = "src/test/java/Dataset/IMDB_Small";
-                break;
-            }
-
-            case 2: {
-                dir = "src/test/java/Dataset/IMDB_Medium";
-                break;
-            }
-
-            case 3: {
-                dir = "src/test/java/Dataset/IMDB_Large";
-                break;
-            }
-        }
 
         String srcDir = dir;
         String tarDir = dir + "/Dataset_Statistics";

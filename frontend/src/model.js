@@ -29,6 +29,8 @@ async function getResults(dataset_choice) {
     })
   });
 
+  console.log("Final Nodes: ", nodes_data);
+
 	const response = await axios
   .post("http://localhost:8080/query", {
     dataset: dataset_choice,

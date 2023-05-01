@@ -220,11 +220,44 @@ const removeNode = (node) => {
   graphChanged();
 };
 
+const getProps = (nodeOrEdge, isNode) => {
+  let p = "";
+  nodeOrEdge.props.forEach((prop) => {
+    if(prop.op != null){
+    p += prop.key + "," + prop.op + "," + prop.value + ";";
+    }
+  })
+  let input = prompt(
+    "Add properties for this " + (isNode ? "node" : "edge") + ":",
+    p
+  );
+
+  let t1 = input.split(';');
+  let t2 = [];
+  t1.forEach(t => {
+    let t_interm = t.split(',');
+    if(t_interm.length == 3){
+      t2.push({key: t_interm[0], op: t_interm[1], value: t_interm[2]});
+    }
+  })
+
+  if (!input){
+    t2 = [{}];
+  }
+
+  nodes.forEach((node) => {
+    if(Object.is(node, curNode)){
+      node.props = t2;
+    }
+  }) 
+}
+
 document.addEventListener("click", (e) => {
 //   e.stopPropagation();
   contextMenu.style.visibility = "hidden";
   if (e.target == addAttrOpt) {
     console.log("Add Attribute");
+    getProps(curNode, "node");
   } else if (e.target == deleteOpt) {
     removeNode(curNode);
   }
@@ -232,7 +265,7 @@ document.addEventListener("click", (e) => {
 });
 
 const MenuOnRightClick = (e) => {
-  console.log("Clcik");
+  console.log("Click");
   e.preventDefault();
   let x = e.screenX + 10,
     y = e.pageY + 20;

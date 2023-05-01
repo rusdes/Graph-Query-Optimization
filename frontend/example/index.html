@@ -102,10 +102,10 @@
     <div class="item" id="addattr">Add Attributes</div>
     <div class="item" id="delete">Delete</div>
   </div>
-  <!--<div style="text-align: center; color: silver">
-        <b>New node:</b> click on the canvas, <b>New edge:</b> drag one node close enough to another one,
-        <b>Rename</b> node or edge by clicking on it, <b>Remove</b> node or edge by right-clicking on it
-    </div>-->
+  <div style="text-align: center; color: rgb(146, 145, 145)">
+        <b>New Node:</b> click on the canvas, <b>New Edge:</b> drag one node close enough to another one,
+        <b>Rename</b> node or edge by clicking on it, <b>Remove</b> node or edge or <b>Add Properties</b> by right-clicking on it
+    </div>
   <table style="background-color:#eee;">
     <tr>
       <td style="vertical-align: top; text-align: left; width: 600px; padding-right: 10px">
@@ -117,7 +117,7 @@
          <label for="imdb">IMDB Dataset</label><br>
         </form>
       </td>
-      <td style="padding-bottom: 10px; justify-content: center">
+      <td style="justify-content: center">
         <div id="graphBuilderDiv"></div>
       </td>
     </tr>
@@ -129,10 +129,8 @@
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; justify-content: center; text-align: center; width: 600px">
-        <div id="outputWrapperDiv">
-          <div id="queryResultsDiv"></div>
-        </div>
+      <td style="display: flex; vertical-align: top; justify-content: center">
+        <div id="outputWrapperDiv"></div>
       </td>
       <td>
           <div id="chartDiv"></div>
@@ -153,13 +151,10 @@
         height: 100,
       },
       resultsTable: {
-        queryResultsDiv: document.getElementById("queryResultsDiv"),
+        queryResultsDiv: document.getElementById("outputWrapperDiv"),
       },
       outputElements: {
         submitButtonId: "submitBtn",
-        queryResultsSentenceDiv: document.getElementById(
-          "queryResultsSentenceDiv"
-        ),
         outputWrapperDiv: document.getElementById("outputWrapperDiv"),
         datasetChoiceToy: document.getElementById("toy"),
         datasetChoiceIMDB: document.getElementById("imdb"),

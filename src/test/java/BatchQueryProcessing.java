@@ -282,7 +282,7 @@ public class BatchQueryProcessing {
         String queryDir = null;
         String dir = null;
         // String name_key = "name";
-        int choice = 4;
+        int choice = 6;
         switch (choice) {
             case 1: {
                 dir = "src/test/java/Dataset/IMDB_Small";
@@ -310,6 +310,12 @@ public class BatchQueryProcessing {
 
 			case 5: {
 				dir = "src/test/java/Dataset/dblp_small";
+                queryDir = "src/test/java/Queries/dblp";
+				break;
+			}
+
+            case 6: {
+				dir = "src/test/java/Dataset/dblp_serialized";
                 queryDir = "src/test/java/Queries/dblp";
 				break;
 			}

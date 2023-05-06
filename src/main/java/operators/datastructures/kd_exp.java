@@ -50,7 +50,7 @@ public class kd_exp {
 
         ObjectInputStream objectInputStreamEdge;
         try {
-            objectInputStreamEdge = new ObjectInputStream(new BufferedInputStream(new FileInputStream("src/test/java/Dataset/dblp_small/KDTree/edge/unbalanced.ser")));
+            objectInputStreamEdge = new ObjectInputStream(new BufferedInputStream(new FileInputStream("src/test/java/Dataset/DBLP/DBLP_Small/KDTree/edge/unbalanced.ser")));
             HashMap<String, KDTree> KDTreeSetEdge = (HashMap<String, KDTree>) objectInputStreamEdge.readObject();
 
         } catch (Exception e) {

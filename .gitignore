@@ -33,9 +33,7 @@ frontend/node_modules/
 raw_datasets/
 
 # Datasets
-src/test/java/Dataset/imdb_nishant/vertices.csv
-src/test/java/Dataset/imdb_nishant/edges.csv
 src/test/java/imdb_CostBasedOptimizerTest.java
 
 **/Dataset_Statistics/
-src/test/java/Dataset/IMDB_Large/KDTree/vertex/
+src/test/java/Dataset/IMDB/IMDB_Large/KDTree/vertex/

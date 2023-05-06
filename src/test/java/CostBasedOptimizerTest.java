@@ -35,7 +35,7 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 10;
+		int choice = 11;
 		String testQuery = "21";
 		System.out.println("Choice: " + choice);
 
@@ -56,63 +56,19 @@ public class CostBasedOptimizerTest {
 		desc.put("Edge Properties Present", new ArrayList<>(Arrays.asList("no_edge_properties", "edge_properties")));
 
 		switch (choice) {
-			case 1: {
+			case 11: {
 				// Query- 21, 22, 24
 				// dir = "src/test/java/Dataset/compressed_imdb";
-				dir = "src/test/java/Dataset/IMDB_Small";
+				dir = "src/test/java/Dataset/IMDB/IMDB_Small";
 				name_key = "name";
 				// testQuery = "23";
 				// testQuery = "22";
 				break;
 			}
 
-			case 2: {
+			case 12: {
 				// Query- 30,
-				dir = "src/test/java/Dataset/uncompressed_imdb";
-				// testQuery = "30";
-				name_key = "value";
-				// testQuery = "31";
-				// testQuery = "32";
-				break;
-			}
-
-			case 3: {
-				// unlabelled dataset
-				dir = "src/test/java/Dataset/unlabeled";
-				// testQuery = null;
-				break;
-			}
-
-			case 4: {
-				// toy dataset
-				// Query: 40, 41, 42, 43, 44, 45
-				dir = "src/test/java/Dataset/Toy";
-				name_key = "Name";
-				// testQuery = "0";
-				// testQuery = "16";
-				// testQuery = "0";
-				// testQuery = "18";
-				// testQuery = "19";
-				testQuery = "45";
-				break;
-			}
-
-			case 5: {
-				// Query: 40, 41, 42, 43, 44, 45
-				dir = "src/test/java/Dataset/compressed_imdb";
-				name_key = "primaryName";
-				// testQuery = "0";
-				// testQuery = "16";
-				// testQuery = "0";
-				// testQuery = "18";
-				// testQuery = "19";
-				// testQuery = "45";
-				break;
-			}
-
-			case 6: {
-				// Query- 30,
-				dir = "src/test/java/Dataset/IMDB_Medium";
+				dir = "src/test/java/Dataset/IMDB/IMDB_Medium";
 				// testQuery = "30";
 				name_key = "name";
 				// testQuery = "31";
@@ -120,9 +76,9 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case 7: {
+			case 13: {
 				// Query- 30,
-				dir = "src/test/java/Dataset/IMDB_Large";
+				dir = "src/test/java/Dataset/IMDB/IMDB_Large";
 				// testQuery = "30";
 				name_key = "name";
 				// testQuery = "31";
@@ -130,19 +86,9 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case 8: {
+			case 21: {
 				// Query- 30,
-				dir = "src/test/java/Dataset/exp_data";
-				// testQuery = "30";
-				name_key = "value";
-				// testQuery = "31";
-				testQuery = "32";
-				break;
-			}
-
-			case 9: {
-				// Query- 30,
-				dir = "src/test/java/Dataset/dblp_super_small";
+				dir = "src/test/java/Dataset/DBLP/DBLP_Small";
 				// testQuery = "30";
 				name_key = "name";
 				// testQuery = "31";
@@ -150,9 +96,19 @@ public class CostBasedOptimizerTest {
 				break;
 			}
 
-			case 10: {
+			case 22: {
 				// Query- 30,
-				dir = "src/test/java/Dataset/dblp_small";
+				dir = "src/test/java/Dataset/DBLP/DBLP_Medium";
+				// testQuery = "30";
+				name_key = "name";
+				// testQuery = "31";
+				testQuery = "33";
+				break;
+			}
+
+			case 23: {
+				// Query- 30,
+				dir = "src/test/java/Dataset/DBLP/DBLP_Large";
 				// testQuery = "30";
 				name_key = "name";
 				// testQuery = "31";

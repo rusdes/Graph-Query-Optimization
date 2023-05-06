@@ -279,41 +279,60 @@ public class BatchQueryProcessing {
      */
     public static void main(String[] args) throws Exception {
 
-        String queryDir = "src/test/java/Queries";
-        int queryChoice = 2;
-        switch (queryChoice) {
-            case 1: {
-                queryDir += "/Too Less"; // Total - 4.5K queries
+        String queryDir = null;
+        String dir = null;
+        // String name_key = "name";
+        int choice = 23;
+        switch (choice) {
+            case 11: {
+                dir = "src/test/java/Dataset/IMDB/IMDB_Small";
+                queryDir = "src/test/java/Queries/IMDB";
                 break;
             }
 
-            case 2: {
-                queryDir += "/Less"; // Total - 75K queries
+            case 12: {
+                dir = "src/test/java/Dataset/IMDB/IMDB_Medium";
+                queryDir = "src/test/java/Queries/IMDB";
+                break;
+            }
+            
+            case 13: {
+                dir = "src/test/java/Dataset/IMDB/IMDB_Large";
+                queryDir = "src/test/java/Queries/IMDB";
                 break;
             }
 
-            case 3: {
-                queryDir += "/Many"; // Total - 150K queries
-                break;
-            }
+            case 21: {
+				dir = "src/test/java/Dataset/DBLP/DBLP_Small";
+                queryDir = "src/test/java/Queries/DBLP";
+				break;
+			}
 
-            case 4: {
-                queryDir += "/Too Many"; // Total - 300K queries
-                break;
-            }
+			case 22: {
+				dir = "src/test/java/Dataset/DBLP/DBLP_Medium";
+                queryDir = "src/test/java/Queries/DBLP";
+				break;
+			}
+
+            case 23: {
+				dir = "src/test/java/Dataset/DBLP/DBLP_Large";
+                queryDir = "src/test/java/Queries/DBLP";
+				break;
+			}
         }
+        
 
+        int totalQueries = 0;
         HashMap<String, List<Query>> queries = LoadQueries(Paths.get(queryDir, "queries.csv"));
         System.out.println("Simple, Medium and Complex QueryGraph Buckets generated\n");
         System.out.println("Difficulty\tCount\n-----------------------");
         for (String difficulty : queries.keySet()) {
             System.out.println(difficulty + "\t\t" + queries.get(difficulty).size());
+            totalQueries += queries.get(difficulty).size();
         }
         System.out.println();
 
-        String dir = null;
-        String name_key = "name";
-        int choice = 3;
+        
         Boolean compare = true;
         Set<String> options = new HashSet<>();
         options.addAll(Arrays.asList("vertex_naive", "edges_naive"));
@@ -325,22 +344,6 @@ public class BatchQueryProcessing {
         desc.put("KDTree Type", new ArrayList<>(Arrays.asList("unbalanced_kdtree", "balanced_kdtree")));
         desc.put("Edge Properties Present", new ArrayList<>(Arrays.asList("no_edge_properties", "edge_properties")));
 
-        switch (choice) {
-            case 1: {
-                dir = "src/test/java/Dataset/IMDB_Small";
-                break;
-            }
-
-            case 2: {
-                dir = "src/test/java/Dataset/IMDB_Medium";
-                break;
-            }
-
-            case 3: {
-                dir = "src/test/java/Dataset/IMDB_Large";
-                break;
-            }
-        }
 
         String srcDir = dir;
         String tarDir = dir + "/Dataset_Statistics";
@@ -386,8 +389,6 @@ public class BatchQueryProcessing {
         // VkEkUbalVEk - Vertex KDtree, Edge KDtree, Unbalanced Vertex & Edge KDTree
         // VkEkBalVEk - Vertex KDtree, Edge KDtree, Balanced Vertex & Edge KDTree
 
-        int numQueries = 1000;
-
         ForkJoinPool myPool = new ForkJoinPool(4);
 
         myPool.submit(() -> {
@@ -404,6 +405,7 @@ public class BatchQueryProcessing {
                 int qcount = 0;
 
                 // Serial
+                int numQueries = queries.get(difficulty).size();
 
                 try (ProgressBar pb = new ProgressBar(
                         ("Query (" + difficulty + ") on " + Thread.currentThread().getName().substring(15)),
@@ -564,8 +566,7 @@ public class BatchQueryProcessing {
 
         // }
         System.out.println();
-        System.out.println(finalResultTable);
-        System.out.println("\nQuery Execution Completed: Executed " + numQueries * 3 + " Queries");
+        System.out.println("\nQuery Execution Completed: Executed " + totalQueries + " Queries");
         writeResultsToCSV(finalResultTable, queryDir);
 
     }

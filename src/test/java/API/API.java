@@ -157,7 +157,7 @@ public class API {
             case "IMDB": {
                 // Query- 21, 22, 24
                 // dir = "src/test/java/Dataset/compressed_imdb";
-                dir = "src/test/java/Dataset/IMDB_Small";
+                dir = "src/test/java/Dataset/IMDB/IMDB_Small";
                 name_key = "name";
                 break;
             }

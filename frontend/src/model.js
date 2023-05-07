@@ -22,21 +22,24 @@ async function getResults(dataset_choice) {
   });
 
   await queryGraphData.edges.forEach((edge) => {
-    edges_data.push({ from: edge.source,
-      to: edge.target,
+    edges_data.push({ from: edge.source.id,
+      to: edge.target.id,
       label: edge.value,
       props: edge.props,
     })
   });
 
   console.log("Final Nodes: ", nodes_data);
+  console.log("Final Edges: ", edges_data);
 
 	const response = await axios
   .post("http://localhost:8080/query", {
     dataset: dataset_choice,
     nodes: nodes_data,
-    edges: [{ from: 0, to: 1, label: "Performed", props: [{}] }],
+    edges: edges_data,
+    // edges: [{ from: 0, to: 1, label: "Performed", props: [{}] }],
   });
+
   let data;
   console.log("Check", response);
   if(response.status === 200){
@@ -79,6 +82,9 @@ const submitBtn = async() => {
     dataset_choice = "Toy";
   } else if (outputElements.datasetChoiceIMDB.checked) {
     dataset_choice = "IMDB";
+  }
+  else if (outputElements.datasetChoiceDBLP.checked) {
+    dataset_choice = "DBLP";
   }
   if (dataset_choice == null) {
     alert("Please Select a Dataset");

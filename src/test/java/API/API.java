@@ -169,6 +169,13 @@ public class API {
                 name_key = "Name";
                 break;
             }
+
+            case "DBLP": {
+				// Query- 30,
+				dir = "src/test/java/Dataset/DBLP/DBLP_Small";
+				name_key = "name";
+				break;
+			}
         }
 
         // defining source and target path for statistics files of edge and vertices

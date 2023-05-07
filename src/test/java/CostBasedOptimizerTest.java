@@ -1,7 +1,6 @@
 import operators.datastructures.EdgeExtended;
 import operators.datastructures.GraphExtended;
 import operators.datastructures.VertexExtended;
-import operators.helper.GraphCompressor;
 import operators.helper.print_result;
 
 import org.javatuples.*;
@@ -35,7 +34,7 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 11;
+		int choice = 21;
 		String testQuery = "21";
 		System.out.println("Choice: " + choice);
 
@@ -56,6 +55,16 @@ public class CostBasedOptimizerTest {
 		desc.put("Edge Properties Present", new ArrayList<>(Arrays.asList("no_edge_properties", "edge_properties")));
 
 		switch (choice) {
+			case 0: {
+				// Query- 21, 22, 24
+				// dir = "src/test/java/Dataset/compressed_imdb";
+				dir = "src/test/java/Dataset/Toy";
+				name_key = "Name";
+				testQuery = "0";
+				// testQuery = "22";
+				break;
+			}
+
 			case 11: {
 				// Query- 21, 22, 24
 				// dir = "src/test/java/Dataset/compressed_imdb";

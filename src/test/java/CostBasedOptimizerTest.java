@@ -34,13 +34,13 @@ public class CostBasedOptimizerTest {
 		// System.out.println(
 		// "1 - Compressed IMDB\n2 - Uncompressed IMDB\n3 - Unlabeled Toy Dataset\n4 -
 		// Labeled Toy Dataset");
-		int choice = 21;
+		int choice = 11;
 		String testQuery = "21";
 		System.out.println("Choice: " + choice);
 
 		String dir = null;
 		String name_key = null;
-		Boolean compare = false;
+		Boolean compare = true;
 
 		Set<String> options = new HashSet<>();
 		options.addAll(Arrays.asList("vertex_naive", "edges_kdtree", "balanced_kdtree"));
@@ -71,7 +71,7 @@ public class CostBasedOptimizerTest {
 				dir = "src/test/java/Dataset/IMDB/IMDB_Small";
 				name_key = "name";
 				// testQuery = "23";
-				// testQuery = "22";
+				testQuery = "21";
 				break;
 			}
 
@@ -464,7 +464,7 @@ public class CostBasedOptimizerTest {
 				// dblp query
 				HashMap<String, Pair<String, String>> bookProps = new HashMap<>();
 				HashMap<String, Pair<String, String>> authorProps = new HashMap<>();
-				bookProps.put("name", new Pair<String, String>("eq", "Exploiting environment configurability in reinforcement learning."));
+				// bookProps.put("name", new Pair<String, String>("eq", "Exploiting environment configurability in reinforcement learning."));
 				// HashMap<String, Pair<String, String>> movieProps = new HashMap<>();
 				// // movieProps.put("originalTitle", new Pair<String, String>("eq",
 				// "Carmencita"));

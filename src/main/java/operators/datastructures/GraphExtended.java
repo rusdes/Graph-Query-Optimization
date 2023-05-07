@@ -187,38 +187,38 @@ public class GraphExtended<K, VL, VP, E, EL, EP> implements java.io.Serializable
 			}
 
 			// Wtite object to file if absent
-			theDir.mkdirs();
-			try {
-				if (!vertexBool) {
-					File f = new File(tarDir + "vertex/");
-					f.mkdirs();
+			// theDir.mkdirs();
+			// try {
+			// 	if (!vertexBool) {
+			// 		File f = new File(tarDir + "vertex/");
+			// 		f.mkdirs();
 
-					ObjectOutputStream objectOutputStreamVertex = new ObjectOutputStream(
-							new FileOutputStream(tarDir + "vertex/" + str1));
+			// 		ObjectOutputStream objectOutputStreamVertex = new ObjectOutputStream(
+			// 				new FileOutputStream(tarDir + "vertex/" + str1));
 
-					// Writing the object
-					objectOutputStreamVertex.writeObject(this.KDTreeSetVertex);
+			// 		// Writing the object
+			// 		objectOutputStreamVertex.writeObject(this.KDTreeSetVertex);
 
-					// Close the ObjectOutputStream
-					objectOutputStreamVertex.close();
-				}
+			// 		// Close the ObjectOutputStream
+			// 		objectOutputStreamVertex.close();
+			// 	}
 
-				if (!edgeBool) {
-					File f = new File(tarDir + "edge/");
-					f.mkdirs();
+			// 	if (!edgeBool) {
+			// 		File f = new File(tarDir + "edge/");
+			// 		f.mkdirs();
 
-					ObjectOutputStream objectOutputStreamEdge = new ObjectOutputStream(
-							new FileOutputStream(tarDir + "edge/" + str1));
+			// 		ObjectOutputStream objectOutputStreamEdge = new ObjectOutputStream(
+			// 				new FileOutputStream(tarDir + "edge/" + str1));
 
-					// Writing the object
-					objectOutputStreamEdge.writeObject(this.KDTreeSetEdge);
+			// 		// Writing the object
+			// 		objectOutputStreamEdge.writeObject(this.KDTreeSetEdge);
 
-					// Close the ObjectOutputStream
-					objectOutputStreamEdge.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			// 		// Close the ObjectOutputStream
+			// 		objectOutputStreamEdge.close();
+			// 	}
+			// } catch (IOException e) {
+			// 	e.printStackTrace();
+			// }
 		}
 	}
 

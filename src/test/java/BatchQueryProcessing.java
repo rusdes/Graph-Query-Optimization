@@ -405,7 +405,8 @@ public class BatchQueryProcessing {
                 int qcount = 0;
 
                 // Serial
-                int numQueries = queries.get(difficulty).size();
+                // int numQueries = queries.get(difficulty).size();
+                int numQueries = 800;
 
                 try (ProgressBar pb = new ProgressBar(
                         ("Query (" + difficulty + ") on " + Thread.currentThread().getName().substring(15)),
